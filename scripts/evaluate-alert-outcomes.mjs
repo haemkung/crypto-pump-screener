@@ -8,72 +8,29 @@
  *
  * Usage: node scripts/evaluate-alert-outcomes.mjs
  */
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
 import { randomUUID } from "node:crypto";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(__dirname, "..");
-const DATA_DIR = resolve(ROOT, "data");
-const ALERT_LOG_FILE = resolve(DATA_DIR, "alert-log.json");
-const LEARNED_CASES_FILE = resolve(DATA_DIR, "learned-cases.json");
-const LEARNED_WEIGHTS_FILE = resolve(DATA_DIR, "learned-weights.json");
+import {
+  ensureDataDir,
+  writeJson,
+  loadAlertLog,
+  loadLearnedCases,
+  buildWeights,
+  paperPnlFromMove,
+  readJson,
+  ALERT_LOG_FILE,
+  LEARNED_CASES_FILE,
+  LEARNED_WEIGHTS_FILE,
+} from "./lib/learning-core.mjs";
 
 const HORIZONS = {
   "15m": { ms: 15 * 60 * 1000, winPct: 1.5, lossPct: 1.5 },
   "60m": { ms: 60 * 60 * 1000, winPct: 3.0, lossPct: 3.0 },
 };
 
-const ROLLING_N = 30;
-const MIN_GRADED_FOR_ADAPT = 5;
-
-const DEFAULTS = {
-  nowLongMinScore: 55,
-  nowShortMinScore: 50,
-  nowLongPctMin: 5,
-  nowLongPctMax: 18,
-  nowShortPctMin: -18,
-  nowShortPctMax: -5,
-};
-
 const FAPI_HOSTS = [
   "https://www.binance.com",
   "https://fapi.binance.com",
 ];
-
-function ensureDataDir() {
-  if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
-}
-
-function readJson(path, fallback) {
-  if (!existsSync(path)) return fallback;
-  try {
-    return JSON.parse(readFileSync(path, "utf8"));
-  } catch {
-    return fallback;
-  }
-}
-
-function writeJson(path, value) {
-  ensureDataDir();
-  writeFileSync(path, JSON.stringify(value, null, 2) + "\n", "utf8");
-}
-
-function loadAlertLog() {
-  const raw = readJson(ALERT_LOG_FILE, { alerts: [] });
-  const alerts = Array.isArray(raw?.alerts)
-    ? raw.alerts
-    : Array.isArray(raw)
-      ? raw
-      : [];
-  return { alerts };
-}
-
-function loadLearnedCases() {
-  const raw = readJson(LEARNED_CASES_FILE, []);
-  return Array.isArray(raw) ? raw : [];
-}
 
 async function fetchJsonFromHosts(path) {
   let lastErr;
@@ -97,7 +54,6 @@ async function fetchJsonFromHosts(path) {
   throw lastErr instanceof Error ? lastErr : new Error(String(lastErr));
 }
 
-/** Bulk last prices for USDT-M perps. */
 async function fetchPriceMap(symbols) {
   const needed = new Set(symbols);
   if (needed.size === 0) return new Map();
@@ -111,17 +67,12 @@ async function fetchPriceMap(symbols) {
   return map;
 }
 
-/**
- * Grade move for one side/horizon.
- * Long: win if +winPct, loss if −lossPct; Short inverted.
- */
 function gradeMove(side, movePct, winPct, lossPct) {
   if (side === "long") {
     if (movePct >= winPct) return "win";
     if (movePct <= -lossPct) return "loss";
     return "neutral";
   }
-  // short: price drop is win
   if (movePct <= -winPct) return "win";
   if (movePct >= lossPct) return "loss";
   return "neutral";
@@ -137,99 +88,6 @@ function noteTh(side, outcome, movePct, horizon) {
     return `${sideTh} ผิด (${horizon}): ราคา ${dir}${movePct.toFixed(2)}% — ตรงข้ามทิศ`;
   }
   return `${sideTh} เป็นกลาง (${horizon}): ราคา ${dir}${movePct.toFixed(2)}% — ยังไม่ถึงเกณฑ์`;
-}
-
-function clamp(n, lo, hi) {
-  return Math.max(lo, Math.min(hi, n));
-}
-
-/**
- * From rolling win rates, set score/band deltas (cap ±2).
- * <40% tighten; >60% loosen; else decay toward 0.
- */
-function computeSideKnobs(winRate, graded, prev) {
-  let scoreDelta = prev?.nowMinScoreDelta ?? 0;
-  let bandDelta = prev?.nowPctBandDelta ?? 0;
-
-  if (graded >= MIN_GRADED_FOR_ADAPT && winRate != null) {
-    if (winRate < 0.4) {
-      scoreDelta = 2; // raise min score
-      bandDelta = -2; // tighten 24h band
-    } else if (winRate > 0.6) {
-      scoreDelta = -2; // loosen
-      bandDelta = 2;
-    } else {
-      // mid band — ease back toward defaults
-      scoreDelta = scoreDelta > 0 ? scoreDelta - 1 : scoreDelta < 0 ? scoreDelta + 1 : 0;
-      bandDelta = bandDelta > 0 ? bandDelta - 1 : bandDelta < 0 ? bandDelta + 1 : 0;
-    }
-  }
-
-  scoreDelta = clamp(scoreDelta, -2, 2);
-  bandDelta = clamp(bandDelta, -2, 2);
-
-  return {
-    winRate,
-    graded,
-    nowMinScoreDelta: scoreDelta,
-    nowPctBandDelta: bandDelta,
-  };
-}
-
-function buildWeights(cases, prevWeights) {
-  const graded = cases
-    .filter((c) => c.outcome === "win" || c.outcome === "loss")
-    .sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1));
-
-  function sideRate(side) {
-    const slice = graded.filter((c) => c.side === side).slice(0, ROLLING_N);
-    const wins = slice.filter((c) => c.outcome === "win").length;
-    const losses = slice.filter((c) => c.outcome === "loss").length;
-    const n = wins + losses;
-    return { winRate: n > 0 ? wins / n : null, graded: n };
-  }
-
-  const longS = sideRate("long");
-  const shortS = sideRate("short");
-  const long = computeSideKnobs(longS.winRate, longS.graded, prevWeights?.long);
-  const short = computeSideKnobs(shortS.winRate, shortS.graded, prevWeights?.short);
-
-  const nowLongMinScore = clamp(
-    DEFAULTS.nowLongMinScore + long.nowMinScoreDelta,
-    DEFAULTS.nowLongMinScore - 2,
-    DEFAULTS.nowLongMinScore + 2
-  );
-  const nowShortMinScore = clamp(
-    DEFAULTS.nowShortMinScore + short.nowMinScoreDelta,
-    DEFAULTS.nowShortMinScore - 2,
-    DEFAULTS.nowShortMinScore + 2
-  );
-  const nowLongPctMax = clamp(
-    DEFAULTS.nowLongPctMax + long.nowPctBandDelta,
-    DEFAULTS.nowLongPctMax - 2,
-    DEFAULTS.nowLongPctMax + 2
-  );
-  // Short: positive bandDelta loosens (more negative min); negative tightens
-  const nowShortPctMin = clamp(
-    DEFAULTS.nowShortPctMin - short.nowPctBandDelta,
-    DEFAULTS.nowShortPctMin - 2,
-    DEFAULTS.nowShortPctMin + 2
-  );
-
-  return {
-    updatedAt: new Date().toISOString(),
-    rollingN: ROLLING_N,
-    long,
-    short,
-    effective: {
-      nowLongMinScore,
-      nowShortMinScore,
-      nowLongPctMin: DEFAULTS.nowLongPctMin,
-      nowLongPctMax,
-      nowShortPctMin,
-      nowShortPctMax: DEFAULTS.nowShortPctMax,
-    },
-  };
 }
 
 async function main() {
@@ -255,7 +113,6 @@ async function main() {
       if (now - sentMs < cfg.ms) continue;
       const key = `${alert.id}|${horizon}`;
       if (existingCaseKeys.has(key)) {
-        // already in learned-cases; mark log graded
         const found = cases.find(
           (c) => c.alertId === alert.id && c.horizon === horizon
         );
@@ -285,7 +142,11 @@ async function main() {
     }
     const movePct = ((priceNow - alert.price) / alert.price) * 100;
     const outcome = gradeMove(alert.side, movePct, cfg.winPct, cfg.lossPct);
+    const roundedMove = Math.round(movePct * 100) / 100;
+    const paperPnlPct = Math.round(paperPnlFromMove(alert.side, roundedMove) * 100) / 100;
     alert.outcomes[horizon] = outcome;
+    if (!alert.paperPnl) alert.paperPnl = {};
+    alert.paperPnl[horizon] = paperPnlPct;
 
     const learned = {
       id: randomUUID(),
@@ -293,20 +154,21 @@ async function main() {
       symbol: alert.symbol,
       side: alert.side,
       outcome,
-      movePct: Math.round(movePct * 100) / 100,
+      movePct: roundedMove,
+      paperPnlPct,
       horizon,
       noteTh: noteTh(alert.side, outcome, movePct, horizon),
       timestamp: new Date().toISOString(),
       priceAtSend: alert.price,
       priceAtGrade: priceNow,
       score: alert.score ?? null,
+      source: "auto",
     };
     cases.push(learned);
     existingCaseKeys.add(`${alert.id}|${horizon}`);
     gradedNew++;
   }
 
-  // Cap learned cases
   const trimmedCases = cases.length > 400 ? cases.slice(-400) : cases;
   writeJson(LEARNED_CASES_FILE, trimmedCases);
   writeJson(ALERT_LOG_FILE, log);

@@ -88,9 +88,8 @@ export function ExampleCases() {
         </p>
         {showLearned.length === 0 ? (
           <p className="rounded-xl border border-dashed border-zinc-700 bg-zinc-900/40 px-4 py-6 text-center text-sm text-zinc-500">
-            ยังไม่มีเคสที่เกรดแล้ว — รัน{" "}
-            <code className="text-zinc-400">node scripts/evaluate-alert-outcomes.mjs</code>{" "}
-            หลังมี NOW alerts ใน log
+            ยังไม่มีเคสเรียนรู้ — รอประเมินอัตโนมัติหรือกดถูก/ผิด · หรือรัน{" "}
+            <code className="text-zinc-400">npm run evaluate-outcomes</code>
           </p>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

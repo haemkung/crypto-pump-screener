@@ -14,6 +14,8 @@ import {
 } from "@/lib/format";
 import { DetailPanel } from "./DetailPanel";
 import { ExampleCases } from "./ExampleCases";
+import { FeedbackButtons } from "./FeedbackButtons";
+import { LearningStatsPanel } from "./LearningStatsPanel";
 
 const REFRESH_MS = 50_000;
 const DEFAULT_PAGE_SIZE = 80;
@@ -35,6 +37,7 @@ export function Screener() {
   const [selected, setSelected] = useState<ScreenRow | null>(null);
   const [lastFetchLocal, setLastFetchLocal] = useState<string>("—");
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const [feedbackRefresh, setFeedbackRefresh] = useState(0);
   const hasDataRef = useRef(false);
   const oiEnrichGen = useRef(0);
 
@@ -242,6 +245,7 @@ export function Screener() {
           )}
         </div>
 
+        <LearningStatsPanel refreshKey={feedbackRefresh} />
 
         {/* NOW urgency banner */}
         {(nowAlerts.long.length > 0 || nowAlerts.short.length > 0) && (
@@ -259,40 +263,64 @@ export function Screener() {
             </div>
             <div className="flex flex-wrap gap-2">
               {nowAlerts.long.slice(0, 8).map((r) => (
-                <button
+                <div
                   key={`nl-${r.symbol}`}
-                  type="button"
-                  onClick={() => {
-                    setMode("long");
-                    setSelected(r);
-                    setNowOnly(false);
-                  }}
-                  className="rounded-lg border border-emerald-500/50 bg-emerald-950/80 px-2.5 py-1.5 text-left hover:bg-emerald-900"
+                  className="rounded-lg border border-emerald-500/50 bg-emerald-950/80 px-2.5 py-1.5 text-left"
                 >
-                  <span className="font-bold text-emerald-300">{r.baseAsset}</span>
-                  <span className="ml-2 font-mono text-xs text-emerald-400">
-                    {fmtPct(r.priceChangePercent)}
-                  </span>
-                  <span className="ml-2 text-[10px] text-orange-300">Long NOW</span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode("long");
+                      setSelected(r);
+                      setNowOnly(false);
+                    }}
+                    className="w-full text-left hover:opacity-90"
+                  >
+                    <span className="font-bold text-emerald-300">{r.baseAsset}</span>
+                    <span className="ml-2 font-mono text-xs text-emerald-400">
+                      {fmtPct(r.priceChangePercent)}
+                    </span>
+                    <span className="ml-2 text-[10px] text-orange-300">Long NOW</span>
+                  </button>
+                  <FeedbackButtons
+                    compact
+                    symbol={r.symbol}
+                    side="long"
+                    score={r.score}
+                    price={r.price}
+                    onDone={() => setFeedbackRefresh((n) => n + 1)}
+                  />
+                </div>
               ))}
               {nowAlerts.short.slice(0, 8).map((r) => (
-                <button
+                <div
                   key={`ns-${r.symbol}`}
-                  type="button"
-                  onClick={() => {
-                    setMode("short");
-                    setSelected(r);
-                    setNowOnly(false);
-                  }}
-                  className="rounded-lg border border-rose-500/50 bg-rose-950/80 px-2.5 py-1.5 text-left hover:bg-rose-900"
+                  className="rounded-lg border border-rose-500/50 bg-rose-950/80 px-2.5 py-1.5 text-left"
                 >
-                  <span className="font-bold text-rose-300">{r.baseAsset}</span>
-                  <span className="ml-2 font-mono text-xs text-rose-400">
-                    {fmtPct(r.priceChangePercent)}
-                  </span>
-                  <span className="ml-2 text-[10px] text-orange-300">Short NOW</span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode("short");
+                      setSelected(r);
+                      setNowOnly(false);
+                    }}
+                    className="w-full text-left hover:opacity-90"
+                  >
+                    <span className="font-bold text-rose-300">{r.baseAsset}</span>
+                    <span className="ml-2 font-mono text-xs text-rose-400">
+                      {fmtPct(r.priceChangePercent)}
+                    </span>
+                    <span className="ml-2 text-[10px] text-orange-300">Short NOW</span>
+                  </button>
+                  <FeedbackButtons
+                    compact
+                    symbol={r.symbol}
+                    side="short"
+                    score={r.shortScore}
+                    price={r.price}
+                    onDone={() => setFeedbackRefresh((n) => n + 1)}
+                  />
+                </div>
               ))}
             </div>
           </div>
@@ -605,6 +633,7 @@ export function Screener() {
             row={selected}
             mode={mode}
             onClose={() => setSelected(null)}
+            onFeedback={() => setFeedbackRefresh((n) => n + 1)}
           />
         )}
       </div>

@@ -11,6 +11,7 @@ import {
   flagLabelTh,
   entryModeBadgeClass,
 } from "@/lib/format";
+import { FeedbackButtons } from "./FeedbackButtons";
 
 interface DetailPayload {
   oiChangePct: number | null;
@@ -25,10 +26,12 @@ export function DetailPanel({
   row,
   mode,
   onClose,
+  onFeedback,
 }: {
   row: ScreenRow;
   mode: ScreenMode;
   onClose: () => void;
+  onFeedback?: () => void;
 }) {
   const [detail, setDetail] = useState<DetailPayload | null>(null);
   const [loading, setLoading] = useState(true);
@@ -136,6 +139,23 @@ export function DetailPanel({
           </p>
         </div>
       )}
+
+
+      <div className="mb-4 rounded-lg border border-zinc-700 bg-zinc-950/40 p-3">
+        <h4 className="mb-1 text-xs font-semibold text-sky-300">
+          ให้คะแนนสัญญาณ (เรียนมือ)
+        </h4>
+        <p className="mb-2 text-[10px] text-zinc-500">
+          กด ถูก / ผิด เพื่อบันทึกลงระบบเรียนรู้ — หรือ ข้าม · ไม่ใช่คำแนะนำการลงทุน
+        </p>
+        <FeedbackButtons
+          symbol={row.symbol}
+          side={isShort ? "short" : "long"}
+          score={score}
+          price={row.price}
+          onDone={onFeedback}
+        />
+      </div>
 
       {entry && (
         <div className="mb-4 rounded-lg border border-zinc-700 bg-zinc-950/50 p-3">

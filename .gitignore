@@ -47,4 +47,5 @@ next-env.d.ts
 # continuous learning runtime data (local outcomes / adaptive knobs)
 /data/alert-log.json
 /data/learned-weights.json
+/data/alert-settings.json
 

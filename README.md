@@ -141,7 +141,9 @@ Public Binance APIs via **server-side Next.js routes** (avoids browser CORS):
 | `/api/screen` | Aggregated screen + long/short scores + urgency |
 | `/api/alerts/now` | NOW-only Long/Short lists (Telegram-friendly) |
 | `/api/learned-cases` | Graded NOW alert outcomes for UI |
-| `/api/learning-stats` | Rolling win-rate + adaptive NOW thresholds |
+| `/api/learning-stats` | Rolling win-rate + paper P&L + adaptive NOW thresholds |
+| `/api/feedback` | POST manual ถูก/ผิด → alert-log + learned-cases + refresh weights |
+| `/api/alert-settings` | GET/POST Telegram mode `all` \| `sharp` |
 | `/api/oi-detail?symbol=` | Lazy OI + L/S for one row |
 
 Filter: USDT perpetual pairs ending in `USDT` (excludes dated quarterlies with `_`).
@@ -169,6 +171,9 @@ Filter: USDT perpetual pairs ending in `USDT` (excludes dated quarterlies with `
 - Detail panel mode-aware: score breakdown + entry/invalidation + lazy OI/L/S
 - Section **เคสตัวอย่างในอดีต** (Long tab): AKE, LSK, BTW, USELESS, 龙虾
 - Section **เคสที่ระบบเรียนรู้**: win/loss badges from graded NOW alerts
+- **สถิติการเรียนรู้** card: Long/Short WR, graded counts, NOW thresholds, Paper P&L
+- Manual feedback **ถูก / ผิด / ข้าม** on NOW banner + Detail panel
+- Telegram toggle: **ส่งทั้งหมด** / **เฉพาะสัญญาณคม**
 
 ---
 
@@ -181,12 +186,40 @@ adjusts NOW score / 24h-band knobs from recent accuracy.
 
 ### Flow
 
-1. `scripts/check-now-alerts.mjs` → appends to `data/alert-log.json` (gitignored)
-2. `scripts/evaluate-alert-outcomes.mjs` → grades open alerts at **15m** and **60m**
+1. `scripts/check-now-alerts.mjs` → appends to `data/alert-log.json` (gitignored); respects **sharp/all** mode from `data/alert-settings.json`
+2. `scripts/evaluate-alert-outcomes.mjs` → grades open alerts at **15m** and **60m** (writes `paperPnlPct`)
 3. Writes `data/learned-cases.json` (committed as empty `[]` seed) and `data/learned-weights.json` (gitignored)
 4. UI section **เคสที่ระบบเรียนรู้** via `GET /api/learned-cases`
-5. Stats: `GET /api/learning-stats` (rolling win-rate Long/Short + effective thresholds)
-6. `urgency.ts` reads learned weights when the file exists; otherwise defaults
+5. Stats: `GET /api/learning-stats` (rolling WR + Paper P&L + effective thresholds)
+6. Manual feedback: UI **ถูก/ผิด** → `POST /api/feedback` → synthetic graded entry + weight refresh
+7. `urgency.ts` reads learned weights when the file exists; otherwise defaults
+
+### Manual feedback / ให้คะแนนมือ (TH + EN)
+
+| Button | Thai | API `outcome` |
+|--------|------|---------------|
+| Correct | **ถูก** | `win` |
+| Wrong | **ผิด** | `loss` |
+| Skip | **ข้าม** | (no request) |
+
+`POST /api/feedback` body: `{ "symbol": "BTCUSDT", "side": "long"|"short", "outcome": "win"|"loss", "note?": "..." }`
+
+Creates a manually graded row in `alert-log.json`, appends to `learned-cases.json`, and refreshes `learned-weights.json` (same knobs as evaluate).
+
+### High-confidence Telegram / โหมดสัญญาณคม
+
+| Mode | Thai | Behavior |
+|------|------|----------|
+| `sharp` (default) | เฉพาะสัญญาณคม | Send only if score ≥ max(settings.min, effectiveNOW+5), or urgency + score ≥ 60L/55S; skip side if learned WR known & &lt;35% |
+| `all` | ส่งทั้งหมด | Every fresh NOW alert (after 30m dedupe) |
+
+Config: `data/alert-settings.json` (gitignored) or env `ALERT_MODE=all|sharp`.  
+UI toggle / API: `GET|POST /api/alert-settings`.
+
+### Paper P&L (heuristic)
+
+On auto or manual grade, store `paperPnlPct` = signed move from the side’s view (long = raw %, short = −%).  
+Shown in learning-stats as **Paper P&L (heuristic)** — not real returns.
 
 ### Grading heuristic (tunable)
 
@@ -214,15 +247,21 @@ Caps keep behavior close to the original Long/Short/NOW rules.
 node scripts/evaluate-alert-outcomes.mjs
 # or
 npm run evaluate-outcomes
+
+# Telegram poll (sharp by default)
+npm run check-now-alerts
+# force all: ALERT_MODE=all npm run check-now-alerts
 ```
 
 Cron tip: run evaluate every ~5–10 minutes alongside `check-now-alerts`.
+Or grade from the UI with **ถูก / ผิด** for faster learning.
 
 ### Disclaimer
 
 Learning is a **heuristic feedback loop**, not a guarantee of future accuracy,
 not backtested alpha, and **not financial advice**. Files under `data/` (except
-`.gitkeep` / seeded `learned-cases.json`) stay local.
+`.gitkeep` / seeded `learned-cases.json`) stay local — including
+`alert-log.json`, `learned-weights.json`, and `alert-settings.json`.
 
 ## Limitations / ข้อจำกัด
 

@@ -190,10 +190,14 @@ export interface LearnedCase {
   side: "long" | "short";
   outcome: LearnedOutcome;
   movePct: number;
+  /** Signed paper PnL % from the side's view (long=move, short=-move). */
+  paperPnlPct?: number;
   horizon: "15m" | "60m";
   noteTh: string;
   timestamp: string;
   priceAtSend: number;
   priceAtGrade: number;
   score: number | null;
+  /** auto = evaluate script; manual = user ถูก/ผิด */
+  source?: "auto" | "manual";
 }
