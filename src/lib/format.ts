@@ -65,3 +65,26 @@ export function fmtBangkok(iso: string): string {
     return iso;
   }
 }
+
+export function entryModeLabelTh(mode: string): string {
+  const map: Record<string, string> = {
+    early_entry: "ต้นทาง",
+    wait_pullback: "รอพัก",
+    too_late: "สายแล้ว",
+    watch_only: "เฝ้าดู",
+  };
+  return map[mode] || mode;
+}
+
+export function entryModeBadgeClass(mode: string): string {
+  switch (mode) {
+    case "early_entry":
+      return "bg-emerald-950 text-emerald-300 ring-emerald-700";
+    case "wait_pullback":
+      return "bg-amber-950 text-amber-300 ring-amber-700";
+    case "too_late":
+      return "bg-rose-950 text-rose-300 ring-rose-800";
+    default:
+      return "bg-zinc-800 text-zinc-400 ring-zinc-700";
+  }
+}

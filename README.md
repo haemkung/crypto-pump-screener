@@ -48,6 +48,23 @@ Catalyst notes are **static** for a few known historical tickers only — v1 can
 
 ---
 
+## Entry-zone hints / จุดเข้า (heuristic)
+
+Each row includes an **entry** object from `computeEntryHint` (no klines in v1):
+
+| Mode | Badge | When |
+|------|-------|------|
+| `early_entry` | ต้นทาง (green) | Decent score, early_move / 24h ~5–18%, preferably neg funding; band ≈ price −1.5% … +0.5% |
+| `wait_pullback` | รอพัก (yellow) | Still decent but 24h ~18–40% (or 40–50% with fuel); pullback band under last price |
+| `too_late` | สายแล้ว (red) | `late_chase` or 24h >50% (or mid-chase without fuel) — no entry band |
+| `watch_only` | เฝ้าดู (gray) | Mixed / weak — watch only |
+
+Fields: `mode`, `labelTh`, `entryLow`/`entryHigh`, `invalidation`, `entryNote`. UI column **จุดเข้า** + detail panel disclaimer: *จุดเข้าเป็น heuristic จากแพทเทิร์น ไม่ใช่คำสั่งซื้อ*.
+
+
+
+---
+
 ## Data sources / แหล่งข้อมูล
 
 Public Binance APIs via **server-side Next.js routes** (avoids browser CORS):

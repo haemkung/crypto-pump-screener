@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { ScreenRow } from "@/lib/types";
-import { fmtFunding, fmtPct, fmtPrice, fmtRatio, fmtVol, flagLabelTh } from "@/lib/format";
+import { fmtFunding, fmtPct, fmtPrice, fmtRatio, fmtVol, flagLabelTh, entryModeBadgeClass } from "@/lib/format";
 
 interface DetailPayload {
   oiChangePct: number | null;
@@ -73,6 +73,34 @@ export function DetailPanel({
         <Stat label="Fut/Spot" value={row.hasSpot ? fmtRatio(row.futSpotRatio) : "ไม่มี Spot"} />
         <Stat label="Score" value={String(row.score)} tone="score" />
       </div>
+
+      {row.entry && (
+        <div className="mb-4 rounded-lg border border-zinc-700 bg-zinc-950/50 p-3">
+          <div className="mb-2 flex items-center gap-2">
+            <h4 className="text-sm font-semibold text-amber-300">จุดเข้า (heuristic)</h4>
+            <span
+              className={`rounded-md px-1.5 py-0.5 text-[10px] font-medium ring-1 ${entryModeBadgeClass(row.entry.mode)}`}
+            >
+              {row.entry.labelTh}
+            </span>
+          </div>
+          {row.entry.entryLow != null && row.entry.entryHigh != null ? (
+            <p className="mb-1 font-mono text-sm text-zinc-200">
+              โซน: {fmtPrice(row.entry.entryLow)} – {fmtPrice(row.entry.entryHigh)}
+            </p>
+          ) : (
+            <p className="mb-1 text-sm text-zinc-400">ไม่มีโซนเข้าแนะนำ</p>
+          )}
+          <p className="mb-1 text-xs text-zinc-300">{row.entry.entryNote}</p>
+          <p className="mb-2 text-xs text-zinc-500">
+            <span className="text-zinc-400">Invalidation:</span>{" "}
+            {row.entry.invalidation}
+          </p>
+          <p className="text-[10px] leading-relaxed text-amber-200/70">
+            จุดเข้าเป็น heuristic จากแพทเทิร์น ไม่ใช่คำสั่งซื้อ
+          </p>
+        </div>
+      )}
 
       <h4 className="mb-2 text-sm font-semibold text-amber-300">องค์ประกอบคะแนน</h4>
       <ul className="mb-3 space-y-1 text-xs text-zinc-300">

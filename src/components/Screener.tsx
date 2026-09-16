@@ -10,6 +10,7 @@ import {
   fmtRatio,
   fmtVol,
   flagLabelTh,
+  entryModeBadgeClass,
 } from "@/lib/format";
 import { DetailPanel } from "./DetailPanel";
 import { ExampleCases } from "./ExampleCases";
@@ -266,7 +267,7 @@ export function Screener() {
 
       <div className={`grid gap-4 ${selected ? "lg:grid-cols-[1fr_340px]" : ""}`}>
         <div className="overflow-x-auto rounded-xl border border-zinc-800 bg-zinc-950/80">
-          <table className="w-full min-w-[900px] border-collapse text-left text-sm">
+          <table className="w-full min-w-[1000px] border-collapse text-left text-sm">
             <thead className="sticky top-0 bg-zinc-900 text-xs uppercase tracking-wide text-zinc-500">
               <tr>
                 <th className="px-3 py-2">#</th>
@@ -277,6 +278,7 @@ export function Screener() {
                 <th className="px-3 py-2">Funding</th>
                 <th className="px-3 py-2">Fut/Spot</th>
                 <th className="px-3 py-2">Score</th>
+                <th className="px-3 py-2">จุดเข้า</th>
                 <th className="px-3 py-2">Flags</th>
               </tr>
             </thead>
@@ -337,6 +339,32 @@ export function Screener() {
                       </span>
                     </td>
                     <td className="px-3 py-2">
+                      {r.entry ? (
+                        <div className="flex flex-col gap-0.5">
+                          <span
+                            className={`inline-flex w-fit rounded-md px-1.5 py-0.5 text-[10px] font-medium ring-1 ${entryModeBadgeClass(r.entry.mode)}`}
+                          >
+                            {r.entry.labelTh}
+                          </span>
+                          {r.entry.entryLow != null &&
+                          r.entry.entryHigh != null ? (
+                            <span className="font-mono text-[10px] text-zinc-500">
+                              {fmtPrice(r.entry.entryLow)}–
+                              {fmtPrice(r.entry.entryHigh)}
+                            </span>
+                          ) : r.entry.mode === "too_late" ? (
+                            <span className="text-[10px] text-rose-500/80">
+                              ไม่แนะนำไล่
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-zinc-600">—</span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-[10px] text-zinc-600">—</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
                       <div className="flex max-w-[220px] flex-wrap gap-1">
                         {r.flags.slice(0, 4).map((f) => (
                           <span
@@ -359,7 +387,7 @@ export function Screener() {
               {!loading && filtered.length === 0 && (
                 <tr>
                   <td
-                    colSpan={9}
+                    colSpan={10}
                     className="px-3 py-8 text-center text-zinc-500"
                   >
                     ไม่มีแถวที่ตรงเงื่อนไข — ลองลด min volume / score

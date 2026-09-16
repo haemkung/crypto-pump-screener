@@ -12,6 +12,7 @@ import {
   batchOiChangePct,
 } from "./binance";
 import { computePatternScore, volumePercentiles } from "./scoring";
+import { computeEntryHint } from "./entry";
 import { getCatalystNote } from "./catalysts";
 import type { ScreenResponse, ScreenRow } from "./types";
 import { cacheGet, cacheSet } from "./cache";
@@ -24,7 +25,7 @@ export async function buildScreen(options?: {
   forceRefresh?: boolean;
 }): Promise<ScreenResponse> {
   const oiTopN = options?.oiTopN ?? DEFAULT_OI_TOP_N;
-  const cacheKey = `screen:v2:${oiTopN}`;
+  const cacheKey = `screen:v3:${oiTopN}`;
   if (!options?.forceRefresh) {
     const hit = cacheGet<ScreenResponse>(cacheKey);
     if (hit) return hit;
@@ -113,15 +114,25 @@ export async function buildScreen(options?: {
       hasCatalyst: Boolean(catalystNote),
     });
 
+    const fundingFinite = Number.isFinite(lastFundingRate as number)
+      ? lastFundingRate
+      : null;
+
+    const entry = computeEntryHint({
+      price,
+      priceChangePercent,
+      score,
+      flags,
+      lastFundingRate: fundingFinite,
+    });
+
     return {
       symbol,
       baseAsset: baseFromSymbol(symbol),
       price,
       priceChangePercent,
       quoteVolume,
-      lastFundingRate: Number.isFinite(lastFundingRate as number)
-        ? lastFundingRate
-        : null,
+      lastFundingRate: fundingFinite,
       markPrice: Number.isFinite(markPrice as number) ? markPrice : null,
       futuresVol: quoteVolume,
       spotVol,
@@ -133,6 +144,7 @@ export async function buildScreen(options?: {
       flags,
       breakdown,
       catalystNote,
+      entry,
     };
   });
 

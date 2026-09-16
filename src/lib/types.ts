@@ -11,6 +11,21 @@ export type Flag =
   | "short_squeeze_fuel"
   | "catalyst";
 
+export type EntryMode =
+  | "early_entry"
+  | "wait_pullback"
+  | "too_late"
+  | "watch_only";
+
+export interface EntryHint {
+  mode: EntryMode;
+  labelTh: string;
+  entryLow: number | null;
+  entryHigh: number | null;
+  invalidation: string;
+  entryNote: string;
+}
+
 export interface ScoreBreakdown {
   earlyMove: number;
   volume: number;
@@ -39,6 +54,7 @@ export interface ScreenRow {
   flags: Flag[];
   breakdown: ScoreBreakdown;
   catalystNote?: string;
+  entry: EntryHint;
 }
 
 export interface ScreenResponse {
