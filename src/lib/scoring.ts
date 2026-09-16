@@ -12,7 +12,7 @@
  * Flags are separate labels; score still reflects only real numbers.
  */
 
-import type { Flag, ScoreBreakdown } from "./types";
+import type { Flag, ScoreBreakdown, ShortFlag, ShortScoreBreakdown } from "./types";
 
 export interface ScoreInput {
   priceChangePercent: number;
@@ -177,4 +177,161 @@ export function volumePercentiles(volumes: number[]): number[] {
     out[item.i] = n === 1 ? 100 : (rank / (n - 1)) * 100;
   });
   return out;
+}
+
+
+/**
+ * ShortScore (0–100) — downside / dump heuristic, independent of PatternScore.
+ *
+ * Components (approx weights):
+ * - earlyDrop  ~25  : 24h% in ~-5% to -20% sweet spot; < -35% late; < -50% too late
+ * - volume     ~30  : quoteVolume percentile
+ * - funding    ~20  : strongly positive lastFundingRate = crowded longs / long-squeeze fuel
+ * - liquidity  ~15  : high fut/spot OR no-spot thin
+ * - oiChange   ~10  : positive OI % (new shorts / leverage adding)
+ */
+export function computeShortScore(input: ScoreInput): {
+  shortScore: number;
+  shortFlags: ShortFlag[];
+  shortBreakdown: ShortScoreBreakdown;
+} {
+  const notes: string[] = [];
+  const flags: ShortFlag[] = [];
+  const pct = input.priceChangePercent;
+
+  // --- Early drop (~25) ---
+  let earlyDrop = 0;
+  if (pct <= -5 && pct >= -20) {
+    // Peak around -10 to -15%
+    const mid = -12.5;
+    earlyDrop = 25 * (1 - Math.abs(pct - mid) / 12.5);
+    earlyDrop = clamp(earlyDrop, 12, 25);
+    flags.push("early_drop");
+    notes.push(`Early drop: 24h ${pct.toFixed(1)}% ในโซน -5 ถึง -20%`);
+  } else if (pct < -20 && pct >= -35) {
+    earlyDrop = clamp(16 - (Math.abs(pct) - 20) * 0.5, 4, 16);
+    notes.push(`Drop กำลังแรง: 24h ${pct.toFixed(1)}% (โซนรอเด้ง / ระวังไล่)`);
+  } else if (pct < -35 && pct >= -50) {
+    earlyDrop = 3;
+    flags.push("late_short_chase");
+    notes.push(`Late short: 24h ${pct.toFixed(1)}% ต่ำกว่า -35% — ระวังไล่ Short`);
+  } else if (pct < -50) {
+    earlyDrop = 1;
+    flags.push("late_short_chase");
+    notes.push(`ลงลึกมาก: 24h ${pct.toFixed(1)}% < -50% — ไม่แนะนำไล่ Short`);
+  } else if (pct < 0 && pct > -5) {
+    earlyDrop = Math.abs(pct); // mild credit
+    notes.push(`Drop อ่อน: 24h ${pct.toFixed(1)}%`);
+  } else {
+    notes.push(`ไม่มี early-drop bonus (24h ${pct.toFixed(1)}%)`);
+  }
+
+  // --- Volume (~30) ---
+  let volume = 0;
+  if (input.volumePercentile != null) {
+    const p = input.volumePercentile;
+    volume = clamp((p / 100) * 30, 0, 30);
+    if (p >= 80) {
+      flags.push("high_volume");
+      notes.push(`วอลุ่มสูง: percentile ~${p.toFixed(0)}th`);
+    } else {
+      notes.push(`วอลุ่ม percentile ~${p.toFixed(0)}th`);
+    }
+  } else {
+    notes.push("ไม่มี volume percentile");
+  }
+
+  // --- Funding (~20) — POSITIVE favors shorts (crowded longs pay) ---
+  let funding = 0;
+  if (input.lastFundingRate != null) {
+    const fr = input.lastFundingRate;
+    if (fr > 0) {
+      const mag = fr;
+      funding = clamp((mag / 0.001) * 12, 4, 20);
+      flags.push("positive_funding");
+      flags.push("long_squeeze_fuel");
+      notes.push(
+        `Funding บวก: ${(fr * 100).toFixed(4)}% — crowded longs / long-squeeze fuel`
+      );
+    } else if (fr === 0) {
+      notes.push("Funding = 0");
+    } else {
+      funding = 0;
+      notes.push(
+        `Funding ติดลบ: ${(fr * 100).toFixed(4)}% — ไม่ช่วย short setup (shorts แออัด)`
+      );
+    }
+  } else {
+    notes.push("ไม่มี funding data");
+  }
+
+  // --- Liquidity / thin proxy (~15) ---
+  let liquidity = 0;
+  if (!input.hasSpot) {
+    flags.push("no_spot");
+    flags.push("thin_liquidity");
+    liquidity = 10;
+    notes.push("ไม่มีคู่ spot บน Binance — thin liquidity flag");
+  } else if (input.futSpotRatio != null && Number.isFinite(input.futSpotRatio)) {
+    const r = input.futSpotRatio;
+    if (r >= 3) {
+      liquidity = clamp(8 + Math.min(r, 20) * 0.35, 8, 15);
+      flags.push("thin_liquidity");
+      notes.push(`Fut/Spot สูง: ${r.toFixed(2)}x — สภาพคล่องบาง (proxy)`);
+    } else if (r >= 1.5) {
+      liquidity = clamp(r * 3, 3, 10);
+      notes.push(`Fut/Spot: ${r.toFixed(2)}x`);
+    } else {
+      liquidity = clamp(r * 2, 0, 5);
+      notes.push(`Fut/Spot ต่ำ: ${r.toFixed(2)}x`);
+    }
+  } else {
+    notes.push("ไม่มี fut/spot ratio");
+  }
+
+  // --- OI change (~10) ---
+  let oiChange = 0;
+  if (input.oiChangePct != null && Number.isFinite(input.oiChangePct)) {
+    const oi = input.oiChangePct;
+    if (oi > 0) {
+      oiChange = clamp((oi / 15) * 10, 1, 10);
+      if (oi >= 5) {
+        flags.push("oi_rising");
+        notes.push(`OI เพิ่มขึ้น ~${oi.toFixed(1)}% (เลเวอเรจเพิ่มขณะราคาลง)`);
+      } else {
+        notes.push(`OI เปลี่ยน ~${oi.toFixed(1)}%`);
+      }
+    } else {
+      notes.push(`OI ลด/นิ่ง ~${oi.toFixed(1)}%`);
+    }
+  } else {
+    notes.push("ยังไม่มี OI hist (lazy / rate-limit)");
+  }
+
+  if (input.hasCatalyst) {
+    flags.push("catalyst");
+    notes.push("มี catalyst note (static) สำหรับสัญลักษณ์นี้");
+  }
+
+  const total = clamp(
+    Math.round(earlyDrop + volume + funding + liquidity + oiChange),
+    0,
+    100
+  );
+
+  const shortBreakdown: ShortScoreBreakdown = {
+    earlyDrop: Math.round(earlyDrop * 10) / 10,
+    volume: Math.round(volume * 10) / 10,
+    funding: Math.round(funding * 10) / 10,
+    liquidity: Math.round(liquidity * 10) / 10,
+    oiChange: Math.round(oiChange * 10) / 10,
+    total,
+    notes,
+  };
+
+  return {
+    shortScore: total,
+    shortFlags: [...new Set(flags)],
+    shortBreakdown,
+  };
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { ScreenResponse, ScreenRow } from "@/lib/types";
+import type { ScreenMode, ScreenResponse, ScreenRow } from "@/lib/types";
 import {
   fmtBangkok,
   fmtFunding,
@@ -27,6 +27,7 @@ export function Screener() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [oiLoading, setOiLoading] = useState(false);
+  const [mode, setMode] = useState<ScreenMode>("long");
   const [minVol, setMinVol] = useState(1_000_000);
   const [minScore, setMinScore] = useState(20);
   const [hideLate, setHideLate] = useState(true);
@@ -46,7 +47,6 @@ export function Screener() {
     });
   }, []);
 
-  /** Background OI enrich — never toggles main loading. */
   const enrichOi = useCallback(
     async (force = false) => {
       const gen = ++oiEnrichGen.current;
@@ -62,7 +62,7 @@ export function Screener() {
         if (gen !== oiEnrichGen.current) return;
         applyResponse(json);
       } catch {
-        // keep fast-path data; detail panel still loads OI per symbol
+        // keep fast-path data
       } finally {
         if (gen === oiEnrichGen.current) setOiLoading(false);
       }
@@ -77,7 +77,6 @@ export function Screener() {
       const isInitial = !hasDataRef.current;
       try {
         setError(null);
-        // Stale-while-revalidate: never blank the table once we have rows
         if (isInitial && !background) {
           setLoading(true);
         } else {
@@ -85,8 +84,6 @@ export function Screener() {
         }
 
         const params = new URLSearchParams();
-        // Initial + forced refresh: fast path (no OI) for snappy paint.
-        // Periodic SWR: keep OI via warm oiTop cache to avoid score flicker.
         const useFastPath = isInitial || force;
         params.set("oiTop", useFastPath ? "0" : String(OI_TOP_DEFAULT));
         if (force) params.set("refresh", "1");
@@ -101,7 +98,6 @@ export function Screener() {
         const json = (await res.json()) as ScreenResponse;
         applyResponse(json);
 
-        // Lazy OI enrich after first paint / forced refresh (does not block UI)
         if (useFastPath) {
           void enrichOi(force);
         }
@@ -123,21 +119,40 @@ export function Screener() {
     return () => clearInterval(id);
   }, [load]);
 
+  // Reset page size when switching mode so pagination feels fresh
+  useEffect(() => {
+    setPageSize(DEFAULT_PAGE_SIZE);
+  }, [mode]);
+
   const filtered = useMemo(() => {
     if (!data) return [];
-    return data.rows.filter((r) => {
+    const rows = data.rows.filter((r) => {
       if (r.quoteVolume < minVol) return false;
-      if (r.score < minScore) return false;
-      if (hideLate && r.flags.includes("late_chase")) return false;
+      if (mode === "long") {
+        if (r.score < minScore) return false;
+        if (hideLate && r.flags.includes("late_chase")) return false;
+      } else {
+        if (r.shortScore < minScore) return false;
+        if (hideLate && r.shortFlags.includes("late_short_chase")) return false;
+      }
       return true;
     });
-  }, [data, minVol, minScore, hideLate]);
+
+    const sorted = [...rows];
+    if (mode === "short") {
+      sorted.sort((a, b) => b.shortScore - a.shortScore);
+    } else {
+      sorted.sort((a, b) => b.score - a.score);
+    }
+    return sorted;
+  }, [data, minVol, minScore, hideLate, mode]);
 
   const visible = useMemo(
     () => filtered.slice(0, pageSize),
     [filtered, pageSize]
   );
   const hasMore = filtered.length > pageSize;
+  const isShort = mode === "short";
 
   return (
     <div className="mx-auto max-w-[1600px] px-4 py-6">
@@ -148,10 +163,10 @@ export function Screener() {
               Binance USDⓈ-M Futures
             </p>
             <h1 className="text-2xl font-bold text-white sm:text-3xl">
-              Crypto Pump Pattern Screener
+              Crypto Pump / Dump Pattern Screener
             </h1>
             <p className="mt-1 text-sm text-zinc-400">
-              สแกนรูปแบบ 4 ขา: Catalyst (static) · Volume/OI · Short squeeze · Thin liquidity
+              สแกนรูปแบบ Long (ขาขึ้น) และ Short (ขาลง) แยกคะแนน — heuristic จากข้อมูลสาธารณะ
             </p>
           </div>
           <div className="text-right text-xs text-zinc-500">
@@ -182,10 +197,42 @@ export function Screener() {
           <strong>คำเตือน / Disclaimer:</strong> ไม่ใช่คำแนะนำการลงทุนหรือการเงิน
           (Not financial advice). คะแนนเป็น heuristic จากข้อมูลสาธารณะของ Binance เท่านั้น
           อาจผิดพลาด / ล่าช้า — ใช้ศึกษาและคัดกรองเบื้องต้นเท่านั้น ความเสี่ยงสูง
+          {isShort && (
+            <span className="mt-1 block text-rose-200/90">
+              โหมด Short: ราคาขาลงอาจเด้งแรง / long squeeze ได้ — จุด Short เป็น heuristic
+              ไม่ใช่คำสั่งเทรด
+            </span>
+          )}
+        </div>
+
+        {/* Mode tabs */}
+        <div className="mt-4 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setMode("long")}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+              mode === "long"
+                ? "bg-emerald-600 text-white shadow-lg shadow-emerald-900/40"
+                : "border border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            Long (ขาขึ้น)
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("short")}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+              mode === "short"
+                ? "bg-rose-600 text-white shadow-lg shadow-rose-900/40"
+                : "border border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            Short (ขาลง)
+          </button>
         </div>
       </header>
 
-      <ExampleCases />
+      {!isShort && <ExampleCases />}
 
       <section className="mb-4 flex flex-wrap items-end gap-4 rounded-xl border border-zinc-800 bg-zinc-900/60 p-4">
         <label className="flex flex-col gap-1 text-xs text-zinc-400">
@@ -200,7 +247,7 @@ export function Screener() {
           />
         </label>
         <label className="flex flex-col gap-1 text-xs text-zinc-400">
-          Score ขั้นต่ำ
+          {isShort ? "Short Score ขั้นต่ำ" : "Score ขั้นต่ำ"}
           <input
             type="number"
             className="w-28 rounded-lg border border-zinc-700 bg-zinc-950 px-2 py-1.5 font-mono text-sm text-white"
@@ -217,7 +264,9 @@ export function Screener() {
             onChange={(e) => setHideLate(e.target.checked)}
             className="size-4 accent-emerald-500"
           />
-          ซ่อน Late/Chase (&gt;50% 24h)
+          {isShort
+            ? "ซ่อน Late Short (ลงลึก / chase)"
+            : "ซ่อน Late/Chase (>50% 24h)"}
         </label>
         <label className="flex flex-col gap-1 text-xs text-zinc-400">
           แสดงต่อหน้า
@@ -276,21 +325,36 @@ export function Screener() {
                 <th className="px-3 py-2">24h%</th>
                 <th className="px-3 py-2">Vol</th>
                 <th className="px-3 py-2">Funding</th>
-                <th className="px-3 py-2">Fut/Spot</th>
-                <th className="px-3 py-2">Score</th>
-                <th className="px-3 py-2">จุดเข้า</th>
+                {!isShort && <th className="px-3 py-2">Fut/Spot</th>}
+                <th className="px-3 py-2">
+                  {isShort ? "Short Score" : "Score"}
+                </th>
+                <th className="px-3 py-2">
+                  {isShort ? "จุด Short" : "จุดเข้า"}
+                </th>
                 <th className="px-3 py-2">Flags</th>
               </tr>
             </thead>
             <tbody>
               {visible.map((r, idx) => {
                 const active = selected?.symbol === r.symbol;
+                const score = isShort ? r.shortScore : r.score;
+                const flags = isShort ? r.shortFlags : r.flags;
+                const entry = isShort ? r.shortEntry : r.entry;
+                const fundingHot = isShort
+                  ? r.lastFundingRate != null && r.lastFundingRate > 0
+                  : r.lastFundingRate != null && r.lastFundingRate < 0;
+
                 return (
                   <tr
                     key={r.symbol}
                     onClick={() => setSelected(r)}
                     className={`cursor-pointer border-t border-zinc-900 transition-colors hover:bg-zinc-900/80 ${
-                      active ? "bg-emerald-950/40" : ""
+                      active
+                        ? isShort
+                          ? "bg-rose-950/40"
+                          : "bg-emerald-950/40"
+                        : ""
                     }`}
                   >
                     <td className="px-3 py-2 font-mono text-[11px] text-zinc-600">
@@ -319,42 +383,46 @@ export function Screener() {
                     </td>
                     <td
                       className={`px-3 py-2 font-mono ${
-                        r.lastFundingRate != null && r.lastFundingRate < 0
-                          ? "text-emerald-400"
-                          : "text-zinc-400"
+                        fundingHot ? "text-emerald-400" : "text-zinc-400"
                       }`}
                     >
                       {fmtFunding(r.lastFundingRate)}
                     </td>
-                    <td className="px-3 py-2 font-mono text-zinc-300">
-                      {r.hasSpot ? (
-                        fmtRatio(r.futSpotRatio)
-                      ) : (
-                        <span className="text-amber-500/90">No Spot</span>
-                      )}
-                    </td>
+                    {!isShort && (
+                      <td className="px-3 py-2 font-mono text-zinc-300">
+                        {r.hasSpot ? (
+                          fmtRatio(r.futSpotRatio)
+                        ) : (
+                          <span className="text-amber-500/90">No Spot</span>
+                        )}
+                      </td>
+                    )}
                     <td className="px-3 py-2">
-                      <span className="inline-flex min-w-[2.5rem] justify-center rounded-md bg-zinc-900 px-2 py-0.5 font-mono font-bold text-amber-300 ring-1 ring-zinc-700">
-                        {r.score}
+                      <span
+                        className={`inline-flex min-w-[2.5rem] justify-center rounded-md bg-zinc-900 px-2 py-0.5 font-mono font-bold ring-1 ring-zinc-700 ${
+                          isShort ? "text-rose-300" : "text-amber-300"
+                        }`}
+                      >
+                        {score}
                       </span>
                     </td>
                     <td className="px-3 py-2">
-                      {r.entry ? (
+                      {entry ? (
                         <div className="flex flex-col gap-0.5">
                           <span
-                            className={`inline-flex w-fit rounded-md px-1.5 py-0.5 text-[10px] font-medium ring-1 ${entryModeBadgeClass(r.entry.mode)}`}
+                            className={`inline-flex w-fit rounded-md px-1.5 py-0.5 text-[10px] font-medium ring-1 ${entryModeBadgeClass(entry.mode)}`}
                           >
-                            {r.entry.labelTh}
+                            {entry.labelTh}
                           </span>
-                          {r.entry.entryLow != null &&
-                          r.entry.entryHigh != null ? (
+                          {entry.entryLow != null && entry.entryHigh != null ? (
                             <span className="font-mono text-[10px] text-zinc-500">
-                              {fmtPrice(r.entry.entryLow)}–
-                              {fmtPrice(r.entry.entryHigh)}
+                              {fmtPrice(entry.entryLow)}–
+                              {fmtPrice(entry.entryHigh)}
                             </span>
-                          ) : r.entry.mode === "too_late" ? (
+                          ) : entry.mode === "too_late" ||
+                            entry.mode === "too_late_short" ? (
                             <span className="text-[10px] text-rose-500/80">
-                              ไม่แนะนำไล่
+                              {isShort ? "ไม่ไล่ Short" : "ไม่แนะนำไล่"}
                             </span>
                           ) : (
                             <span className="text-[10px] text-zinc-600">—</span>
@@ -366,7 +434,7 @@ export function Screener() {
                     </td>
                     <td className="px-3 py-2">
                       <div className="flex max-w-[220px] flex-wrap gap-1">
-                        {r.flags.slice(0, 4).map((f) => (
+                        {flags.slice(0, 4).map((f) => (
                           <span
                             key={f}
                             className="rounded bg-zinc-800 px-1 py-0.5 text-[10px] text-zinc-400"
@@ -374,9 +442,9 @@ export function Screener() {
                             {flagLabelTh(f)}
                           </span>
                         ))}
-                        {r.flags.length > 4 && (
+                        {flags.length > 4 && (
                           <span className="text-[10px] text-zinc-600">
-                            +{r.flags.length - 4}
+                            +{flags.length - 4}
                           </span>
                         )}
                       </div>
@@ -387,7 +455,7 @@ export function Screener() {
               {!loading && filtered.length === 0 && (
                 <tr>
                   <td
-                    colSpan={10}
+                    colSpan={isShort ? 9 : 10}
                     className="px-3 py-8 text-center text-zinc-500"
                   >
                     ไม่มีแถวที่ตรงเงื่อนไข — ลองลด min volume / score
@@ -422,14 +490,18 @@ export function Screener() {
         </div>
 
         {selected && (
-          <DetailPanel row={selected} onClose={() => setSelected(null)} />
+          <DetailPanel
+            row={selected}
+            mode={mode}
+            onClose={() => setSelected(null)}
+          />
         )}
       </div>
 
       <footer className="mt-8 border-t border-zinc-900 pt-4 text-center text-[11px] text-zinc-600">
-        PatternScore เป็น heuristic · ไม่ invent ตัวเลขที่ API ไม่ให้ · ตารางแสดง Top N
-        ตามคะแนน (ค่าเริ่มต้น {DEFAULT_PAGE_SIZE}) · OI hist เติมพื้นหลังหลัง first paint ·
-        ข้อมูลจาก Binance public API
+        PatternScore / ShortScore เป็น heuristic · ไม่ invent ตัวเลขที่ API ไม่ให้ · ตารางแสดง
+        Top N ตามคะแนนโหมดที่เลือก (ค่าเริ่มต้น {DEFAULT_PAGE_SIZE}) · OI hist เติมพื้นหลังหลัง
+        first paint · ข้อมูลจาก Binance public API
       </footer>
     </div>
   );

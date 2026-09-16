@@ -41,6 +41,11 @@ export function flagLabelTh(flag: string): string {
     oi_rising: "OI↑",
     short_squeeze_fuel: "Squeeze Fuel",
     catalyst: "Catalyst",
+    // short-side
+    early_drop: "Early Drop",
+    late_short_chase: "Late Short",
+    positive_funding: "Funding+",
+    long_squeeze_fuel: "Long Squeeze",
   };
   return map[flag] || flag;
 }
@@ -72,6 +77,10 @@ export function entryModeLabelTh(mode: string): string {
     wait_pullback: "รอพัก",
     too_late: "สายแล้ว",
     watch_only: "เฝ้าดู",
+    early_short: "ต้นทาง Short",
+    wait_bounce: "รอเด้งก่อน Short",
+    too_late_short: "ลงลึกแล้ว",
+    watch_only_short: "เฝ้าดู",
   };
   return map[mode] || mode;
 }
@@ -79,10 +88,13 @@ export function entryModeLabelTh(mode: string): string {
 export function entryModeBadgeClass(mode: string): string {
   switch (mode) {
     case "early_entry":
+    case "early_short":
       return "bg-emerald-950 text-emerald-300 ring-emerald-700";
     case "wait_pullback":
+    case "wait_bounce":
       return "bg-amber-950 text-amber-300 ring-amber-700";
     case "too_late":
+    case "too_late_short":
       return "bg-rose-950 text-rose-300 ring-rose-800";
     default:
       return "bg-zinc-800 text-zinc-400 ring-zinc-700";

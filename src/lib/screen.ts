@@ -11,8 +11,8 @@ import {
   baseFromSymbol,
   batchOiChangePct,
 } from "./binance";
-import { computePatternScore, volumePercentiles } from "./scoring";
-import { computeEntryHint } from "./entry";
+import { computePatternScore, computeShortScore, volumePercentiles } from "./scoring";
+import { computeEntryHint, computeShortEntryHint } from "./entry";
 import { getCatalystNote } from "./catalysts";
 import type { ScreenResponse, ScreenRow } from "./types";
 import { cacheGet, cacheSet } from "./cache";
@@ -25,7 +25,7 @@ export async function buildScreen(options?: {
   forceRefresh?: boolean;
 }): Promise<ScreenResponse> {
   const oiTopN = options?.oiTopN ?? DEFAULT_OI_TOP_N;
-  const cacheKey = `screen:v3:${oiTopN}`;
+  const cacheKey = `screen:v4:${oiTopN}`;
   if (!options?.forceRefresh) {
     const hit = cacheGet<ScreenResponse>(cacheKey);
     if (hit) return hit;
@@ -100,29 +100,39 @@ export async function buildScreen(options?: {
     const oiChangePct = oiMap.has(symbol) ? oiMap.get(symbol)! : null;
     const catalystNote = getCatalystNote(symbol);
 
-    const { score, flags, breakdown } = computePatternScore({
+    const fundingFinite = Number.isFinite(lastFundingRate as number)
+      ? lastFundingRate
+      : null;
+
+    const scoreInput = {
       priceChangePercent,
       quoteVolume,
       volumePercentile: percentileBySymbol.get(symbol) ?? null,
-      lastFundingRate: Number.isFinite(lastFundingRate as number)
-        ? lastFundingRate
-        : null,
+      lastFundingRate: fundingFinite,
       futSpotRatio,
       // If spot API down, pass hasSpot=true so we don't mass-tag thin_liquidity
       hasSpot: spotOk ? hasSpot : true,
       oiChangePct,
       hasCatalyst: Boolean(catalystNote),
-    });
+    };
 
-    const fundingFinite = Number.isFinite(lastFundingRate as number)
-      ? lastFundingRate
-      : null;
+    const { score, flags, breakdown } = computePatternScore(scoreInput);
+    const { shortScore, shortFlags, shortBreakdown } =
+      computeShortScore(scoreInput);
 
     const entry = computeEntryHint({
       price,
       priceChangePercent,
       score,
       flags,
+      lastFundingRate: fundingFinite,
+    });
+
+    const shortEntry = computeShortEntryHint({
+      price,
+      priceChangePercent,
+      shortScore,
+      shortFlags,
       lastFundingRate: fundingFinite,
     });
 
@@ -143,8 +153,12 @@ export async function buildScreen(options?: {
       score,
       flags,
       breakdown,
-      catalystNote,
       entry,
+      shortScore,
+      shortFlags,
+      shortBreakdown,
+      shortEntry,
+      catalystNote,
     };
   });
 

@@ -1,4 +1,6 @@
-/** Shared types for the pump pattern screener */
+/** Shared types for the pump / dump pattern screener */
+
+export type ScreenMode = "long" | "short";
 
 export type Flag =
   | "early_move"
@@ -11,11 +13,28 @@ export type Flag =
   | "short_squeeze_fuel"
   | "catalyst";
 
+export type ShortFlag =
+  | "early_drop"
+  | "late_short_chase"
+  | "positive_funding"
+  | "long_squeeze_fuel"
+  | "thin_liquidity"
+  | "no_spot"
+  | "high_volume"
+  | "oi_rising"
+  | "catalyst";
+
 export type EntryMode =
   | "early_entry"
   | "wait_pullback"
   | "too_late"
   | "watch_only";
+
+export type ShortEntryMode =
+  | "early_short"
+  | "wait_bounce"
+  | "too_late_short"
+  | "watch_only_short";
 
 export interface EntryHint {
   mode: EntryMode;
@@ -26,8 +45,28 @@ export interface EntryHint {
   entryNote: string;
 }
 
+export interface ShortEntryHint {
+  mode: ShortEntryMode;
+  labelTh: string;
+  entryLow: number | null;
+  entryHigh: number | null;
+  invalidation: string;
+  entryNote: string;
+}
+
 export interface ScoreBreakdown {
   earlyMove: number;
+  volume: number;
+  funding: number;
+  liquidity: number;
+  oiChange: number;
+  total: number;
+  notes: string[];
+}
+
+/** Short-side breakdown — earlyDrop mirrors earlyMove on the downside. */
+export interface ShortScoreBreakdown {
+  earlyDrop: number;
   volume: number;
   funding: number;
   liquidity: number;
@@ -50,11 +89,17 @@ export interface ScreenRow {
   hasSpot: boolean;
   oiChangePct: number | null;
   longShortRatio: number | null;
+  /** Long / pump PatternScore */
   score: number;
   flags: Flag[];
   breakdown: ScoreBreakdown;
-  catalystNote?: string;
   entry: EntryHint;
+  /** Short / dump score — independent of long score */
+  shortScore: number;
+  shortFlags: ShortFlag[];
+  shortBreakdown: ShortScoreBreakdown;
+  shortEntry: ShortEntryHint;
+  catalystNote?: string;
 }
 
 export interface ScreenResponse {
