@@ -96,9 +96,9 @@ export function DetailPanel({
                 isShort ? row.shortQualityGrade : row.qualityGrade
               )}`}
             >
-              เกรด {isShort ? row.shortQualityGrade : row.qualityGrade}
+              เกรด {(isShort ? row.shortQualityGrade : row.qualityGrade) ?? "C"}
             </span>
-            {row.mtfAlign && (
+            {row.mtfAlign != null && (
               <span className="rounded bg-zinc-800 px-1.5 py-0.5 text-[10px] text-zinc-300">
                 {flagLabelTh(row.mtfAlign)}
               </span>
@@ -162,7 +162,7 @@ export function DetailPanel({
                 isShort ? row.shortQualityGrade : row.qualityGrade
               )}`}
             >
-              {isShort ? row.shortQualityGrade : row.qualityGrade}
+              {(isShort ? row.shortQualityGrade : row.qualityGrade) ?? "C"}
             </span>
           </div>
           <p className="mb-1 text-xs text-orange-100/90">{row.urgencyReasonTh}</p>

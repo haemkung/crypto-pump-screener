@@ -54,8 +54,8 @@ export function flagLabelTh(flag: string): string {
   return map[flag] || flag;
 }
 
-export function qualityBadgeClass(grade: string): string {
-  switch (grade) {
+export function qualityBadgeClass(grade: string | null | undefined): string {
+  switch (grade ?? "C") {
     case "A":
       return "bg-emerald-500 text-black";
     case "B":

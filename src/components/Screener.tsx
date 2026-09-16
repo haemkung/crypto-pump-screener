@@ -197,7 +197,7 @@ export function Screener() {
   const isShort = mode === "short";
 
   return (
-    <div className="mx-auto max-w-[1600px] px-4 py-6">
+    <div className="mx-auto min-h-[100dvh] max-w-[1600px] bg-[#09090b] px-4 py-6 text-[#fafafa]">
       <header className="mb-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
@@ -210,14 +210,14 @@ export function Screener() {
             <p className="mt-1 text-sm text-zinc-400">
               สแกนรูปแบบ Long (ขาขึ้น) และ Short (ขาลง) แยกคะแนน — heuristic จากข้อมูลสาธารณะ
             </p>
-            {data?.meta?.regime && (
+            {data?.meta?.regime?.kind && (
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <span
                   className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ring-1 ${regimeChipClass(
                     data.meta.regime.kind
                   )}`}
                 >
-                  Regime: {data.meta.regime.labelTh}
+                  Regime: {data.meta.regime.labelTh ?? data.meta.regime.kind}
                 </span>
                 <span className="font-mono text-[10px] text-zinc-500">
                   BTC {fmtPct(data.meta.regime.btc24h)} · ETH{" "}
@@ -262,9 +262,11 @@ export function Screener() {
           )}
         </div>
 
-        <LearningStatsPanel refreshKey={feedbackRefresh} />
-
-        <CoachNotesPanel refreshKey={feedbackRefresh} />
+        {/* Optional panels — failures should not blank the page */}
+        <div className="contents">
+          <LearningStatsPanel refreshKey={feedbackRefresh} />
+          <CoachNotesPanel refreshKey={feedbackRefresh} />
+        </div>
 
         {/* NOW urgency banner */}
         {(nowAlerts.long.length > 0 || nowAlerts.short.length > 0) && (
@@ -305,7 +307,7 @@ export function Screener() {
                         r.qualityGrade
                       )}`}
                     >
-                      {r.qualityGrade}
+                      {r.qualityGrade ?? "C"}
                     </span>
                   </button>
                   <FeedbackButtons
@@ -342,7 +344,7 @@ export function Screener() {
                         r.shortQualityGrade
                       )}`}
                     >
-                      {r.shortQualityGrade}
+                      {r.shortQualityGrade ?? "C"}
                     </span>
                   </button>
                   <FeedbackButtons
@@ -464,16 +466,56 @@ export function Screener() {
             : `แสดง ${visible.length} / ${filtered.length} ที่กรอง (ทั้งหมด ${data?.rows.length ?? 0} คู่)`}
           {data && (
             <span className="ml-2">
-              · Fut {data.meta.futuresPairs} · Spot match {data.meta.spotMatched} ·
-              OI {data.meta.oiEnriched} · MTF {data.meta.mtfEnriched ?? 0}
+              · Fut {data.meta?.futuresPairs ?? "—"} · Spot match{" "}
+              {data.meta?.spotMatched ?? "—"} · OI {data.meta?.oiEnriched ?? "—"} ·
+              MTF {data.meta?.mtfEnriched ?? 0}
             </span>
           )}
         </div>
       </section>
 
-      {error && (
+      {loading && !data && (
+        <div className="mb-4 rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-8 text-center">
+          <p className="text-lg font-semibold text-white">กำลังโหลด…</p>
+          <p className="mt-2 text-sm text-zinc-400">
+            กำลังดึงข้อมูลจาก Binance — กรุณารอสักครู่
+          </p>
+        </div>
+      )}
+
+      {error && !data && (
+        <div className="mb-4 rounded-xl border-2 border-rose-600 bg-rose-950/80 px-4 py-8 text-center shadow-lg shadow-rose-900/40">
+          <p className="text-xl font-bold text-rose-200">โหลดข้อมูลไม่สำเร็จ</p>
+          <p className="mt-2 text-sm text-rose-100/90">
+            ไม่สามารถติดต่อเซิร์ฟเวอร์หรือ Binance ได้ — ตรวจสอบเน็ตแล้วกดลองใหม่
+          </p>
+          <p className="mt-3 break-words font-mono text-xs text-rose-300/80">
+            {error}
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              void load({ force: true, background: false });
+            }}
+            className="mt-5 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-500"
+          >
+            ลองใหม่
+          </button>
+        </div>
+      )}
+
+      {error && data && (
         <div className="mb-4 rounded-lg border border-rose-900 bg-rose-950/50 px-3 py-2 text-sm text-rose-300">
-          โหลดไม่สำเร็จ: {error}
+          อัปเดตล่าสุดล้มเหลว: {error}
+          <button
+            type="button"
+            onClick={() => {
+              void load({ force: true, background: true });
+            }}
+            className="ml-3 underline hover:text-rose-100"
+          >
+            ลองใหม่
+          </button>
         </div>
       )}
 
@@ -503,8 +545,11 @@ export function Screener() {
               {visible.map((r, idx) => {
                 const active = selected?.symbol === r.symbol;
                 const score = isShort ? r.shortScore : r.score;
-                const flags = isShort ? r.shortFlags : r.flags;
+                const flagsRaw = isShort ? r.shortFlags : r.flags;
+                const flags = Array.isArray(flagsRaw) ? flagsRaw : [];
                 const entry = isShort ? r.shortEntry : r.entry;
+                const grade =
+                  (isShort ? r.shortQualityGrade : r.qualityGrade) ?? "C";
                 const fundingHot = isShort
                   ? r.lastFundingRate != null && r.lastFundingRate > 0
                   : r.lastFundingRate != null && r.lastFundingRate < 0;
@@ -534,7 +579,7 @@ export function Screener() {
                             ตอนนี้
                           </span>
                         )}
-                        {r.mtfAlign === "mtf_align" && (
+                        {r.mtfAlign != null && r.mtfAlign === "mtf_align" && (
                           <span className="rounded bg-emerald-950 px-1 py-0.5 text-[8px] text-emerald-400">
                             MTF✓
                           </span>
@@ -592,10 +637,10 @@ export function Screener() {
                     <td className="px-3 py-2">
                       <span
                         className={`rounded px-1.5 py-0.5 text-[10px] font-black ${qualityBadgeClass(
-                          isShort ? r.shortQualityGrade : r.qualityGrade
+                          grade
                         )}`}
                       >
-                        {isShort ? r.shortQualityGrade : r.qualityGrade}
+                        {grade}
                       </span>
                     </td>
                     <td className="px-3 py-2">
