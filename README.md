@@ -105,6 +105,25 @@ Catalyst notes are **static** for a few known historical tickers only — v1 can
 
 ---
 
+
+---
+
+## NOW urgency / เข้าตอนนี้
+
+Loud act-now layer (research heuristic — **not** financial advice).
+
+| Kind | When (approx) |
+|------|----------------|
+| `now_long` | `early_entry` + score ≥ 55 + `early_move` + (neg funding / squeeze fuel) + 24h ~+5…+18% |
+| `now_short` | `early_short` + shortScore ≥ 50 + `early_drop` + (funding+ / long squeeze) + 24h ~−5…−18% |
+
+Row fields: `urgency`, `urgencyLabelTh`, `urgencyReasonTh`, `missRiskTh`.
+
+**API:** `GET /api/alerts/now` → `{ long: NowAlertRow[], short: NowAlertRow[], updatedAt, disclaimerTh }` — brief cache ~35s, for Telegram/routines. Prefer high-volume when sorting.
+
+**UI:** sticky orange NOW banner, row pulse highlight + **ตอนนี้** badge, detail urgency block, filter **แสดงเฉพาะตอนนี้**.
+
+
 ## Data sources / แหล่งข้อมูล
 
 Public Binance APIs via **server-side Next.js routes** (avoids browser CORS):
@@ -119,7 +138,8 @@ Public Binance APIs via **server-side Next.js routes** (avoids browser CORS):
 | `/api/proxy/futures/topLongShortPositionRatio?symbol=` | `futures/data/topLongShortPositionRatio` |
 | `/api/proxy/futures/takerlongshortRatio?symbol=` | `futures/data/takerlongshortRatio` |
 | `/api/proxy/spot/ticker24hr` | `api.binance.com/api/v3/ticker/24hr` |
-| `/api/screen` | Aggregated screen + long/short scores |
+| `/api/screen` | Aggregated screen + long/short scores + urgency |
+| `/api/alerts/now` | NOW-only Long/Short lists (Telegram-friendly) |
 | `/api/oi-detail?symbol=` | Lazy OI + L/S for one row |
 
 Filter: USDT perpetual pairs ending in `USDT` (excludes dated quarterlies with `_`).
@@ -140,6 +160,7 @@ Filter: USDT perpetual pairs ending in `USDT` (excludes dated quarterlies with `
 
 - Dark crypto dashboard, **Thai labels primary**
 - Tabs: **Long (ขาขึ้น)** / **Short (ขาลง)**
+- **เข้าตอนนี้ / NOW** banner + row badge + filter
 - Long columns: Symbol, Price, 24h%, Vol, Funding, Fut/Spot, Score, จุดเข้า, Flags
 - Short columns: Symbol, Price, 24h%, Vol, Funding, Short Score, จุด Short, Flags
 - Filters: min volume, min score, hide late (chase / late short)

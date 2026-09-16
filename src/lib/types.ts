@@ -2,6 +2,8 @@
 
 export type ScreenMode = "long" | "short";
 
+export type UrgencyKind = "now_long" | "now_short";
+
 export type Flag =
   | "early_move"
   | "late_chase"
@@ -100,7 +102,42 @@ export interface ScreenRow {
   shortBreakdown: ShortScoreBreakdown;
   shortEntry: ShortEntryHint;
   catalystNote?: string;
+  /** Act-now heuristic — null if not urgent */
+  urgency: UrgencyKind | null;
+  urgencyLabelTh: string | null;
+  urgencyReasonTh: string | null;
+  missRiskTh: string | null;
 }
+
+export interface NowAlertRow {
+  symbol: string;
+  baseAsset: string;
+  price: number;
+  priceChangePercent: number;
+  quoteVolume: number;
+  lastFundingRate: number | null;
+  urgency: UrgencyKind;
+  urgencyLabelTh: string;
+  urgencyReasonTh: string;
+  missRiskTh: string;
+  score: number;
+  shortScore: number;
+  entryMode: string;
+  shortEntryMode: string;
+  flags: string[];
+  shortFlags: string[];
+  entryLow: number | null;
+  entryHigh: number | null;
+}
+
+export interface NowAlertsResponse {
+  updatedAt: string;
+  cacheTtlSec: number;
+  disclaimerTh: string;
+  long: NowAlertRow[];
+  short: NowAlertRow[];
+}
+
 
 export interface ScreenResponse {
   updatedAt: string;

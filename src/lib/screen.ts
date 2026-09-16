@@ -13,6 +13,7 @@ import {
 } from "./binance";
 import { computePatternScore, computeShortScore, volumePercentiles } from "./scoring";
 import { computeEntryHint, computeShortEntryHint } from "./entry";
+import { computeUrgency } from "./urgency";
 import { getCatalystNote } from "./catalysts";
 import type { ScreenResponse, ScreenRow } from "./types";
 import { cacheGet, cacheSet } from "./cache";
@@ -25,7 +26,7 @@ export async function buildScreen(options?: {
   forceRefresh?: boolean;
 }): Promise<ScreenResponse> {
   const oiTopN = options?.oiTopN ?? DEFAULT_OI_TOP_N;
-  const cacheKey = `screen:v4:${oiTopN}`;
+  const cacheKey = `screen:v5:${oiTopN}`;
   if (!options?.forceRefresh) {
     const hit = cacheGet<ScreenResponse>(cacheKey);
     if (hit) return hit;
@@ -136,6 +137,16 @@ export async function buildScreen(options?: {
       lastFundingRate: fundingFinite,
     });
 
+    const urgencyFields = computeUrgency({
+      priceChangePercent,
+      score,
+      flags,
+      entry,
+      shortScore,
+      shortFlags,
+      shortEntry,
+    });
+
     return {
       symbol,
       baseAsset: baseFromSymbol(symbol),
@@ -159,6 +170,7 @@ export async function buildScreen(options?: {
       shortBreakdown,
       shortEntry,
       catalystNote,
+      ...urgencyFields,
     };
   });
 

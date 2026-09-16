@@ -31,6 +31,7 @@ export function Screener() {
   const [minVol, setMinVol] = useState(1_000_000);
   const [minScore, setMinScore] = useState(20);
   const [hideLate, setHideLate] = useState(true);
+  const [nowOnly, setNowOnly] = useState(false);
   const [selected, setSelected] = useState<ScreenRow | null>(null);
   const [lastFetchLocal, setLastFetchLocal] = useState<string>("—");
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
@@ -124,10 +125,35 @@ export function Screener() {
     setPageSize(DEFAULT_PAGE_SIZE);
   }, [mode]);
 
+  const nowAlerts = useMemo(() => {
+    if (!data) return { long: [] as ScreenRow[], short: [] as ScreenRow[] };
+    const long = data.rows
+      .filter((r) => r.urgency === "now_long")
+      .sort((a, b) => {
+        const av = a.flags.includes("high_volume") ? 1 : 0;
+        const bv = b.flags.includes("high_volume") ? 1 : 0;
+        if (bv !== av) return bv - av;
+        return b.score - a.score;
+      });
+    const short = data.rows
+      .filter((r) => r.urgency === "now_short")
+      .sort((a, b) => {
+        const av = a.shortFlags.includes("high_volume") ? 1 : 0;
+        const bv = b.shortFlags.includes("high_volume") ? 1 : 0;
+        if (bv !== av) return bv - av;
+        return b.shortScore - a.shortScore;
+      });
+    return { long, short };
+  }, [data]);
+
   const filtered = useMemo(() => {
     if (!data) return [];
     const rows = data.rows.filter((r) => {
       if (r.quoteVolume < minVol) return false;
+      if (nowOnly) {
+        if (mode === "long") return r.urgency === "now_long";
+        return r.urgency === "now_short";
+      }
       if (mode === "long") {
         if (r.score < minScore) return false;
         if (hideLate && r.flags.includes("late_chase")) return false;
@@ -140,12 +166,23 @@ export function Screener() {
 
     const sorted = [...rows];
     if (mode === "short") {
-      sorted.sort((a, b) => b.shortScore - a.shortScore);
+      sorted.sort((a, b) => {
+        // NOW rows float to top within Short tab
+        const au = a.urgency === "now_short" ? 1 : 0;
+        const bu = b.urgency === "now_short" ? 1 : 0;
+        if (bu !== au) return bu - au;
+        return b.shortScore - a.shortScore;
+      });
     } else {
-      sorted.sort((a, b) => b.score - a.score);
+      sorted.sort((a, b) => {
+        const au = a.urgency === "now_long" ? 1 : 0;
+        const bu = b.urgency === "now_long" ? 1 : 0;
+        if (bu !== au) return bu - au;
+        return b.score - a.score;
+      });
     }
     return sorted;
-  }, [data, minVol, minScore, hideLate, mode]);
+  }, [data, minVol, minScore, hideLate, mode, nowOnly]);
 
   const visible = useMemo(
     () => filtered.slice(0, pageSize),
@@ -204,6 +241,62 @@ export function Screener() {
             </span>
           )}
         </div>
+
+
+        {/* NOW urgency banner */}
+        {(nowAlerts.long.length > 0 || nowAlerts.short.length > 0) && (
+          <div className="sticky top-0 z-30 mt-4 animate-pulse rounded-xl border-2 border-orange-500/80 bg-gradient-to-r from-orange-950 via-rose-950 to-orange-950 px-4 py-3 shadow-lg shadow-orange-900/50">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <span className="rounded bg-orange-500 px-2 py-0.5 text-xs font-black uppercase tracking-widest text-black">
+                ตอนนี้ / NOW
+              </span>
+              <span className="text-sm font-bold text-orange-100">
+                สัญญาณเข้าตอนนี้ (heuristic — ไม่ใช่คำสั่งซื้อ)
+              </span>
+              <span className="text-[10px] text-orange-200/70">
+                Long {nowAlerts.long.length} · Short {nowAlerts.short.length}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {nowAlerts.long.slice(0, 8).map((r) => (
+                <button
+                  key={`nl-${r.symbol}`}
+                  type="button"
+                  onClick={() => {
+                    setMode("long");
+                    setSelected(r);
+                    setNowOnly(false);
+                  }}
+                  className="rounded-lg border border-emerald-500/50 bg-emerald-950/80 px-2.5 py-1.5 text-left hover:bg-emerald-900"
+                >
+                  <span className="font-bold text-emerald-300">{r.baseAsset}</span>
+                  <span className="ml-2 font-mono text-xs text-emerald-400">
+                    {fmtPct(r.priceChangePercent)}
+                  </span>
+                  <span className="ml-2 text-[10px] text-orange-300">Long NOW</span>
+                </button>
+              ))}
+              {nowAlerts.short.slice(0, 8).map((r) => (
+                <button
+                  key={`ns-${r.symbol}`}
+                  type="button"
+                  onClick={() => {
+                    setMode("short");
+                    setSelected(r);
+                    setNowOnly(false);
+                  }}
+                  className="rounded-lg border border-rose-500/50 bg-rose-950/80 px-2.5 py-1.5 text-left hover:bg-rose-900"
+                >
+                  <span className="font-bold text-rose-300">{r.baseAsset}</span>
+                  <span className="ml-2 font-mono text-xs text-rose-400">
+                    {fmtPct(r.priceChangePercent)}
+                  </span>
+                  <span className="ml-2 text-[10px] text-orange-300">Short NOW</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Mode tabs */}
         <div className="mt-4 flex gap-2">
@@ -267,6 +360,15 @@ export function Screener() {
           {isShort
             ? "ซ่อน Late Short (ลงลึก / chase)"
             : "ซ่อน Late/Chase (>50% 24h)"}
+        </label>
+        <label className="flex items-center gap-2 text-sm font-semibold text-orange-300">
+          <input
+            type="checkbox"
+            checked={nowOnly}
+            onChange={(e) => setNowOnly(e.target.checked)}
+            className="size-4 accent-orange-500"
+          />
+          แสดงเฉพาะตอนนี้
         </label>
         <label className="flex flex-col gap-1 text-xs text-zinc-400">
           แสดงต่อหน้า
@@ -350,18 +452,27 @@ export function Screener() {
                     key={r.symbol}
                     onClick={() => setSelected(r)}
                     className={`cursor-pointer border-t border-zinc-900 transition-colors hover:bg-zinc-900/80 ${
-                      active
-                        ? isShort
-                          ? "bg-rose-950/40"
-                          : "bg-emerald-950/40"
-                        : ""
+                      r.urgency
+                        ? "bg-orange-950/50 ring-1 ring-inset ring-orange-500/40"
+                        : active
+                          ? isShort
+                            ? "bg-rose-950/40"
+                            : "bg-emerald-950/40"
+                          : ""
                     }`}
                   >
                     <td className="px-3 py-2 font-mono text-[11px] text-zinc-600">
                       {idx + 1}
                     </td>
                     <td className="px-3 py-2 font-semibold text-white">
-                      {r.baseAsset}
+                      <span className="inline-flex items-center gap-1.5">
+                        {r.baseAsset}
+                        {r.urgency && (
+                          <span className="animate-pulse rounded bg-orange-500 px-1 py-0.5 text-[9px] font-black uppercase tracking-wide text-black">
+                            ตอนนี้
+                          </span>
+                        )}
+                      </span>
                       <span className="ml-1 font-mono text-[10px] text-zinc-600">
                         USDT
                       </span>

@@ -119,6 +119,24 @@ export function DetailPanel({
         />
       </div>
 
+      {row.urgency && (
+        <div className="mb-4 animate-pulse rounded-xl border-2 border-orange-500/70 bg-gradient-to-br from-orange-950 to-rose-950 p-3">
+          <div className="mb-1 flex items-center gap-2">
+            <span className="rounded bg-orange-500 px-1.5 py-0.5 text-[10px] font-black uppercase text-black">
+              ตอนนี้
+            </span>
+            <span className="text-sm font-bold text-orange-100">
+              {row.urgencyLabelTh}
+            </span>
+          </div>
+          <p className="mb-1 text-xs text-orange-100/90">{row.urgencyReasonTh}</p>
+          <p className="mb-2 text-xs font-medium text-rose-200">{row.missRiskTh}</p>
+          <p className="text-[10px] leading-relaxed text-orange-200/60">
+            &quot;เข้าตอนนี้&quot; เป็น heuristic จากแพทเทิร์น ไม่ใช่คำสั่งซื้อ/ขาย และไม่ใช่คำแนะนำการลงทุน
+          </p>
+        </div>
+      )}
+
       {entry && (
         <div className="mb-4 rounded-lg border border-zinc-700 bg-zinc-950/50 p-3">
           <div className="mb-2 flex items-center gap-2">
