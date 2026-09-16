@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# telegram alert helpers (local secrets/state)
+.alert-state.json
+.telegram-chat-id
