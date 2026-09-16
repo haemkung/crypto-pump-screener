@@ -178,3 +178,22 @@ export interface OIHistPoint {
   sumOpenInterestValue: string;
   timestamp: number;
 }
+
+
+export type LearnedOutcome = "win" | "loss" | "neutral";
+
+/** Graded NOW alert outcome — shown in UI learned-cases section. */
+export interface LearnedCase {
+  id: string;
+  alertId: string;
+  symbol: string;
+  side: "long" | "short";
+  outcome: LearnedOutcome;
+  movePct: number;
+  horizon: "15m" | "60m";
+  noteTh: string;
+  timestamp: string;
+  priceAtSend: number;
+  priceAtGrade: number;
+  score: number | null;
+}

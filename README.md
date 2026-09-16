@@ -140,6 +140,8 @@ Public Binance APIs via **server-side Next.js routes** (avoids browser CORS):
 | `/api/proxy/spot/ticker24hr` | `api.binance.com/api/v3/ticker/24hr` |
 | `/api/screen` | Aggregated screen + long/short scores + urgency |
 | `/api/alerts/now` | NOW-only Long/Short lists (Telegram-friendly) |
+| `/api/learned-cases` | Graded NOW alert outcomes for UI |
+| `/api/learning-stats` | Rolling win-rate + adaptive NOW thresholds |
 | `/api/oi-detail?symbol=` | Lazy OI + L/S for one row |
 
 Filter: USDT perpetual pairs ending in `USDT` (excludes dated quarterlies with `_`).
@@ -166,8 +168,61 @@ Filter: USDT perpetual pairs ending in `USDT` (excludes dated quarterlies with `
 - Filters: min volume, min score, hide late (chase / late short)
 - Detail panel mode-aware: score breakdown + entry/invalidation + lazy OI/L/S
 - Section **เคสตัวอย่างในอดีต** (Long tab): AKE, LSK, BTW, USELESS, 龙虾
+- Section **เคสที่ระบบเรียนรู้**: win/loss badges from graded NOW alerts
 
 ---
+
+
+## Continuous learning / การเรียนรู้ต่อเนื่อง
+
+When NOW alerts are sent (or would be sent), they are appended to a local **alert log**.
+A grading script later checks price moves and stores **learned cases**, then lightly
+adjusts NOW score / 24h-band knobs from recent accuracy.
+
+### Flow
+
+1. `scripts/check-now-alerts.mjs` → appends to `data/alert-log.json` (gitignored)
+2. `scripts/evaluate-alert-outcomes.mjs` → grades open alerts at **15m** and **60m**
+3. Writes `data/learned-cases.json` (committed as empty `[]` seed) and `data/learned-weights.json` (gitignored)
+4. UI section **เคสที่ระบบเรียนรู้** via `GET /api/learned-cases`
+5. Stats: `GET /api/learning-stats` (rolling win-rate Long/Short + effective thresholds)
+6. `urgency.ts` reads learned weights when the file exists; otherwise defaults
+
+### Grading heuristic (tunable)
+
+| Horizon | Long win | Long loss | Short |
+|---------|----------|-----------|-------|
+| 15m | move ≥ **+1.5%** | move ≤ **−1.5%** | inverted |
+| 60m | move ≥ **+3%** | move ≤ **−3%** | inverted |
+
+Otherwise **neutral** (stored but UI emphasizes win/loss). Simple mark-to-market vs price at send — not path-dependent stops.
+
+### Adaptive knobs (v1)
+
+Rolling last **N=30** graded (win/loss only). If a side has ≥5 graded:
+
+- win-rate **&lt; 40%** → raise NOW min score by up to **+2** and tighten 24h band by up to **2pp**
+- win-rate **&gt; 60%** → loosen by up to **−2** score / **+2pp** band
+- mid range → deltas ease back toward defaults
+
+Caps keep behavior close to the original Long/Short/NOW rules.
+
+### Commands
+
+```bash
+# after NOW alerts are logged
+node scripts/evaluate-alert-outcomes.mjs
+# or
+npm run evaluate-outcomes
+```
+
+Cron tip: run evaluate every ~5–10 minutes alongside `check-now-alerts`.
+
+### Disclaimer
+
+Learning is a **heuristic feedback loop**, not a guarantee of future accuracy,
+not backtested alpha, and **not financial advice**. Files under `data/` (except
+`.gitkeep` / seeded `learned-cases.json`) stay local.
 
 ## Limitations / ข้อจำกัด
 

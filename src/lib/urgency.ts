@@ -1,6 +1,6 @@
 /**
  * "เข้าตอนนี้" / NOW urgency — research heuristic only, not trade signals.
- * Tunable thresholds kept in one place.
+ * Tunable thresholds: defaults in urgencyDefaults; adaptive overrides via learnedWeights.
  */
 
 import type {
@@ -12,14 +12,24 @@ import type {
   ShortFlag,
   UrgencyKind,
 } from "./types";
+import {
+  NOW_LONG_MIN_SCORE,
+  NOW_SHORT_MIN_SCORE,
+  NOW_LONG_PCT_MIN,
+  NOW_LONG_PCT_MAX,
+  NOW_SHORT_PCT_MIN,
+  NOW_SHORT_PCT_MAX,
+} from "./urgencyDefaults";
+import { getNowThresholds } from "./learnedWeights";
 
-/** Tunable NOW thresholds */
-export const NOW_LONG_MIN_SCORE = 55;
-export const NOW_SHORT_MIN_SCORE = 50;
-export const NOW_LONG_PCT_MIN = 5;
-export const NOW_LONG_PCT_MAX = 18;
-export const NOW_SHORT_PCT_MIN = -18;
-export const NOW_SHORT_PCT_MAX = -5;
+export {
+  NOW_LONG_MIN_SCORE,
+  NOW_SHORT_MIN_SCORE,
+  NOW_LONG_PCT_MIN,
+  NOW_LONG_PCT_MAX,
+  NOW_SHORT_PCT_MIN,
+  NOW_SHORT_PCT_MAX,
+};
 
 export interface UrgencyFields {
   urgency: UrgencyKind | null;
@@ -53,25 +63,27 @@ function hasShortFuel(flags: ShortFlag[]): boolean {
 /**
  * Compute urgency for one row. Long and short are mutually exclusive in practice
  * (opposite 24h bands); if both somehow match, Long wins.
+ * Thresholds come from learned-weights.json when present, else defaults.
  */
 export function computeUrgency(input: UrgencyInput): UrgencyFields {
   const pct = input.priceChangePercent;
+  const t = getNowThresholds();
 
   const longNow =
     input.entry.mode === "early_entry" &&
-    input.score >= NOW_LONG_MIN_SCORE &&
+    input.score >= t.longMinScore &&
     input.flags.includes("early_move") &&
     hasLongFuel(input.flags) &&
-    pct >= NOW_LONG_PCT_MIN &&
-    pct <= NOW_LONG_PCT_MAX;
+    pct >= t.longPctMin &&
+    pct <= t.longPctMax;
 
   const shortNow =
     input.shortEntry.mode === "early_short" &&
-    input.shortScore >= NOW_SHORT_MIN_SCORE &&
+    input.shortScore >= t.shortMinScore &&
     input.shortFlags.includes("early_drop") &&
     hasShortFuel(input.shortFlags) &&
-    pct >= NOW_SHORT_PCT_MIN &&
-    pct <= NOW_SHORT_PCT_MAX;
+    pct >= t.shortPctMin &&
+    pct <= t.shortPctMax;
 
   if (longNow) {
     const volNote = input.flags.includes("high_volume")

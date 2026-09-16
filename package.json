@@ -6,7 +6,9 @@
     "dev": "next dev -H 0.0.0.0 -p 3000",
     "build": "next build",
     "start": "next start -H 0.0.0.0 -p 3000",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check-now-alerts": "node scripts/check-now-alerts.mjs",
+    "evaluate-outcomes": "node scripts/evaluate-alert-outcomes.mjs"
   },
   "dependencies": {
     "react": "19.1.0",

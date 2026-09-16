@@ -3,21 +3,27 @@
  * Poll /api/alerts/now, format Thai short NOW alerts, dedupe 30m by symbol+side,
  * send new ones via Telegram. Exit quietly when nothing new.
  *
+ * Also appends each fresh NOW alert to data/alert-log.json for outcome learning.
+ *
  * Reads:
  *   TELEGRAM_BOT_TOKEN from env
  *   TELEGRAM_CHAT_ID from ../.telegram-chat-id
  * State:
  *   ../.alert-state.json
+ *   ../data/alert-log.json (gitignored)
  */
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
 const CHAT_ID_FILE = resolve(ROOT, ".telegram-chat-id");
 const STATE_FILE = resolve(ROOT, ".alert-state.json");
+const DATA_DIR = resolve(ROOT, "data");
+const ALERT_LOG_FILE = resolve(DATA_DIR, "alert-log.json");
 const ALERTS_URL = process.env.ALERTS_NOW_URL || "http://127.0.0.1:3000/api/alerts/now";
 const DEDUPE_MS = 30 * 60 * 1000;
 
@@ -37,6 +43,54 @@ function loadState() {
 
 function saveState(state) {
   writeFileSync(STATE_FILE, JSON.stringify(state, null, 2) + "\n", "utf8");
+}
+
+function loadAlertLog() {
+  if (!existsSync(ALERT_LOG_FILE)) return { alerts: [] };
+  try {
+    const raw = JSON.parse(readFileSync(ALERT_LOG_FILE, "utf8"));
+    const alerts = Array.isArray(raw?.alerts)
+      ? raw.alerts
+      : Array.isArray(raw)
+        ? raw
+        : [];
+    return { alerts };
+  } catch {
+    return { alerts: [] };
+  }
+}
+
+function saveAlertLog(log) {
+  if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
+  writeFileSync(ALERT_LOG_FILE, JSON.stringify(log, null, 2) + "\n", "utf8");
+}
+
+/** Append fresh NOW alerts for later outcome grading (even if Telegram fails). */
+function appendAlertLog(freshRows, delivered) {
+  const log = loadAlertLog();
+  const sentAt = new Date().toISOString();
+  for (const f of freshRows) {
+    const row = f.row;
+    const score = f.side === "long" ? row.score : row.shortScore;
+    const flags = f.side === "long" ? row.flags : row.shortFlags;
+    const entryMode = f.side === "long" ? row.entryMode : row.shortEntryMode;
+    log.alerts.push({
+      id: randomUUID(),
+      symbol: f.symbol,
+      side: f.side,
+      sentAt,
+      price: Number(row.price),
+      score: score != null ? Number(score) : null,
+      flags: Array.isArray(flags) ? flags : [],
+      entryMode: entryMode || null,
+      urgency: row.urgency || (f.side === "long" ? "now_long" : "now_short"),
+      delivered: !!delivered,
+      outcomes: { "15m": null, "60m": null },
+    });
+  }
+  // Keep last ~500 alerts to bound file size
+  if (log.alerts.length > 500) log.alerts = log.alerts.slice(-500);
+  saveAlertLog(log);
 }
 
 function keyFor(symbol, side) {
@@ -101,24 +155,27 @@ for (const row of longRows) {
   if (!symbol) continue;
   const k = keyFor(symbol, "long");
   if (state.sent[k] && now - state.sent[k] < DEDUPE_MS) continue;
-  fresh.push({ side: "long", symbol, text: formatRow(row, "long"), key: k });
+  fresh.push({ side: "long", symbol, text: formatRow(row, "long"), key: k, row });
 }
 for (const row of shortRows) {
   const symbol = row.symbol;
   if (!symbol) continue;
   const k = keyFor(symbol, "short");
   if (state.sent[k] && now - state.sent[k] < DEDUPE_MS) continue;
-  fresh.push({ side: "short", symbol, text: formatRow(row, "short"), key: k });
+  fresh.push({ side: "short", symbol, text: formatRow(row, "short"), key: k, row });
 }
 
 if (fresh.length === 0) quietExit(0);
 
+// Log "would send" before Telegram so learning still works without a bot.
+appendAlertLog(fresh, false);
+
 if (!process.env.TELEGRAM_BOT_TOKEN?.trim()) {
-  console.error("TELEGRAM_BOT_TOKEN is not set");
+  console.error("TELEGRAM_BOT_TOKEN is not set (alert-log still updated)");
   quietExit(1);
 }
 if (!existsSync(CHAT_ID_FILE)) {
-  console.error("Missing .telegram-chat-id — send /start to the bot first");
+  console.error("Missing .telegram-chat-id — send /start to the bot first (alert-log still updated)");
   quietExit(1);
 }
 
@@ -139,8 +196,19 @@ if (send.status !== 0) {
   quietExit(send.status || 1);
 }
 
+// Mark last N log entries as delivered
+try {
+  const log = loadAlertLog();
+  const n = fresh.length;
+  for (let i = log.alerts.length - n; i < log.alerts.length; i++) {
+    if (i >= 0 && log.alerts[i]) log.alerts[i].delivered = true;
+  }
+  saveAlertLog(log);
+} catch {
+  /* non-fatal */
+}
+
 for (const f of fresh) state.sent[f.key] = now;
 saveState(state);
-// success: stay relatively quiet but confirm count for operators
 console.log(`sent_new=${fresh.length}`);
 quietExit(0);

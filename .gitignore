@@ -43,3 +43,8 @@ next-env.d.ts
 # telegram alert helpers (local secrets/state)
 .alert-state.json
 .telegram-chat-id
+
+# continuous learning runtime data (local outcomes / adaptive knobs)
+/data/alert-log.json
+/data/learned-weights.json
+
