@@ -196,3 +196,39 @@ export async function batchOiChangePct(
   }
   return out;
 }
+
+export type KlineInterval = "5m" | "15m" | "1h" | "4h" | "1d";
+
+export interface KlineBar {
+  openTime: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+  closeTime: number;
+}
+
+/** Futures klines — cached per symbol/interval/limit. */
+export async function getKlines(
+  symbol: string,
+  interval: KlineInterval = "15m",
+  limit = 48
+): Promise<KlineBar[]> {
+  const key = `klines:${symbol}:${interval}:${limit}`;
+  return cacheGetOrSet(key, DETAIL_TTL, async () => {
+    const raw = await fetchJsonFromHosts<unknown[][]>(
+      `/fapi/v1/klines?symbol=${encodeURIComponent(symbol)}&interval=${interval}&limit=${limit}`,
+      FAPI_HOSTS
+    );
+    return raw.map((row) => ({
+      openTime: Number(row[0]),
+      open: Number(row[1]),
+      high: Number(row[2]),
+      low: Number(row[3]),
+      close: Number(row[4]),
+      volume: Number(row[5]),
+      closeTime: Number(row[6]),
+    }));
+  });
+}

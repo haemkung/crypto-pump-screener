@@ -1,12 +1,16 @@
 /**
  * "เข้าตอนนี้" / NOW urgency — research heuristic only, not trade signals.
  * Tunable thresholds: defaults in urgencyDefaults; adaptive overrides via learnedWeights.
+ * MTF against blocks NOW; regime risk-off dampens thin Long NOW; false patterns can block.
  */
 
 import type {
   EntryHint,
   Flag,
+  MarketRegime,
+  MtfAlign,
   NowAlertRow,
+  QualityGrade,
   ScreenRow,
   ShortEntryHint,
   ShortFlag,
@@ -21,6 +25,7 @@ import {
   NOW_SHORT_PCT_MAX,
 } from "./urgencyDefaults";
 import { getNowThresholds } from "./learnedWeights";
+import { isThinOrSmallCap, longNowRegimeGate } from "./regime";
 
 export {
   NOW_LONG_MIN_SCORE,
@@ -46,6 +51,17 @@ export interface UrgencyInput {
   shortScore: number;
   shortFlags: ShortFlag[];
   shortEntry: ShortEntryHint;
+  quoteVolume?: number;
+  hasSpot?: boolean;
+  /** Long-side MTF */
+  mtfLong?: MtfAlign | null;
+  /** Short-side MTF */
+  mtfShort?: MtfAlign | null;
+  regime?: MarketRegime | null;
+  falsePatternLong?: boolean;
+  falsePatternShort?: boolean;
+  falsePatternBlockLong?: boolean;
+  falsePatternBlockShort?: boolean;
 }
 
 function hasLongFuel(flags: Flag[]): boolean {
@@ -69,7 +85,7 @@ export function computeUrgency(input: UrgencyInput): UrgencyFields {
   const pct = input.priceChangePercent;
   const t = getNowThresholds();
 
-  const longNow =
+  let longNow =
     input.entry.mode === "early_entry" &&
     input.score >= t.longMinScore &&
     input.flags.includes("early_move") &&
@@ -77,7 +93,7 @@ export function computeUrgency(input: UrgencyInput): UrgencyFields {
     pct >= t.longPctMin &&
     pct <= t.longPctMax;
 
-  const shortNow =
+  let shortNow =
     input.shortEntry.mode === "early_short" &&
     input.shortScore >= t.shortMinScore &&
     input.shortFlags.includes("early_drop") &&
@@ -85,14 +101,43 @@ export function computeUrgency(input: UrgencyInput): UrgencyFields {
     pct >= t.shortPctMin &&
     pct <= t.shortPctMax;
 
+  // MTF: against blocks; mixed allowed (caller may grade lower)
+  if (longNow && input.mtfLong === "mtf_against") longNow = false;
+  if (shortNow && input.mtfShort === "mtf_against") shortNow = false;
+
+  // False-pattern hard block
+  if (longNow && input.falsePatternBlockLong) longNow = false;
+  if (shortNow && input.falsePatternBlockShort) shortNow = false;
+
+  // Regime dampen Long NOW for thin names
+  let regimeNote: string | null = null;
+  if (longNow && input.regime) {
+    const thin = isThinOrSmallCap({
+      quoteVolume: input.quoteVolume ?? 0,
+      flags: input.flags,
+      shortFlags: input.shortFlags,
+      hasSpot: input.hasSpot,
+    });
+    const gate = longNowRegimeGate(input.regime, input.score, thin);
+    regimeNote = gate.noteTh;
+    if (gate.block) longNow = false;
+  }
+
   if (longNow) {
     const volNote = input.flags.includes("high_volume")
       ? "วอลุ่มสูง + "
       : "";
+    const mtfNote =
+      input.mtfLong === "mtf_align"
+        ? " · MTF align"
+        : input.mtfLong === "mtf_mixed"
+          ? " · MTF mixed"
+          : "";
+    const fpNote = input.falsePatternLong ? " · ระวัง false pattern" : "";
     return {
       urgency: "now_long",
       urgencyLabelTh: "เข้าตอนนี้ (Long)",
-      urgencyReasonTh: `${volNote}ต้นทาง Long: score ${input.score}, early_move, funding−, 24h +${pct.toFixed(1)}% ยังในโซนต้น`,
+      urgencyReasonTh: `${volNote}ต้นทาง Long: score ${input.score}, early_move, funding−, 24h +${pct.toFixed(1)}% ยังในโซนต้น${mtfNote}${fpNote}${regimeNote ? " · " + regimeNote : ""}`,
       missRiskTh: "ถ้าไม่เข้าตอนนี้อาจพลาดขาต้นทาง",
     };
   }
@@ -101,10 +146,17 @@ export function computeUrgency(input: UrgencyInput): UrgencyFields {
     const volNote = input.shortFlags.includes("high_volume")
       ? "วอลุ่มสูง + "
       : "";
+    const mtfNote =
+      input.mtfShort === "mtf_align"
+        ? " · MTF align"
+        : input.mtfShort === "mtf_mixed"
+          ? " · MTF mixed"
+          : "";
+    const fpNote = input.falsePatternShort ? " · ระวัง false pattern" : "";
     return {
       urgency: "now_short",
       urgencyLabelTh: "เข้าตอนนี้ (Short)",
-      urgencyReasonTh: `${volNote}ต้นทาง Short: shortScore ${input.shortScore}, early_drop, funding+, 24h ${pct.toFixed(1)}% ยังในโซนต้น`,
+      urgencyReasonTh: `${volNote}ต้นทาง Short: shortScore ${input.shortScore}, early_drop, funding+, 24h ${pct.toFixed(1)}% ยังในโซนต้น${mtfNote}${fpNote}`,
       missRiskTh: "ถ้าไม่ Short ตอนนี้อาจพลาดขาลงต้นทาง (ระวังเด้งแรง)",
     };
   }
@@ -117,7 +169,7 @@ export function computeUrgency(input: UrgencyInput): UrgencyFields {
   };
 }
 
-/** Soft preference: high_volume first, then score. Caller should pass NOW-only rows. */
+/** Soft preference: high_volume first, then quality grade, then score. */
 export function sortNowRows(rows: ScreenRow[], side: "long" | "short"): ScreenRow[] {
   return [...rows].sort((a, b) => {
     const aVol =
@@ -137,6 +189,12 @@ export function sortNowRows(rows: ScreenRow[], side: "long" | "short"): ScreenRo
           ? 1
           : 0;
     if (bVol !== aVol) return bVol - aVol;
+    const aG =
+      side === "long" ? a.qualityGrade : a.shortQualityGrade;
+    const bG =
+      side === "long" ? b.qualityGrade : b.shortQualityGrade;
+    const rank = (g: QualityGrade) => (g === "A" ? 3 : g === "B" ? 2 : 1);
+    if (rank(bG) !== rank(aG)) return rank(bG) - rank(aG);
     if (side === "long") return b.score - a.score;
     return b.shortScore - a.shortScore;
   });
@@ -166,5 +224,8 @@ export function toNowAlertRow(r: ScreenRow): NowAlertRow {
     shortFlags: r.shortFlags,
     entryLow: isLong ? r.entry.entryLow : r.shortEntry.entryLow,
     entryHigh: isLong ? r.entry.entryHigh : r.shortEntry.entryHigh,
+    qualityGrade: isLong ? r.qualityGrade : r.shortQualityGrade,
+    mtfAlign: r.mtfAlign,
+    falsePatternRisk: r.falsePatternRisk,
   };
 }

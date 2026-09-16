@@ -16,6 +16,8 @@ import { DetailPanel } from "./DetailPanel";
 import { ExampleCases } from "./ExampleCases";
 import { FeedbackButtons } from "./FeedbackButtons";
 import { LearningStatsPanel } from "./LearningStatsPanel";
+import { CoachNotesPanel } from "./CoachNotesPanel";
+import { qualityBadgeClass, regimeChipClass } from "@/lib/format";
 
 const REFRESH_MS = 50_000;
 const DEFAULT_PAGE_SIZE = 80;
@@ -208,6 +210,21 @@ export function Screener() {
             <p className="mt-1 text-sm text-zinc-400">
               สแกนรูปแบบ Long (ขาขึ้น) และ Short (ขาลง) แยกคะแนน — heuristic จากข้อมูลสาธารณะ
             </p>
+            {data?.meta?.regime && (
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <span
+                  className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ring-1 ${regimeChipClass(
+                    data.meta.regime.kind
+                  )}`}
+                >
+                  Regime: {data.meta.regime.labelTh}
+                </span>
+                <span className="font-mono text-[10px] text-zinc-500">
+                  BTC {fmtPct(data.meta.regime.btc24h)} · ETH{" "}
+                  {fmtPct(data.meta.regime.eth24h)}
+                </span>
+              </div>
+            )}
           </div>
           <div className="text-right text-xs text-zinc-500">
             <div>
@@ -247,6 +264,8 @@ export function Screener() {
 
         <LearningStatsPanel refreshKey={feedbackRefresh} />
 
+        <CoachNotesPanel refreshKey={feedbackRefresh} />
+
         {/* NOW urgency banner */}
         {(nowAlerts.long.length > 0 || nowAlerts.short.length > 0) && (
           <div className="sticky top-0 z-30 mt-4 animate-pulse rounded-xl border-2 border-orange-500/80 bg-gradient-to-r from-orange-950 via-rose-950 to-orange-950 px-4 py-3 shadow-lg shadow-orange-900/50">
@@ -281,6 +300,13 @@ export function Screener() {
                       {fmtPct(r.priceChangePercent)}
                     </span>
                     <span className="ml-2 text-[10px] text-orange-300">Long NOW</span>
+                    <span
+                      className={`ml-1 rounded px-1 py-0.5 text-[9px] font-black ${qualityBadgeClass(
+                        r.qualityGrade
+                      )}`}
+                    >
+                      {r.qualityGrade}
+                    </span>
                   </button>
                   <FeedbackButtons
                     compact
@@ -311,6 +337,13 @@ export function Screener() {
                       {fmtPct(r.priceChangePercent)}
                     </span>
                     <span className="ml-2 text-[10px] text-orange-300">Short NOW</span>
+                    <span
+                      className={`ml-1 rounded px-1 py-0.5 text-[9px] font-black ${qualityBadgeClass(
+                        r.shortQualityGrade
+                      )}`}
+                    >
+                      {r.shortQualityGrade}
+                    </span>
                   </button>
                   <FeedbackButtons
                     compact
@@ -432,7 +465,7 @@ export function Screener() {
           {data && (
             <span className="ml-2">
               · Fut {data.meta.futuresPairs} · Spot match {data.meta.spotMatched} ·
-              OI {data.meta.oiEnriched}
+              OI {data.meta.oiEnriched} · MTF {data.meta.mtfEnriched ?? 0}
             </span>
           )}
         </div>
@@ -459,6 +492,7 @@ export function Screener() {
                 <th className="px-3 py-2">
                   {isShort ? "Short Score" : "Score"}
                 </th>
+                <th className="px-3 py-2">เกรด</th>
                 <th className="px-3 py-2">
                   {isShort ? "จุด Short" : "จุดเข้า"}
                 </th>
@@ -498,6 +532,16 @@ export function Screener() {
                         {r.urgency && (
                           <span className="animate-pulse rounded bg-orange-500 px-1 py-0.5 text-[9px] font-black uppercase tracking-wide text-black">
                             ตอนนี้
+                          </span>
+                        )}
+                        {r.mtfAlign === "mtf_align" && (
+                          <span className="rounded bg-emerald-950 px-1 py-0.5 text-[8px] text-emerald-400">
+                            MTF✓
+                          </span>
+                        )}
+                        {r.falsePatternRisk && (
+                          <span className="rounded bg-rose-950 px-1 py-0.5 text-[8px] text-rose-400">
+                            FP
                           </span>
                         )}
                       </span>
@@ -543,6 +587,15 @@ export function Screener() {
                         }`}
                       >
                         {score}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2">
+                      <span
+                        className={`rounded px-1.5 py-0.5 text-[10px] font-black ${qualityBadgeClass(
+                          isShort ? r.shortQualityGrade : r.qualityGrade
+                        )}`}
+                      >
+                        {isShort ? r.shortQualityGrade : r.qualityGrade}
                       </span>
                     </td>
                     <td className="px-3 py-2">
@@ -594,7 +647,7 @@ export function Screener() {
               {!loading && filtered.length === 0 && (
                 <tr>
                   <td
-                    colSpan={isShort ? 9 : 10}
+                    colSpan={isShort ? 10 : 11}
                     className="px-3 py-8 text-center text-zinc-500"
                   >
                     ไม่มีแถวที่ตรงเงื่อนไข — ลองลด min volume / score

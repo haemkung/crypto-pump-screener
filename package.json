@@ -8,7 +8,8 @@
     "start": "next start -H 0.0.0.0 -p 3000",
     "lint": "eslint",
     "check-now-alerts": "node scripts/check-now-alerts.mjs",
-    "evaluate-outcomes": "node scripts/evaluate-alert-outcomes.mjs"
+    "evaluate-outcomes": "node scripts/evaluate-alert-outcomes.mjs",
+    "post-trade-coach": "node scripts/post-trade-coach.mjs"
   },
   "dependencies": {
     "react": "19.1.0",

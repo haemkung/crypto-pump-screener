@@ -10,6 +10,9 @@
  * Usage: node scripts/evaluate-alert-outcomes.mjs
  */
 import { randomUUID } from "node:crypto";
+import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
 import {
   ensureDataDir,
   writeJson,
@@ -228,7 +231,19 @@ async function main() {
   }
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+const __evalDir = dirname(fileURLToPath(import.meta.url));
+
+main()
+  .then(() => {
+    const r = spawnSync(
+      process.execPath,
+      [resolve(__evalDir, "post-trade-coach.mjs")],
+      { encoding: "utf8" }
+    );
+    if (r.stdout) process.stdout.write(r.stdout);
+    if (r.stderr) process.stderr.write(r.stderr);
+  })
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });

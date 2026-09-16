@@ -49,3 +49,7 @@ next-env.d.ts
 /data/learned-weights.json
 /data/alert-settings.json
 
+
+# super-upgrade runtime (local learning memory / coach)
+/data/false-patterns.json
+/data/coach-notes.json

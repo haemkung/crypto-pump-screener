@@ -145,6 +145,8 @@ Public Binance APIs via **server-side Next.js routes** (avoids browser CORS):
 | `/api/feedback` | POST manual ถูก/ผิด → alert-log + learned-cases + refresh weights |
 | `/api/alert-settings` | GET/POST Telegram mode `all` \| `sharp` |
 | `/api/oi-detail?symbol=` | Lazy OI + L/S for one row |
+| `/api/klines?symbol=&interval=` | Cached futures klines / sparkline |
+| `/api/coach-notes` | Last N Thai post-trade coach notes |
 
 Filter: USDT perpetual pairs ending in `USDT` (excludes dated quarterlies with `_`).
 
@@ -262,6 +264,47 @@ Learning is a **heuristic feedback loop**, not a guarantee of future accuracy,
 not backtested alpha, and **not financial advice**. Files under `data/` (except
 `.gitkeep` / seeded `learned-cases.json`) stay local — including
 `alert-log.json`, `learned-weights.json`, and `alert-settings.json`.
+
+
+
+---
+
+## Super upgrade v1 / อัปเกรดใหญ่ (heuristic)
+
+### 1) Multi-timeframe confirm (MTF)
+- For NOW candidates + top ~30 by score, fetch Binance futures klines **5m / 15m / 1h** (batched, cached).
+- Flags: `mtf_align` / `mtf_mixed` / `mtf_against`.
+- **NOW requires not `mtf_against`** (mixed allowed with quality penalty).
+
+### 2) BTC/ETH regime filter
+- BTCUSDT + ETHUSDT 24h + short 15m momentum → `risk_on` / `neutral` / `risk_off`.
+- Risk-off dampens / blocks **Long NOW** on thin / small-cap names (unless score very high).
+- Regime chip in UI header; `meta.regime` on `/api/screen` and `/api/alerts/now`.
+
+### 3) False-signal memory
+- Aggregate failing flag pairs from alert-log losses → `data/false-patterns.json`.
+- Matching pattern → `false_pattern_risk` flag; may block NOW.
+- Rebuilt by `scripts/post-trade-coach.mjs` (also after evaluate).
+
+### 4) Quality grade A/B/C
+- Combines score, funding, MTF, regime, learned WR, false-pattern → `qualityGrade` / `shortQualityGrade`.
+- UI badges on rows + NOW banner.
+- Telegram sharp mode: `minGrade: "A"` (strong B score≥65 still allowed) in `alert-settings` + `check-now-alerts.mjs`.
+
+### 5) Post-trade coach
+- Thai coach notes after grading (`data/coach-notes.json`).
+- `GET /api/coach-notes` + UI panel **โค้ชหลังเทรด**.
+- `npm run post-trade-coach` or auto after `npm run evaluate-outcomes`.
+
+### 6) Mini charts
+- Detail panel SVG sparkline from `GET /api/klines?symbol=&interval=15m` (server-cached).
+
+### Performance
+- Klines / regime / MTF cached; MTF never N+1 across all ~700 symbols (cap ~30).
+- `/api/screen` fast path (`oiTop=0`) unchanged; cache key `screen:v6`.
+
+**Disclaimer:** research heuristics only — **ไม่ใช่คำแนะนำการลงทุน / not financial advice**.
+
 
 ## Limitations / ข้อจำกัด
 

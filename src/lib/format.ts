@@ -46,8 +46,36 @@ export function flagLabelTh(flag: string): string {
     late_short_chase: "Late Short",
     positive_funding: "Funding+",
     long_squeeze_fuel: "Long Squeeze",
+    mtf_align: "MTF✓",
+    mtf_mixed: "MTF~",
+    mtf_against: "MTF✗",
+    false_pattern_risk: "FalsePat",
   };
   return map[flag] || flag;
+}
+
+export function qualityBadgeClass(grade: string): string {
+  switch (grade) {
+    case "A":
+      return "bg-emerald-500 text-black";
+    case "B":
+      return "bg-sky-500 text-black";
+    case "C":
+      return "bg-zinc-600 text-zinc-100";
+    default:
+      return "bg-zinc-800 text-zinc-400";
+  }
+}
+
+export function regimeChipClass(kind: string): string {
+  switch (kind) {
+    case "risk_on":
+      return "bg-emerald-950 text-emerald-300 ring-emerald-700";
+    case "risk_off":
+      return "bg-rose-950 text-rose-300 ring-rose-700";
+    default:
+      return "bg-zinc-800 text-zinc-300 ring-zinc-600";
+  }
 }
 
 /** Convert ISO UTC to Asia/Bangkok display */

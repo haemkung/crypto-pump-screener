@@ -61,6 +61,7 @@ function loadAlertSettings() {
     minLongScore: DEFAULT_NOW_LONG + 5,
     minShortScore: DEFAULT_NOW_SHORT + 5,
     poorWrSkipBelow: 0.35,
+    minGrade: "A",
     updatedAt: null,
   };
   let raw = readJson(ALERT_SETTINGS_FILE, null);
@@ -75,6 +76,10 @@ function loadAlertSettings() {
       : raw.mode === "all"
         ? "all"
         : "sharp";
+  const minGrade =
+    raw.minGrade === "A" || raw.minGrade === "B" || raw.minGrade === "C"
+      ? raw.minGrade
+      : defaults.minGrade;
   return {
     mode,
     minLongScore:
@@ -87,6 +92,7 @@ function loadAlertSettings() {
       typeof raw.poorWrSkipBelow === "number"
         ? raw.poorWrSkipBelow
         : defaults.poorWrSkipBelow,
+    minGrade,
   };
 }
 
@@ -108,6 +114,17 @@ function loadLearnedSideMeta() {
  * OR (urgency present AND score >= 60 long / 55 short).
  * Skip side if learned WR known (graded>=5) and WR < poorWrSkipBelow.
  */
+function meetsMinGrade(grade, minGrade, score) {
+  const g = grade === "A" || grade === "B" || grade === "C" ? grade : "C";
+  const min = minGrade === "A" || minGrade === "B" || minGrade === "C" ? minGrade : "A";
+  if (min === "C") return true;
+  if (min === "B") return g === "A" || g === "B";
+  // min A: allow A, and strong B (score >= 65)
+  if (g === "A") return true;
+  if (g === "B" && score >= 65) return true;
+  return false;
+}
+
 function passesAlertFilter(side, row, settings, meta) {
   if (settings.mode === "all") return true;
 
@@ -124,6 +141,11 @@ function passesAlertFilter(side, row, settings, meta) {
 
   const score = Number(side === "long" ? row.score : row.shortScore);
   if (!Number.isFinite(score)) return false;
+
+  // Sharp: prefer quality grade A (strong B ok)
+  if (!meetsMinGrade(row.qualityGrade, settings.minGrade || "A", score)) {
+    return false;
+  }
 
   const eff = side === "long" ? meta.effLong : meta.effShort;
   const settingsMin =
@@ -242,10 +264,12 @@ function formatRow(row, side) {
   const score = side === "long" ? row.score : row.shortScore;
   const pct = fmtPct(row.priceChangePercent);
   const price = fmtPrice(row.price);
+  const grade = row.qualityGrade ? `เกรด ${row.qualityGrade}` : "";
+  const mtf = row.mtfAlign ? row.mtfAlign.replace("mtf_", "MTF ") : "";
   const reason = (row.urgencyReasonTh || "").trim();
   const lines = [
-    `⚡ เข้าตอนนี้ (${label}) ${symbol}`,
-    `ราคา ${price} | 24h ${pct}` + (score != null ? ` | score ${score}` : ""),
+    `⚡ เข้าตอนนี้ (${label}) ${symbol}` + (grade ? ` · ${grade}` : ""),
+    `ราคา ${price} | 24h ${pct}` + (score != null ? ` | score ${score}` : "") + (mtf ? ` | ${mtf}` : ""),
   ];
   if (reason) lines.push(reason);
   return lines.join("\n");

@@ -10,8 +10,10 @@ import {
   fmtVol,
   flagLabelTh,
   entryModeBadgeClass,
+  qualityBadgeClass,
 } from "@/lib/format";
 import { FeedbackButtons } from "./FeedbackButtons";
+import { MiniSparkline } from "./MiniSparkline";
 
 interface DetailPayload {
   oiChangePct: number | null;
@@ -88,6 +90,25 @@ export function DetailPanel({
           <p className="mt-1 text-[10px] uppercase tracking-wide text-zinc-500">
             โหมด: {isShort ? "Short (ขาลง)" : "Long (ขาขึ้น)"}
           </p>
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+            <span
+              className={`rounded px-1.5 py-0.5 text-[10px] font-black ${qualityBadgeClass(
+                isShort ? row.shortQualityGrade : row.qualityGrade
+              )}`}
+            >
+              เกรด {isShort ? row.shortQualityGrade : row.qualityGrade}
+            </span>
+            {row.mtfAlign && (
+              <span className="rounded bg-zinc-800 px-1.5 py-0.5 text-[10px] text-zinc-300">
+                {flagLabelTh(row.mtfAlign)}
+              </span>
+            )}
+            {row.falsePatternRisk && (
+              <span className="rounded bg-rose-950 px-1.5 py-0.5 text-[10px] text-rose-300 ring-1 ring-rose-800">
+                FalsePat
+              </span>
+            )}
+          </div>
         </div>
         <button
           type="button"
@@ -122,6 +143,11 @@ export function DetailPanel({
         />
       </div>
 
+      <div className="mb-4">
+        <h4 className="mb-1 text-xs font-semibold text-sky-300">ชาร์ตย่อ (15m)</h4>
+        <MiniSparkline symbol={row.symbol} interval="15m" limit={48} />
+      </div>
+
       {row.urgency && (
         <div className="mb-4 animate-pulse rounded-xl border-2 border-orange-500/70 bg-gradient-to-br from-orange-950 to-rose-950 p-3">
           <div className="mb-1 flex items-center gap-2">
@@ -130,6 +156,13 @@ export function DetailPanel({
             </span>
             <span className="text-sm font-bold text-orange-100">
               {row.urgencyLabelTh}
+            </span>
+            <span
+              className={`rounded px-1.5 py-0.5 text-[10px] font-black ${qualityBadgeClass(
+                isShort ? row.shortQualityGrade : row.qualityGrade
+              )}`}
+            >
+              {isShort ? row.shortQualityGrade : row.qualityGrade}
             </span>
           </div>
           <p className="mb-1 text-xs text-orange-100/90">{row.urgencyReasonTh}</p>

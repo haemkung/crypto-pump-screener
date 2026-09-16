@@ -1,6 +1,7 @@
 /**
  * Build the full screen dataset: tickers + funding + spot ratio.
  * OI enrichment is optional (oiTopN) so the default path stays fast.
+ * MTF / regime / quality / false-patterns enrich only a limited batch.
  */
 
 import {
@@ -15,18 +16,53 @@ import { computePatternScore, computeShortScore, volumePercentiles } from "./sco
 import { computeEntryHint, computeShortEntryHint } from "./entry";
 import { computeUrgency } from "./urgency";
 import { getCatalystNote } from "./catalysts";
-import type { ScreenResponse, ScreenRow } from "./types";
+import { getMarketRegime } from "./regime";
+import { batchMtfConfirm } from "./mtf";
+import { matchFalsePatterns } from "./falsePatterns";
+import { gradeRow } from "./qualityGrade";
+import type {
+  Flag,
+  MtfAlign,
+  ScreenResponse,
+  ScreenRow,
+  ShortFlag,
+} from "./types";
 import { cacheGet, cacheSet } from "./cache";
 
 const SCREEN_TTL = 45_000;
 const DEFAULT_OI_TOP_N = 0; // fast path — client lazy-enriches
+const MTF_BATCH_LIMIT = 30;
+
+const MTF_FLAGS: MtfAlign[] = ["mtf_align", "mtf_mixed", "mtf_against"];
+
+function stripMtfAndFalse(flags: Flag[]): Flag[] {
+  return flags.filter(
+    (f) =>
+      f !== "mtf_align" &&
+      f !== "mtf_mixed" &&
+      f !== "mtf_against" &&
+      f !== "false_pattern_risk"
+  );
+}
+
+function stripMtfAndFalseShort(flags: ShortFlag[]): ShortFlag[] {
+  return flags.filter(
+    (f) =>
+      f !== "mtf_align" &&
+      f !== "mtf_mixed" &&
+      f !== "mtf_against" &&
+      f !== "false_pattern_risk"
+  );
+}
 
 export async function buildScreen(options?: {
   oiTopN?: number;
   forceRefresh?: boolean;
+  /** Skip MTF batch (tests / ultra-fast) */
+  skipMtf?: boolean;
 }): Promise<ScreenResponse> {
   const oiTopN = options?.oiTopN ?? DEFAULT_OI_TOP_N;
-  const cacheKey = `screen:v5:${oiTopN}`;
+  const cacheKey = `screen:v6:${oiTopN}:${options?.skipMtf ? "nomtf" : "mtf"}`;
   if (!options?.forceRefresh) {
     const hit = cacheGet<ScreenResponse>(cacheKey);
     if (hit) return hit;
@@ -79,7 +115,28 @@ export async function buildScreen(options?: {
     }
   }
 
-  const rows: ScreenRow[] = sortedByVol.map((t) => {
+  const tickerPct = new Map<string, number>();
+  for (const t of perps) {
+    tickerPct.set(t.symbol, Number(t.priceChangePercent) || 0);
+  }
+
+  let regime = null;
+  try {
+    regime = await getMarketRegime({
+      forceRefresh: options?.forceRefresh,
+      tickerPct,
+    });
+  } catch (e) {
+    warnings.push(`Regime fetch failed: ${String(e)}`);
+  }
+
+  // Pass 1: base scores + provisional urgency (no MTF yet)
+  type Draft = ScreenRow & {
+    _mtfLong: MtfAlign | null;
+    _mtfShort: MtfAlign | null;
+  };
+
+  const drafts: Draft[] = sortedByVol.map((t) => {
     const symbol = t.symbol;
     const price = Number(t.lastPrice) || 0;
     const priceChangePercent = Number(t.priceChangePercent) || 0;
@@ -92,8 +149,7 @@ export async function buildScreen(options?: {
     const markPrice =
       prem && prem.markPrice !== undefined ? Number(prem.markPrice) : null;
 
-    // Only assert hasSpot when spot universe loaded successfully
-    const hasSpot = spotOk ? spotVolMap.has(symbol) : true; // assume spot exists if unknown — don't false-flag
+    const hasSpot = spotOk ? spotVolMap.has(symbol) : true;
     const spotVol = spotOk && spotVolMap.has(symbol) ? spotVolMap.get(symbol)! : null;
     const futSpotRatio =
       spotOk && spotVol != null && spotVol > 0 ? quoteVolume / spotVol : null;
@@ -111,7 +167,6 @@ export async function buildScreen(options?: {
       volumePercentile: percentileBySymbol.get(symbol) ?? null,
       lastFundingRate: fundingFinite,
       futSpotRatio,
-      // If spot API down, pass hasSpot=true so we don't mass-tag thin_liquidity
       hasSpot: spotOk ? hasSpot : true,
       oiChangePct,
       hasCatalyst: Boolean(catalystNote),
@@ -145,6 +200,9 @@ export async function buildScreen(options?: {
       shortScore,
       shortFlags,
       shortEntry,
+      quoteVolume,
+      hasSpot: spotOk ? hasSpot : true,
+      regime,
     });
 
     return {
@@ -171,6 +229,120 @@ export async function buildScreen(options?: {
       shortEntry,
       catalystNote,
       ...urgencyFields,
+      mtfAlign: null,
+      qualityGrade: "C" as const,
+      shortQualityGrade: "C" as const,
+      falsePatternRisk: false,
+      _mtfLong: null,
+      _mtfShort: null,
+    };
+  });
+
+  // Select MTF targets: provisional NOW + top by max(score, shortScore)
+  let mtfEnriched = 0;
+  if (!options?.skipMtf) {
+    const byScore = [...drafts].sort(
+      (a, b) =>
+        Math.max(b.score, b.shortScore) - Math.max(a.score, a.shortScore)
+    );
+    const nowSyms = drafts.filter((r) => r.urgency).map((r) => r.symbol);
+    const topSyms = byScore.slice(0, MTF_BATCH_LIMIT).map((r) => r.symbol);
+    const targets = [...new Set([...nowSyms, ...topSyms])].slice(
+      0,
+      MTF_BATCH_LIMIT
+    );
+
+    try {
+      const mtfMap = await batchMtfConfirm(targets, {
+        limit: MTF_BATCH_LIMIT,
+        concurrency: 3,
+      });
+      mtfEnriched = mtfMap.size;
+      for (const d of drafts) {
+        const m = mtfMap.get(d.symbol);
+        if (!m) continue;
+        d._mtfLong = m.longAlign;
+        d._mtfShort = m.shortAlign;
+      }
+    } catch (e) {
+      warnings.push(`MTF batch failed: ${String(e)}`);
+    }
+  }
+
+  // Pass 2: apply MTF flags, false patterns, recompute urgency + grades
+  const rows: ScreenRow[] = drafts.map((d) => {
+    let flags = stripMtfAndFalse(d.flags);
+    let shortFlags = stripMtfAndFalseShort(d.shortFlags);
+
+    const fpLong = matchFalsePatterns(flags, "long");
+    const fpShort = matchFalsePatterns(shortFlags, "short");
+
+    if (d._mtfLong) {
+      flags = [...flags, d._mtfLong as Flag];
+    }
+    if (d._mtfShort) {
+      shortFlags = [...shortFlags, d._mtfShort as ShortFlag];
+    }
+    if (fpLong.matched) {
+      flags = [...flags, "false_pattern_risk"];
+    }
+    if (fpShort.matched) {
+      shortFlags = [...shortFlags, "false_pattern_risk"];
+    }
+
+    const urgencyFields = computeUrgency({
+      priceChangePercent: d.priceChangePercent,
+      score: d.score,
+      flags,
+      entry: d.entry,
+      shortScore: d.shortScore,
+      shortFlags,
+      shortEntry: d.shortEntry,
+      quoteVolume: d.quoteVolume,
+      hasSpot: d.hasSpot,
+      mtfLong: d._mtfLong,
+      mtfShort: d._mtfShort,
+      regime,
+      falsePatternLong: fpLong.matched,
+      falsePatternShort: fpShort.matched,
+      falsePatternBlockLong: fpLong.blockNow,
+      falsePatternBlockShort: fpShort.blockNow,
+    });
+
+    const { qualityGrade, shortQualityGrade } = gradeRow(
+      { ...d, flags, shortFlags },
+      d._mtfLong,
+      d._mtfShort,
+      regime,
+      fpLong.matched,
+      fpShort.matched
+    );
+
+    // Prefer MTF align matching urgency side for display
+    let mtfAlign: MtfAlign | null = d._mtfLong;
+    if (urgencyFields.urgency === "now_short") mtfAlign = d._mtfShort;
+    else if (urgencyFields.urgency === "now_long") mtfAlign = d._mtfLong;
+    else if (d.shortScore > d.score) mtfAlign = d._mtfShort;
+
+    const falsePatternRisk =
+      urgencyFields.urgency === "now_short" ? fpShort.matched : fpLong.matched;
+
+    // Drop unused MTF_FLAGS helper lint
+    void MTF_FLAGS;
+
+    const { _mtfLong: _l, _mtfShort: _s, ...rest } = d;
+    void _l;
+    void _s;
+
+    return {
+      ...rest,
+      flags,
+      shortFlags,
+      ...urgencyFields,
+      mtfAlign,
+      qualityGrade,
+      shortQualityGrade,
+      falsePatternRisk,
     };
   });
 
@@ -184,7 +356,9 @@ export async function buildScreen(options?: {
       futuresPairs: perps.length,
       spotMatched: spotOk ? rows.filter((r) => r.hasSpot).length : 0,
       oiEnriched: [...oiMap.values()].filter((v) => v != null).length,
+      mtfEnriched,
       warnings,
+      regime,
     },
   };
 

@@ -20,20 +20,21 @@ export async function GET() {
         minLongScore: defaults.minLongScore,
         minShortScore: defaults.minShortScore,
         poorWrSkipBelow: defaults.poorWrSkipBelow,
+        minGrade: defaults.minGrade,
       },
       labelsTh: {
         all: "ส่งทั้งหมด",
         sharp: "เฉพาะสัญญาณคม",
       },
       disclaimerTh:
-        "โหมดคม = กรอง Telegram ให้เหลือเฉพาะคะแนนสูง / urgency แรง — ไม่ใช่คำแนะนำการลงทุน",
+        "โหมดคม = กรอง Telegram ให้เหลือเกรด A (และ B แรง) — ไม่ใช่คำแนะนำการลงทุน",
     });
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
 }
 
-/** POST { mode: 'all'|'sharp', minLongScore?, minShortScore?, poorWrSkipBelow? } */
+/** POST { mode, minLongScore?, minShortScore?, poorWrSkipBelow?, minGrade? } */
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
@@ -50,9 +51,12 @@ export async function POST(req: Request) {
     if (typeof body?.poorWrSkipBelow === "number") {
       patch.poorWrSkipBelow = body.poorWrSkipBelow;
     }
+    if (body?.minGrade === "A" || body?.minGrade === "B" || body?.minGrade === "C") {
+      patch.minGrade = body.minGrade;
+    }
     if (Object.keys(patch).length === 0) {
       return NextResponse.json(
-        { error: "Provide mode and/or score thresholds" },
+        { error: "Provide mode and/or score thresholds / minGrade" },
         { status: 400 }
       );
     }

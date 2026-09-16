@@ -1,6 +1,7 @@
 /**
  * Telegram alert filter settings — data/alert-settings.json (gitignored).
  * mode 'sharp' = high-confidence only; 'all' = every NOW alert.
+ * minGrade: sharp default 'A' (allow strong B).
  */
 
 import {
@@ -14,6 +15,7 @@ import {
   NOW_LONG_MIN_SCORE,
   NOW_SHORT_MIN_SCORE,
 } from "./urgencyDefaults";
+import type { QualityGrade } from "./types";
 
 export type AlertMode = "all" | "sharp";
 
@@ -25,6 +27,8 @@ export interface AlertSettings {
   minShortScore: number;
   /** Skip side temporarily when learned WR known and below this (0–1). Default 0.35 */
   poorWrSkipBelow: number;
+  /** Sharp mode: mainly send this grade and above (A default; strong B allowed) */
+  minGrade: QualityGrade;
   updatedAt: string | null;
 }
 
@@ -37,12 +41,18 @@ export function defaultAlertSettings(): AlertSettings {
     minLongScore: NOW_LONG_MIN_SCORE + 5,
     minShortScore: NOW_SHORT_MIN_SCORE + 5,
     poorWrSkipBelow: 0.35,
+    minGrade: "A",
     updatedAt: null,
   };
 }
 
 function ensureDataDir() {
   if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
+}
+
+function parseGrade(v: unknown, fallback: QualityGrade): QualityGrade {
+  if (v === "A" || v === "B" || v === "C") return v;
+  return fallback;
 }
 
 /** Read settings; create sharp defaults on disk if missing. */
@@ -78,6 +88,7 @@ export function readAlertSettings(createIfMissing = true): AlertSettings {
         typeof raw?.poorWrSkipBelow === "number"
           ? raw.poorWrSkipBelow
           : defaults.poorWrSkipBelow,
+      minGrade: parseGrade(raw?.minGrade, defaults.minGrade),
       updatedAt: typeof raw?.updatedAt === "string" ? raw.updatedAt : null,
     };
   } catch {
@@ -93,6 +104,7 @@ export function writeAlertSettings(
     ...current,
     ...patch,
     mode: patch.mode === "all" || patch.mode === "sharp" ? patch.mode : current.mode,
+    minGrade: parseGrade(patch.minGrade ?? current.minGrade, current.minGrade),
     updatedAt: new Date().toISOString(),
   };
   if (typeof patch.minLongScore === "number") {

@@ -46,5 +46,37 @@
     "priceAtGrade": 0.03653,
     "score": 50,
     "source": "auto"
+  },
+  {
+    "id": "329f5d25-dd1a-4706-9e36-964e369e9742",
+    "alertId": "8398dd3e-1b92-4d9a-a3e8-4615ac2441cf",
+    "symbol": "ARBUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.61,
+    "paperPnlPct": 0.61,
+    "horizon": "5m",
+    "noteTh": "Long เป็นกลาง (5m): ราคา +0.61% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-16T09:16:47.936Z",
+    "priceAtSend": 0.15387,
+    "priceAtGrade": 0.15481,
+    "score": 57,
+    "source": "auto"
+  },
+  {
+    "id": "21e9ea8b-d9ec-44eb-b9fe-e0f896779f78",
+    "alertId": "38104f90-cfdc-4fe3-b419-527922dfb760",
+    "symbol": "POWERUSDT",
+    "side": "short",
+    "outcome": "win",
+    "movePct": -0.92,
+    "paperPnlPct": 0.92,
+    "horizon": "5m",
+    "noteTh": "Short ถูก (5m): ราคา -0.92% — heuristic ตรงทิศ",
+    "timestamp": "2026-09-16T09:16:47.937Z",
+    "priceAtSend": 0.13848,
+    "priceAtGrade": 0.13721,
+    "score": 57,
+    "source": "auto"
   }
 ]

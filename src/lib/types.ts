@@ -4,6 +4,12 @@ export type ScreenMode = "long" | "short";
 
 export type UrgencyKind = "now_long" | "now_short";
 
+export type MtfAlign = "mtf_align" | "mtf_mixed" | "mtf_against";
+
+export type RegimeKind = "risk_on" | "neutral" | "risk_off";
+
+export type QualityGrade = "A" | "B" | "C";
+
 export type Flag =
   | "early_move"
   | "late_chase"
@@ -13,7 +19,11 @@ export type Flag =
   | "high_volume"
   | "oi_rising"
   | "short_squeeze_fuel"
-  | "catalyst";
+  | "catalyst"
+  | "mtf_align"
+  | "mtf_mixed"
+  | "mtf_against"
+  | "false_pattern_risk";
 
 export type ShortFlag =
   | "early_drop"
@@ -24,7 +34,11 @@ export type ShortFlag =
   | "no_spot"
   | "high_volume"
   | "oi_rising"
-  | "catalyst";
+  | "catalyst"
+  | "mtf_align"
+  | "mtf_mixed"
+  | "mtf_against"
+  | "false_pattern_risk";
 
 export type EntryMode =
   | "early_entry"
@@ -77,6 +91,16 @@ export interface ShortScoreBreakdown {
   notes: string[];
 }
 
+export interface MarketRegime {
+  kind: RegimeKind;
+  labelTh: string;
+  btc24h: number;
+  eth24h: number;
+  btcShortMom: number | null;
+  ethShortMom: number | null;
+  updatedAt: string;
+}
+
 export interface ScreenRow {
   symbol: string;
   baseAsset: string;
@@ -107,6 +131,12 @@ export interface ScreenRow {
   urgencyLabelTh: string | null;
   urgencyReasonTh: string | null;
   missRiskTh: string | null;
+  /** Multi-timeframe align for the active urgency side / long bias */
+  mtfAlign: MtfAlign | null;
+  /** Quality A/B/C (long-oriented default; shortQualityGrade for short tab) */
+  qualityGrade: QualityGrade;
+  shortQualityGrade: QualityGrade;
+  falsePatternRisk: boolean;
 }
 
 export interface NowAlertRow {
@@ -128,12 +158,16 @@ export interface NowAlertRow {
   shortFlags: string[];
   entryLow: number | null;
   entryHigh: number | null;
+  qualityGrade: QualityGrade;
+  mtfAlign: MtfAlign | null;
+  falsePatternRisk: boolean;
 }
 
 export interface NowAlertsResponse {
   updatedAt: string;
   cacheTtlSec: number;
   disclaimerTh: string;
+  regime: MarketRegime | null;
   long: NowAlertRow[];
   short: NowAlertRow[];
 }
@@ -147,7 +181,9 @@ export interface ScreenResponse {
     futuresPairs: number;
     spotMatched: number;
     oiEnriched: number;
+    mtfEnriched: number;
     warnings: string[];
+    regime: MarketRegime | null;
   };
 }
 
