@@ -150,6 +150,10 @@ export function LearningStatsPanel({ refreshKey = 0 }: { refreshKey?: number }) 
         </div>
       </div>
 
+      <p className="mb-3 text-[10px] leading-relaxed text-sky-200/80">
+        ไม่ต้องกดเอง — ระบบประเมินจากราคาอัตโนมัติทุก几นาที ปุ่มถูก/ผิดเป็นตัวเลือกเร่งเท่านั้น
+      </p>
+
       {error && (
         <p className="mb-2 text-xs text-rose-400">โหลดไม่สำเร็จ: {error}</p>
       )}
@@ -157,7 +161,7 @@ export function LearningStatsPanel({ refreshKey = 0 }: { refreshKey?: number }) 
       {empty ? (
         <p className="rounded-lg border border-dashed border-zinc-700 bg-zinc-950/40 px-3 py-4 text-center text-sm text-zinc-500">
           {stats?.emptyMessageTh ||
-            "ยังไม่มีเคสเรียนรู้ — รอประเมินอัตโนมัติหรือกดถูก/ผิด"}
+            "ยังไม่มีเคสเรียนรู้ — ระบบประเมินจากราคาอัตโนมัติ (ไม่ต้องกดเอง)"}
         </p>
       ) : (
         stats && (

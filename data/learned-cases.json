@@ -1,1 +1,50 @@
-[]
+[
+  {
+    "id": "8390ef27-01a0-4e08-bf02-eacf982ecf92",
+    "alertId": "8398dd3e-1b92-4d9a-a3e8-4615ac2441cf",
+    "symbol": "ARBUSDT",
+    "side": "long",
+    "outcome": "win",
+    "movePct": 1.5,
+    "paperPnlPct": 1.5,
+    "horizon": "15m",
+    "noteTh": "Long ถูก (manual) — ผู้ใช้ให้คะแนนมือ · paper +1.50%",
+    "timestamp": "2026-09-16T09:05:28.928Z",
+    "priceAtSend": 0.15387,
+    "priceAtGrade": 0.15617804999999998,
+    "score": 57,
+    "source": "manual"
+  },
+  {
+    "id": "50b621fc-cac7-434c-93d6-c3450060be25",
+    "alertId": "6c36e377-deca-4321-b941-bc7863926f09",
+    "symbol": "CHIPUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": 0.14,
+    "paperPnlPct": -0.14,
+    "horizon": "5m",
+    "noteTh": "Short เป็นกลาง (5m): ราคา +0.14% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-16T09:08:46.109Z",
+    "priceAtSend": 0.03648,
+    "priceAtGrade": 0.03653,
+    "score": 50,
+    "source": "auto"
+  },
+  {
+    "id": "fb013852-b6ab-4542-a5de-11632e7ee9dc",
+    "alertId": "6c36e377-deca-4321-b941-bc7863926f09",
+    "symbol": "CHIPUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": 0.14,
+    "paperPnlPct": -0.14,
+    "horizon": "15m",
+    "noteTh": "Short เป็นกลาง (15m): ราคา +0.14% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-16T09:08:46.110Z",
+    "priceAtSend": 0.03648,
+    "priceAtGrade": 0.03653,
+    "score": 50,
+    "source": "auto"
+  }
+]

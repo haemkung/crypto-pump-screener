@@ -171,16 +171,20 @@ function saveAlertLog(log) {
   writeFileSync(ALERT_LOG_FILE, JSON.stringify(log, null, 2) + "\n", "utf8");
 }
 
+/** Append fresh NOW alerts to alert-log. Returns entry ids. Never skip logging. */
 function appendAlertLog(freshRows, delivered) {
   const log = loadAlertLog();
   const sentAt = new Date().toISOString();
+  const ids = [];
   for (const f of freshRows) {
     const row = f.row;
     const score = f.side === "long" ? row.score : row.shortScore;
     const flags = f.side === "long" ? row.flags : row.shortFlags;
     const entryMode = f.side === "long" ? row.entryMode : row.shortEntryMode;
+    const id = randomUUID();
+    ids.push(id);
     log.alerts.push({
-      id: randomUUID(),
+      id,
       symbol: f.symbol,
       side: f.side,
       sentAt,
@@ -190,12 +194,27 @@ function appendAlertLog(freshRows, delivered) {
       entryMode: entryMode || null,
       urgency: row.urgency || (f.side === "long" ? "now_long" : "now_short"),
       delivered: !!delivered,
-      outcomes: { "15m": null, "60m": null },
+      outcomes: { "5m": null, "15m": null, "60m": null },
       filterMode: f.filterMode || null,
     });
   }
   if (log.alerts.length > 500) log.alerts = log.alerts.slice(-500);
   saveAlertLog(log);
+  return ids;
+}
+
+function markAlertLogDelivered(ids, delivered) {
+  if (!ids?.length) return;
+  const log = loadAlertLog();
+  const want = new Set(ids);
+  let changed = 0;
+  for (const a of log.alerts) {
+    if (want.has(a.id)) {
+      a.delivered = !!delivered;
+      changed++;
+    }
+  }
+  if (changed > 0) saveAlertLog(log);
 }
 
 function keyFor(symbol, side) {
@@ -302,14 +321,21 @@ if (fresh.length === 0) {
   quietExit(0);
 }
 
-appendAlertLog(fresh, false);
+// Always log BEFORE Telegram send so learning never depends on delivery.
+let logIds;
+try {
+  logIds = appendAlertLog(fresh, false);
+} catch (e) {
+  console.error("alert-log append failed — aborting send:", String(e));
+  quietExit(1);
+}
 
 if (!process.env.TELEGRAM_BOT_TOKEN?.trim()) {
-  console.error("TELEGRAM_BOT_TOKEN is not set (alert-log still updated)");
+  console.error("TELEGRAM_BOT_TOKEN is not set (alert-log still updated, delivered=false)");
   quietExit(1);
 }
 if (!existsSync(CHAT_ID_FILE)) {
-  console.error("Missing .telegram-chat-id — send /start to the bot first (alert-log still updated)");
+  console.error("Missing .telegram-chat-id — send /start to the bot first (alert-log still updated, delivered=false)");
   quietExit(1);
 }
 
@@ -328,18 +354,14 @@ const send = spawnSync(
 if (send.status !== 0) {
   if (send.stderr) process.stderr.write(send.stderr);
   if (send.stdout) process.stderr.write(send.stdout);
+  // Log entries remain with delivered=false for auto-eval.
   quietExit(send.status || 1);
 }
 
 try {
-  const log = loadAlertLog();
-  const n = fresh.length;
-  for (let i = log.alerts.length - n; i < log.alerts.length; i++) {
-    if (i >= 0 && log.alerts[i]) log.alerts[i].delivered = true;
-  }
-  saveAlertLog(log);
-} catch {
-  /* non-fatal */
+  markAlertLogDelivered(logIds, true);
+} catch (e) {
+  console.error("alert-log delivered update failed (entries already logged):", String(e));
 }
 
 for (const f of fresh) state.sent[f.key] = now;

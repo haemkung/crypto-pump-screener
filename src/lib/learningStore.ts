@@ -45,8 +45,8 @@ export interface AlertLogEntry {
   entryMode?: string | null;
   urgency?: string;
   delivered?: boolean;
-  outcomes: { "15m": LearnedOutcome | null; "60m": LearnedOutcome | null };
-  paperPnl?: { "15m"?: number; "60m"?: number; manual?: number };
+  outcomes: { "5m": LearnedOutcome | null; "15m": LearnedOutcome | null; "60m": LearnedOutcome | null };
+  paperPnl?: { "5m"?: number; "15m"?: number; "60m"?: number; manual?: number };
   manualGrade?: {
     outcome: LearnedOutcome;
     note?: string;
@@ -348,8 +348,8 @@ export function applyManualFeedback(
     entryMode: null,
     urgency: side === "long" ? "now_long" : "now_short",
     delivered: false,
-    outcomes: { "15m": outcome, "60m": outcome },
-    paperPnl: { manual: paperPnlPct, "15m": paperPnlPct, "60m": paperPnlPct },
+    outcomes: { "5m": outcome, "15m": outcome, "60m": outcome },
+    paperPnl: { manual: paperPnlPct, "5m": paperPnlPct, "15m": paperPnlPct, "60m": paperPnlPct },
     manualGrade: {
       outcome,
       note: input.note?.trim() || undefined,

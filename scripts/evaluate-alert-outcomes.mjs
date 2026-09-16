@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 /**
- * Grade open NOW alerts in data/alert-log.json at 15m and 60m horizons,
- * append win/loss cases to data/learned-cases.json, and nudge
+ * Grade open NOW alerts in data/alert-log.json at 5m / 15m / 60m horizons,
+ * append win/loss/neutral cases to data/learned-cases.json, and nudge
  * data/learned-weights.json from rolling accuracy.
  *
+ * Primary learning path is automatic (price-based) — manual ถูก/ผิด is optional.
  * Heuristic only — not financial advice / not a trading system.
  *
  * Usage: node scripts/evaluate-alert-outcomes.mjs
@@ -23,9 +24,12 @@ import {
 } from "./lib/learning-core.mjs";
 
 const HORIZONS = {
+  "5m": { ms: 5 * 60 * 1000, winPct: 0.8, lossPct: 0.8 },
   "15m": { ms: 15 * 60 * 1000, winPct: 1.5, lossPct: 1.5 },
   "60m": { ms: 60 * 60 * 1000, winPct: 3.0, lossPct: 3.0 },
 };
+
+const EMPTY_OUTCOMES = () => ({ "5m": null, "15m": null, "60m": null });
 
 const FAPI_HOSTS = [
   "https://www.binance.com",
@@ -90,6 +94,16 @@ function noteTh(side, outcome, movePct, horizon) {
   return `${sideTh} เป็นกลาง (${horizon}): ราคา ${dir}${movePct.toFixed(2)}% — ยังไม่ถึงเกณฑ์`;
 }
 
+function ensureOutcomes(alert) {
+  if (!alert.outcomes || typeof alert.outcomes !== "object") {
+    alert.outcomes = EMPTY_OUTCOMES();
+    return;
+  }
+  for (const h of Object.keys(HORIZONS)) {
+    if (!(h in alert.outcomes)) alert.outcomes[h] = null;
+  }
+}
+
 async function main() {
   ensureDataDir();
   const log = loadAlertLog();
@@ -100,17 +114,19 @@ async function main() {
 
   const now = Date.now();
   const pending = [];
+  let awaitingHorizon = 0;
 
   for (const alert of log.alerts) {
     if (!alert?.id || !alert.symbol || !alert.sentAt || !alert.price) continue;
     const sentMs = Date.parse(alert.sentAt);
     if (!Number.isFinite(sentMs)) continue;
-    if (!alert.outcomes || typeof alert.outcomes !== "object") {
-      alert.outcomes = { "15m": null, "60m": null };
-    }
+    ensureOutcomes(alert);
     for (const [horizon, cfg] of Object.entries(HORIZONS)) {
       if (alert.outcomes[horizon] != null) continue;
-      if (now - sentMs < cfg.ms) continue;
+      if (now - sentMs < cfg.ms) {
+        awaitingHorizon++;
+        continue;
+      }
       const key = `${alert.id}|${horizon}`;
       if (existingCaseKeys.has(key)) {
         const found = cases.find(
@@ -119,7 +135,7 @@ async function main() {
         if (found) alert.outcomes[horizon] = found.outcome;
         continue;
       }
-      pending.push({ alert, horizon, cfg });
+      pending.push({ alert, horizon, cfg, ageMin: (now - sentMs) / 60000 });
     }
   }
 
@@ -135,15 +151,20 @@ async function main() {
   }
 
   let gradedNew = 0;
-  for (const { alert, horizon, cfg } of pending) {
+  const gradedLines = [];
+  let skippedNoPrice = 0;
+
+  for (const { alert, horizon, cfg, ageMin } of pending) {
     const priceNow = priceMap.get(alert.symbol);
     if (priceNow == null || !Number.isFinite(priceNow) || alert.price <= 0) {
+      skippedNoPrice++;
       continue;
     }
     const movePct = ((priceNow - alert.price) / alert.price) * 100;
     const outcome = gradeMove(alert.side, movePct, cfg.winPct, cfg.lossPct);
     const roundedMove = Math.round(movePct * 100) / 100;
-    const paperPnlPct = Math.round(paperPnlFromMove(alert.side, roundedMove) * 100) / 100;
+    const paperPnlPct =
+      Math.round(paperPnlFromMove(alert.side, roundedMove) * 100) / 100;
     alert.outcomes[horizon] = outcome;
     if (!alert.paperPnl) alert.paperPnl = {};
     alert.paperPnl[horizon] = paperPnlPct;
@@ -167,6 +188,9 @@ async function main() {
     cases.push(learned);
     existingCaseKeys.add(`${alert.id}|${horizon}`);
     gradedNew++;
+    gradedLines.push(
+      `  ${alert.symbol} ${alert.side} ${horizon} → ${outcome} move=${roundedMove >= 0 ? "+" : ""}${roundedMove}% paper=${paperPnlPct >= 0 ? "+" : ""}${paperPnlPct}% age=${ageMin.toFixed(1)}m`
+    );
   }
 
   const trimmedCases = cases.length > 400 ? cases.slice(-400) : cases;
@@ -186,11 +210,22 @@ async function main() {
       ? (weights.short.winRate * 100).toFixed(1) + "%"
       : "n/a";
 
+  console.log("=== evaluate-alert-outcomes ===");
   console.log(
-    `graded_new=${gradedNew} cases_total=${trimmedCases.length} ` +
-      `long_wr=${longWr}(${weights.long.graded}) short_wr=${shortWr}(${weights.short.graded}) ` +
-      `long_score=${weights.effective.nowLongMinScore} short_score=${weights.effective.nowShortMinScore}`
+    `pending_eligible=${pending.length} graded_new=${gradedNew} awaiting_horizon=${awaitingHorizon} skipped_no_price=${skippedNoPrice}`
   );
+  console.log(
+    `cases_total=${trimmedCases.length} long_wr=${longWr}(${weights.long.graded}) short_wr=${shortWr}(${weights.short.graded})`
+  );
+  console.log(
+    `weights long_score=${weights.effective.nowLongMinScore} short_score=${weights.effective.nowShortMinScore}`
+  );
+  if (gradedLines.length) {
+    console.log("graded:");
+    for (const line of gradedLines) console.log(line);
+  } else {
+    console.log("graded: (none this run)");
+  }
 }
 
 main().catch((e) => {

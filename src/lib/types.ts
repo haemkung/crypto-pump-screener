@@ -192,7 +192,7 @@ export interface LearnedCase {
   movePct: number;
   /** Signed paper PnL % from the side's view (long=move, short=-move). */
   paperPnlPct?: number;
-  horizon: "15m" | "60m";
+  horizon: "5m" | "15m" | "60m";
   noteTh: string;
   timestamp: string;
   priceAtSend: number;

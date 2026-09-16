@@ -143,10 +143,10 @@ export function DetailPanel({
 
       <div className="mb-4 rounded-lg border border-zinc-700 bg-zinc-950/40 p-3">
         <h4 className="mb-1 text-xs font-semibold text-sky-300">
-          ให้คะแนนสัญญาณ (เรียนมือ)
+          ให้คะแนนสัญญาณ (ตัวเลือกเร่ง)
         </h4>
         <p className="mb-2 text-[10px] text-zinc-500">
-          กด ถูก / ผิด เพื่อบันทึกลงระบบเรียนรู้ — หรือ ข้าม · ไม่ใช่คำแนะนำการลงทุน
+          ไม่ต้องกดเอง — ระบบประเมินจากราคาอัตโนมัติทุก几นาที ปุ่มถูก/ผิดเป็นตัวเลือกเร่งเท่านั้น
         </p>
         <FeedbackButtons
           symbol={row.symbol}

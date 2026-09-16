@@ -61,9 +61,9 @@ export async function GET() {
       },
       empty: side.totalCases === 0,
       emptyMessageTh:
-        "ยังไม่มีเคสเรียนรู้ — รอประเมินอัตโนมัติหรือกดถูก/ผิด",
+        "ยังไม่มีเคสเรียนรู้ — ระบบประเมินจากราคาอัตโนมัติ (ไม่ต้องกดเอง)",
       disclaimerTh:
-        "สถิติจากเกณฑ์ heuristic (15m/60m) — ไม่ใช่ผลตอบแทนจริง และไม่ใช่คำแนะนำการลงทุน",
+        "สถิติจากเกณฑ์ heuristic (5m/15m/60m อัตโนมัติ) — ไม่ใช่ผลตอบแทนจริง และไม่ใช่คำแนะนำการลงทุน",
     });
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });

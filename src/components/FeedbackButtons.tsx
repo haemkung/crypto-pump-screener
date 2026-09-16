@@ -14,7 +14,7 @@ interface Props {
 }
 
 /**
- * Manual ถูก / ผิด / ข้าม — posts to /api/feedback (ข้าม = no-op locally).
+ * Optional ถูก / ผิด / ข้าม — posts to /api/feedback. Primary learning is auto price eval.
  */
 export function FeedbackButtons({
   symbol,
@@ -101,6 +101,9 @@ export function FeedbackButtons({
       </button>
       {msg && <span className="text-[9px] text-sky-400">{msg}</span>}
       {err && <span className="text-[9px] text-rose-400">{err}</span>}
+      <p className="basis-full text-[9px] leading-snug text-zinc-500">
+        ไม่ต้องกดเอง — ระบบประเมินจากราคาอัตโนมัติทุก几นาที ปุ่มถูก/ผิดเป็นตัวเลือกเร่งเท่านั้น
+      </p>
     </div>
   );
 }
