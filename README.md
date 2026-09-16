@@ -72,9 +72,10 @@ Filter: USDT perpetual pairs ending in `USDT` (excludes dated quarterlies with `
 ## Rate limits & caching / จำกัดเรท
 
 - Server cache ~**45–60s** for bulk tickers / screen payload.
-- OI history is fetched only for the **top ~50** symbols by futures quote volume (batched, staggered).
+- `/api/screen` defaults to **oiTop=0** (fast path). Pass `?oi=1` or `?oiTop=40` to enrich OI for top-N by volume (batched, staggered). Client lazy-enriches after first paint.
+- UI shows **top 80** rows by score by default, with **โหลดเพิ่ม** / page-size control (does not mount all ~700 rows).
 - Detail panel lazy-loads L/S ratios per selected symbol.
-- UI auto-refreshes about every **50s**.
+- UI auto-refreshes about every **50s** (stale-while-revalidate; no full loading blank).
 
 ---
 

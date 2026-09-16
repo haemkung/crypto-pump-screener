@@ -84,8 +84,10 @@ export function Screener() {
         }
 
         const params = new URLSearchParams();
-        // First paint: skip OI. Later refreshes keep OI (warm cache is fast).
-        params.set("oiTop", isInitial ? "0" : String(OI_TOP_DEFAULT));
+        // Initial + forced refresh: fast path (no OI) for snappy paint.
+        // Periodic SWR: keep OI via warm oiTop cache to avoid score flicker.
+        const useFastPath = isInitial || force;
+        params.set("oiTop", useFastPath ? "0" : String(OI_TOP_DEFAULT));
         if (force) params.set("refresh", "1");
 
         const res = await fetch(`/api/screen?${params}`);
@@ -98,8 +100,8 @@ export function Screener() {
         const json = (await res.json()) as ScreenResponse;
         applyResponse(json);
 
-        // Lazy OI enrich only after first paint (does not block UI)
-        if (isInitial) {
+        // Lazy OI enrich after first paint / forced refresh (does not block UI)
+        if (useFastPath) {
           void enrichOi(force);
         }
       } catch (e) {
