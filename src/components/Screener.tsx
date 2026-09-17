@@ -391,9 +391,11 @@ export function Screener() {
       {!isShort && <ExampleCases />}
 
       <section className="mb-4 flex flex-wrap items-end gap-4 rounded-xl border border-zinc-800 bg-zinc-900/60 p-4">
-        <label className="flex flex-col gap-1 text-xs text-zinc-400">
+        <label htmlFor="min-vol" className="flex flex-col gap-1 text-xs text-zinc-400">
           Vol ขั้นต่ำ (USDT)
           <input
+            id="min-vol"
+            name="minVol"
             type="number"
             className="w-40 rounded-lg border border-zinc-700 bg-zinc-950 px-2 py-1.5 font-mono text-sm text-white"
             value={minVol}
@@ -402,9 +404,11 @@ export function Screener() {
             step={100000}
           />
         </label>
-        <label className="flex flex-col gap-1 text-xs text-zinc-400">
+        <label htmlFor="min-score" className="flex flex-col gap-1 text-xs text-zinc-400">
           {isShort ? "Short Score ขั้นต่ำ" : "Score ขั้นต่ำ"}
           <input
+            id="min-score"
+            name="minScore"
             type="number"
             className="w-28 rounded-lg border border-zinc-700 bg-zinc-950 px-2 py-1.5 font-mono text-sm text-white"
             value={minScore}
@@ -413,8 +417,10 @@ export function Screener() {
             max={100}
           />
         </label>
-        <label className="flex items-center gap-2 text-sm text-zinc-300">
+        <label htmlFor="hide-late" className="flex items-center gap-2 text-sm text-zinc-300">
           <input
+            id="hide-late"
+            name="hideLate"
             type="checkbox"
             checked={hideLate}
             onChange={(e) => setHideLate(e.target.checked)}
@@ -424,8 +430,10 @@ export function Screener() {
             ? "ซ่อน Late Short (ลงลึก / chase)"
             : "ซ่อน Late/Chase (>50% 24h)"}
         </label>
-        <label className="flex items-center gap-2 text-sm font-semibold text-orange-300">
+        <label htmlFor="now-only" className="flex items-center gap-2 text-sm font-semibold text-orange-300">
           <input
+            id="now-only"
+            name="nowOnly"
             type="checkbox"
             checked={nowOnly}
             onChange={(e) => setNowOnly(e.target.checked)}
@@ -433,9 +441,11 @@ export function Screener() {
           />
           แสดงเฉพาะตอนนี้
         </label>
-        <label className="flex flex-col gap-1 text-xs text-zinc-400">
+        <label htmlFor="page-size" className="flex flex-col gap-1 text-xs text-zinc-400">
           แสดงต่อหน้า
           <select
+            id="page-size"
+            name="pageSize"
             className="rounded-lg border border-zinc-700 bg-zinc-950 px-2 py-1.5 font-mono text-sm text-white"
             value={
               PAGE_SIZE_OPTIONS.includes(

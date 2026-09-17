@@ -78,5 +78,21 @@
     "priceAtGrade": 0.13721,
     "score": 57,
     "source": "auto"
+  },
+  {
+    "id": "0489a9a6-f653-4c93-abdf-cc26a6a779d7",
+    "alertId": "38104f90-cfdc-4fe3-b419-527922dfb760",
+    "symbol": "POWERUSDT",
+    "side": "short",
+    "outcome": "loss",
+    "movePct": 4.15,
+    "paperPnlPct": -4.15,
+    "horizon": "15m",
+    "noteTh": "Short ผิด (15m): ราคา +4.15% — ตรงข้ามทิศ",
+    "timestamp": "2026-09-16T09:42:28.510Z",
+    "priceAtSend": 0.13848,
+    "priceAtGrade": 0.14423,
+    "score": 57,
+    "source": "auto"
   }
 ]

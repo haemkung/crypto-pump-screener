@@ -9,22 +9,37 @@
     "lint": "eslint",
     "check-now-alerts": "node scripts/check-now-alerts.mjs",
     "evaluate-outcomes": "node scripts/evaluate-alert-outcomes.mjs",
-    "post-trade-coach": "node scripts/post-trade-coach.mjs"
+    "post-trade-coach": "node scripts/post-trade-coach.mjs",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
+    "next": "15.5.25",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "next": "15.5.25"
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@opennextjs/cloudflare": "^1.20.6",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.5.25",
-    "@eslint/eslintrc": "^3"
-  }
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "wrangler": "^4.133.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "browserslist": [
+    "iOS >= 14",
+    "Safari >= 14",
+    "Chrome >= 90",
+    "Firefox >= 90",
+    "not dead"
+  ]
 }

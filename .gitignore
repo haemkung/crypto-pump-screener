@@ -53,3 +53,7 @@ next-env.d.ts
 # super-upgrade runtime (local learning memory / coach)
 /data/false-patterns.json
 /data/coach-notes.json
+
+.open-next
+.wrangler
+.dev.vars

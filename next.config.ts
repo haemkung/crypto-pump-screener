@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Cloudflare / OpenNext: avoid Node-only image optimizer defaults
+  images: {
+    unoptimized: true,
+  },
 };
 
 export default nextConfig;
