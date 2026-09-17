@@ -237,3 +237,35 @@ export interface LearnedCase {
   /** auto = evaluate script; manual = user ถูก/ผิด */
   source?: "auto" | "manual";
 }
+
+/** Early accelerator row for Hot strip (/api/hot) */
+export interface HotRow {
+  symbol: string;
+  baseAsset: string;
+  price: number;
+  pct1h: number | null;
+  /** ~15m % from 5m bars when enriched */
+  pct15m?: number | null;
+  pct24h: number;
+  score: number;
+  quoteVolume: number;
+  flags: Flag[];
+  entryMode: EntryMode;
+  qualityGrade: QualityGrade;
+  /** true when still in early band (catch window) */
+  early: boolean;
+}
+
+export interface HotResponse {
+  updatedAt: string;
+  cacheTtlSec: number;
+  /** Top early accelerators — catch before late */
+  hot: HotRow[];
+  /** Already ran (late_chase / >50%) — collapsed "ขึ้นไปแล้ว" */
+  late: HotRow[];
+  meta: {
+    enriched1h: number;
+    warnings: string[];
+    noteTh: string;
+  };
+}

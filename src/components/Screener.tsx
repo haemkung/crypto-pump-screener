@@ -17,6 +17,7 @@ import { ExampleCases } from "./ExampleCases";
 import { FeedbackButtons } from "./FeedbackButtons";
 import { LearningStatsPanel } from "./LearningStatsPanel";
 import { CoachNotesPanel } from "./CoachNotesPanel";
+import { HotStrip } from "./HotStrip";
 import { qualityBadgeClass, regimeChipClass } from "@/lib/format";
 
 const REFRESH_MS = 50_000;
@@ -262,6 +263,16 @@ export function Screener() {
           )}
         </div>
 
+        {/* Hot early accel — TOP so user cannot miss BR-type names while still early */}
+        <HotStrip
+          screenRows={data?.rows ?? null}
+          onSelect={(row) => {
+            setSelected(row);
+            setNowOnly(false);
+          }}
+          onSelectMode={setMode}
+        />
+
         {/* Optional panels — failures should not blank the page */}
         <div className="contents">
           <LearningStatsPanel refreshKey={feedbackRefresh} />
@@ -417,19 +428,26 @@ export function Screener() {
             max={100}
           />
         </label>
-        <label htmlFor="hide-late" className="flex items-center gap-2 text-sm text-zinc-300">
-          <input
-            id="hide-late"
-            name="hideLate"
-            type="checkbox"
-            checked={hideLate}
-            onChange={(e) => setHideLate(e.target.checked)}
-            className="size-4 accent-emerald-500"
-          />
-          {isShort
-            ? "ซ่อน Late Short (ลงลึก / chase)"
-            : "ซ่อน Late/Chase (>50% 24h)"}
-        </label>
+        <div className="flex max-w-md flex-col gap-1">
+          <label htmlFor="hide-late" className="flex items-center gap-2 text-sm text-zinc-300">
+            <input
+              id="hide-late"
+              name="hideLate"
+              type="checkbox"
+              checked={hideLate}
+              onChange={(e) => setHideLate(e.target.checked)}
+              className="size-4 accent-emerald-500"
+            />
+            {isShort
+              ? "ซ่อน Late Short (ลงลึก / chase)"
+              : "ซ่อน Late/Chase (>50% 24h)"}
+          </label>
+          <p className="pl-6 text-[10px] leading-snug text-zinc-500">
+            {isShort
+              ? "เหรียญที่ลงลึกแล้วจะถูกซ่อนโดยตั้งใจ — ดูสัญญาณต้นที่แผง «กำลังเร่งตัว» ด้านบน"
+              : "เช่น BR ที่ +192% จะหายจากตารางหลัง >50% โดยตั้งใจ (ไม่ไล่ราคา) — จับตอนต้นที่แผง «กำลังเร่งตัว» ด้านบน"}
+          </p>
+        </div>
         <label htmlFor="now-only" className="flex items-center gap-2 text-sm font-semibold text-orange-300">
           <input
             id="now-only"
