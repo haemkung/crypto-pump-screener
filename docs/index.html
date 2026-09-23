@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#09090b" />
+  <meta name="color-scheme" content="dark" />
+  <title>Crypto Pump Screener | สแกนรูปแบบ Pump (GitHub Pages)</title>
+  <meta name="description" content="Static GitHub Pages shell — data from Workers API. Not financial advice." />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="top">
+    <div>
+      <h1>Crypto Pump Screener</h1>
+      <p class="sub">
+        เวอร์ชันถาวรบน GitHub Pages (HTML ไม่พังเมื่อ Cloudflare Workers error) ·
+        ข้อมูลจาก API · <strong>ไม่ใช่คำแนะนำการลงทุน</strong>
+      </p>
+    </div>
+    <div class="links">
+      <a id="workersLink" href="https://crypto-pump-screener.jakahome2.workers.dev/" target="_blank" rel="noopener">Workers UI</a>
+      <a href="https://github.com/haemkung/crypto-pump-screener" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </header>
+
+  <section class="toolbar">
+    <label>โหมด
+      <select id="mode">
+        <option value="long">Long ขาขึ้น</option>
+        <option value="short">Short ขาลง</option>
+      </select>
+    </label>
+    <label>Min vol
+      <input id="minVol" type="number" value="1000000" step="100000" />
+    </label>
+    <label>Min score
+      <input id="minScore" type="number" value="20" min="0" max="100" />
+    </label>
+    <label class="chk"><input id="nowOnly" type="checkbox" /> NOW only</label>
+    <button id="refreshBtn" type="button">รีเฟรช</button>
+    <span id="status" class="status">กำลังโหลด…</span>
+  </section>
+
+  <section id="banner" class="banner hidden"></section>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Symbol</th>
+          <th>Score</th>
+          <th>24h%</th>
+          <th>Price</th>
+          <th>Vol</th>
+          <th>Funding</th>
+          <th>Urgency</th>
+          <th>Grade</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr><td colspan="9" class="muted">รอข้อมูลจาก API…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer class="foot">
+    <span>API: <code id="apiLabel"></code></span>
+    <span id="updated"></span>
+  </footer>
+
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

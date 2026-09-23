@@ -14,7 +14,10 @@ export function rememberLastGood(
 ): void {
   if (!body || typeof body !== "object") return;
   const rows = (body as { rows?: unknown }).rows;
-  if (!Array.isArray(rows) || rows.length < 1) return;
+  const hot = (body as { hot?: unknown }).hot;
+  const hasRows = Array.isArray(rows) && rows.length >= 1;
+  const hasHot = Array.isArray(hot) && hot.length >= 1;
+  if (!hasRows && !hasHot) return;
   cacheSet(key, body, ttlMs);
 }
 

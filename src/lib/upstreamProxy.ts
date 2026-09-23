@@ -9,11 +9,15 @@
  *
  * CRITICAL: local Next (the bot upstream) must NEVER use BOT_UPSTREAM — remote
  * bindings can hang on getCloudflareContext and/or self-proxy :3000 → deadlock.
+ *
+ * CRITICAL: never buffer large upstream bodies with res.text() on Workers.
+ * /api/screen is ~1.5MB; buffering + JSON.parse caused Error 1102 (CPU/memory).
+ * Stream pass-through instead.
  */
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 const CF_CONTEXT_TIMEOUT_MS = 600;
-const VPC_FETCH_TIMEOUT_MS = 4_000;
+const VPC_FETCH_TIMEOUT_MS = 8_000;
 
 export function upstreamOrigin(): string | null {
   const v =
@@ -74,6 +78,37 @@ async function botUpstreamFetcher(): Promise<FetcherLike | null> {
   return null;
 }
 
+/**
+ * True when running inside Cloudflare Workers / OpenNext edge isolate.
+ * Used to skip CPU-heavy local handlers (buildScreen) that trigger Error 1102.
+ */
+export async function isCloudflareWorkersRuntime(): Promise<boolean> {
+  if (proxyDisabledOnThisProcess()) return false;
+  try {
+    const ctx = await withTimeout(
+      getCloudflareContext({ async: true }),
+      CF_CONTEXT_TIMEOUT_MS
+    );
+    return !!(ctx && ctx.env);
+  } catch {
+    return false;
+  }
+}
+
+function passThrough(res: Response, via: string): Response {
+  const headers = new Headers();
+  const ct = res.headers.get("Content-Type");
+  if (ct) headers.set("Content-Type", ct);
+  else headers.set("Content-Type", "application/json");
+  headers.set("Cache-Control", "no-store");
+  headers.set("X-Upstream-Via", via);
+  // Stream body — do NOT res.text() / res.json() (screen ~1.5MB → 1102).
+  return new Response(res.body, {
+    status: res.status,
+    headers,
+  });
+}
+
 function wrap(
   text: string,
   status: number,
@@ -88,6 +123,14 @@ function wrap(
       "X-Upstream-Via": via,
     },
   });
+}
+
+async function cancelBody(res: Response): Promise<void> {
+  try {
+    await res.body?.cancel();
+  } catch {
+    // ignore
+  }
 }
 
 /**
@@ -136,14 +179,9 @@ export async function proxyToUpstream(
           res.status,
           "; falling through to local handler"
         );
+        await cancelBody(res);
       } else {
-        const text = await res.text();
-        return wrap(
-          text,
-          res.status,
-          res.headers.get("Content-Type"),
-          `vpc:${res.status}`
-        );
+        return passThrough(res, `vpc:${res.status}`);
       }
     } catch (e) {
       console.error("BOT_UPSTREAM fetch failed; falling through", String(e));
@@ -168,14 +206,11 @@ export async function proxyToUpstream(
   try {
     const res = await withTimeout(fetch(url, init), VPC_FETCH_TIMEOUT_MS);
     if (!res) return null;
-    if (res.status >= 500 && !opts?.requireUpstream) return null;
-    const text = await res.text();
-    return wrap(
-      text,
-      res.status,
-      res.headers.get("Content-Type"),
-      `origin:${res.status}`
-    );
+    if (res.status >= 500 && !opts?.requireUpstream) {
+      await cancelBody(res);
+      return null;
+    }
+    return passThrough(res, `origin:${res.status}`);
   } catch {
     return null;
   }
