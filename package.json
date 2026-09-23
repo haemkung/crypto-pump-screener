@@ -12,7 +12,10 @@
     "post-trade-coach": "node scripts/post-trade-coach.mjs",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "upstream:supervise": "bash scripts/supervise-bot-upstream.sh",
+    "upstream:health": "bash scripts/health-bot-upstream.sh",
+    "upstream:next": "bash scripts/start-upstream-next.sh"
   },
   "dependencies": {
     "next": "15.5.25",
