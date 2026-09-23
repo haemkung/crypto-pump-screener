@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import type { HotResponse, HotRow, ScreenRow } from "@/lib/types";
 import { fmtPct, fmtVol } from "@/lib/format";
+import { apiUrl } from "@/lib/apiBase";
 
 const HOT_REFRESH_MS = 40_000;
 
@@ -23,7 +24,7 @@ export function HotStrip({ screenRows, onSelect, onSelectMode }: Props) {
     try {
       setError(null);
       const q = force ? "?refresh=1" : "";
-      const res = await fetch(`/api/hot${q}`);
+      const res = await fetch(apiUrl(`/api/hot${q}`));
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
         throw new Error(

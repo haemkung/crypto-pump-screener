@@ -1,18 +1,26 @@
 import { proxyToUpstream } from "@/lib/upstreamProxy";
 import { NextRequest, NextResponse } from "next/server";
+import { withCors, corsPreflight } from "@/lib/cors";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+export async function OPTIONS(req: NextRequest) {
+  return corsPreflight(req) || new NextResponse(null, { status: 204 });
+}
+
 export async function GET(req: NextRequest) {
   const symbol = (req.nextUrl.searchParams.get("symbol") || "").toUpperCase();
   if (!symbol || !symbol.endsWith("USDT") || symbol.includes("_")) {
-    return NextResponse.json({ error: "Invalid symbol" }, { status: 400 });
+    return withCors(
+      req,
+      NextResponse.json({ error: "Invalid symbol" }, { status: 400 })
+    );
   }
 
   try {
     const proxied = await proxyToUpstream(`/api/oi-detail${req.nextUrl.search}`);
-    if (proxied) return proxied;
+    if (proxied) return withCors(req, proxied);
 
     const {
       getOpenInterest,
@@ -23,7 +31,10 @@ export async function GET(req: NextRequest) {
       isUsdtPerpetual,
     } = await import("@/lib/binance");
     if (!isUsdtPerpetual(symbol)) {
-      return NextResponse.json({ error: "Invalid symbol" }, { status: 400 });
+      return withCors(
+        req,
+        NextResponse.json({ error: "Invalid symbol" }, { status: 400 })
+      );
     }
 
     const [oi, hist, globalLS, topLS, taker] = await Promise.all([
@@ -43,16 +54,22 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({
-      symbol,
-      openInterest: oi,
-      openInterestHist: hist,
-      oiChangePct,
-      globalLongShortAccountRatio: globalLS,
-      topLongShortPositionRatio: topLS,
-      takerLongShortRatio: taker,
-    });
+    return withCors(
+      req,
+      NextResponse.json({
+        symbol,
+        openInterest: oi,
+        openInterestHist: hist,
+        oiChangePct,
+        globalLongShortAccountRatio: globalLS,
+        topLongShortPositionRatio: topLS,
+        takerLongShortRatio: taker,
+      })
+    );
   } catch (e) {
-    return NextResponse.json({ error: String(e) }, { status: 502 });
+    return withCors(
+      req,
+      NextResponse.json({ error: String(e) }, { status: 502 })
+    );
   }
 }

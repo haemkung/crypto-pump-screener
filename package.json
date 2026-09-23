@@ -15,7 +15,10 @@
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "upstream:supervise": "bash scripts/supervise-bot-upstream.sh",
     "upstream:health": "bash scripts/health-bot-upstream.sh",
-    "upstream:next": "bash scripts/start-upstream-next.sh"
+    "upstream:next": "bash scripts/start-upstream-next.sh",
+    "pages:dev": "vite --config pages-spa/vite.config.mts",
+    "pages:build": "vite build --config pages-spa/vite.config.mts",
+    "pages:preview": "vite preview --config pages-spa/vite.config.mts --base /crypto-pump-screener/"
   },
   "dependencies": {
     "next": "15.5.25",
@@ -26,13 +29,16 @@
     "@eslint/eslintrc": "^3",
     "@opennextjs/cloudflare": "^1.20.6",
     "@tailwindcss/postcss": "^4",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.1.1",
     "eslint": "^9",
     "eslint-config-next": "15.5.25",
     "tailwindcss": "^4",
     "typescript": "^5",
+    "vite": "^8.3.0",
     "wrangler": "^4.133.0"
   },
   "engines": {

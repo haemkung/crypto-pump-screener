@@ -1,4 +1,5 @@
 "use client";
+import { apiUrl } from "@/lib/apiBase";
 
 import { useCallback, useEffect, useState } from "react";
 
@@ -72,8 +73,8 @@ export function LearningStatsPanel({ refreshKey = 0 }: { refreshKey?: number }) 
     try {
       setError(null);
       const [sRes, aRes] = await Promise.all([
-        fetch("/api/learning-stats", { cache: "no-store" }),
-        fetch("/api/alert-settings", { cache: "no-store" }),
+        fetch(apiUrl("/api/learning-stats"), { cache: "no-store" }),
+        fetch(apiUrl("/api/alert-settings"), { cache: "no-store" }),
       ]);
       if (!sRes.ok) throw new Error(`stats HTTP ${sRes.status}`);
       const sJson = (await sRes.json()) as StatsPayload;
@@ -95,7 +96,7 @@ export function LearningStatsPanel({ refreshKey = 0 }: { refreshKey?: number }) 
   async function setMode(mode: "all" | "sharp") {
     setToggling(true);
     try {
-      const res = await fetch("/api/alert-settings", {
+      const res = await fetch(apiUrl("/api/alert-settings"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mode }),

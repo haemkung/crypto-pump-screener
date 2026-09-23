@@ -1,15 +1,20 @@
 import { proxyToUpstream } from "@/lib/upstreamProxy";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { withCors, corsPreflight } from "@/lib/cors";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+
+export async function OPTIONS(req: NextRequest) {
+  return corsPreflight(req) || new NextResponse(null, { status: 204 });
+}
 
 /**
  * POST { symbol, side: 'long'|'short', outcome: 'win'|'loss', note? }
  * Manual ถูก/ผิด feedback → alert-log + learned-cases + refresh weights.
  * On Workers, proxy to UPSTREAM so Learn buttons write bot data/*.json.
  */
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const raw = await req.text();
     const proxied = await proxyToUpstream("/api/feedback", {
@@ -17,7 +22,7 @@ export async function POST(req: Request) {
       body: raw,
       contentType: req.headers.get("content-type") || "application/json",
     });
-    if (proxied) return proxied;
+    if (proxied) return withCors(req, proxied);
 
     const { applyManualFeedback } = await import("@/lib/learningStore");
     const body = raw ? JSON.parse(raw) : {};
@@ -32,12 +37,15 @@ export async function POST(req: Request) {
     const price = typeof body?.price === "number" ? body.price : undefined;
 
     if (!symbol || !side || !outcome) {
-      return NextResponse.json(
-        {
-          error:
-            "Required: symbol, side ('long'|'short'), outcome ('win'|'loss')",
-        },
-        { status: 400 }
+      return withCors(
+        req,
+        NextResponse.json(
+          {
+            error:
+              "Required: symbol, side ('long'|'short'), outcome ('win'|'loss')",
+          },
+          { status: 400 }
+        )
       );
     }
 
@@ -51,13 +59,19 @@ export async function POST(req: Request) {
       price,
     });
 
-    return NextResponse.json({
-      ok: true,
-      ...result,
-      disclaimerTh:
-        "ฟีดแบ็กมือเป็น heuristic สำหรับเรียนรู้ — ไม่ใช่ผลตอบแทนจริง และไม่ใช่คำแนะนำการลงทุน",
-    });
+    return withCors(
+      req,
+      NextResponse.json({
+        ok: true,
+        ...result,
+        disclaimerTh:
+          "ฟีดแบ็กมือเป็น heuristic สำหรับเรียนรู้ — ไม่ใช่ผลตอบแทนจริง และไม่ใช่คำแนะนำการลงทุน",
+      })
+    );
   } catch (e) {
-    return NextResponse.json({ error: String(e) }, { status: 500 });
+    return withCors(
+      req,
+      NextResponse.json({ error: String(e) }, { status: 500 })
+    );
   }
 }

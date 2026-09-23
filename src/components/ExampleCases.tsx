@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { EXAMPLE_CASES } from "@/lib/examples";
 import type { LearnedCase } from "@/lib/types";
+import { apiUrl } from "@/lib/apiBase";
 
 interface LearnedCasesResponse {
   cases: LearnedCase[];
@@ -19,7 +20,7 @@ export function ExampleCases() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch("/api/learned-cases", { cache: "no-store" });
+        const res = await fetch(apiUrl("/api/learned-cases"), { cache: "no-store" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = (await res.json()) as LearnedCasesResponse;
         if (!cancelled) setLearned(Array.isArray(data.cases) ? data.cases : []);

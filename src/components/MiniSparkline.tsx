@@ -1,4 +1,5 @@
 "use client";
+import { apiUrl } from "@/lib/apiBase";
 
 import { useEffect, useMemo, useState } from "react";
 
@@ -21,7 +22,7 @@ export function MiniSparkline({
     setLoading(true);
     setErr(null);
     fetch(
-      `/api/klines?symbol=${encodeURIComponent(symbol)}&interval=${interval}&limit=${limit}`
+      apiUrl(`/api/klines?symbol=${encodeURIComponent(symbol)}&interval=${interval}&limit=${limit}`)
     )
       .then(async (r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);

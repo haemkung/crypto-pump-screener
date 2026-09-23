@@ -19,6 +19,7 @@ import { LearningStatsPanel } from "./LearningStatsPanel";
 import { CoachNotesPanel } from "./CoachNotesPanel";
 import { HotStrip } from "./HotStrip";
 import { qualityBadgeClass, regimeChipClass } from "@/lib/format";
+import { apiUrl } from "@/lib/apiBase";
 
 const REFRESH_MS = 50_000;
 const DEFAULT_PAGE_SIZE = 80;
@@ -70,7 +71,7 @@ export function Screener() {
           oiTop: String(OI_TOP_DEFAULT),
         });
         if (force) params.set("refresh", "1");
-        const res = await fetch(`/api/screen?${params}`);
+        const res = await fetch(apiUrl(`/api/screen?${params}`));
         if (!res.ok) return;
         const json = (await res.json()) as ScreenResponse;
         if (gen !== oiEnrichGen.current) return;
@@ -102,7 +103,7 @@ export function Screener() {
         params.set("oiTop", useFastPath ? "0" : String(OI_TOP_DEFAULT));
         if (force) params.set("refresh", "1");
 
-        const res = await fetch(`/api/screen?${params}`);
+        const res = await fetch(apiUrl(`/api/screen?${params}`));
         if (!res.ok) {
           const j = await res.json().catch(() => ({}));
           throw new Error(

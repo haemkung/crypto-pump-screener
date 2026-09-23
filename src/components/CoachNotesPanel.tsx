@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fmtBangkok } from "@/lib/format";
+import { apiUrl } from "@/lib/apiBase";
 
 interface CoachNote {
   id: string;
@@ -19,7 +20,7 @@ export function CoachNotesPanel({ refreshKey = 0 }: { refreshKey?: number }) {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/coach-notes?limit=8")
+    fetch(apiUrl("/api/coach-notes?limit=8"))
       .then(async (r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();

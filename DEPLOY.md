@@ -10,8 +10,15 @@
 | Cloudflare Workers (full Next UI + API) | `https://crypto-pump-screener.jakahome2.workers.dev` |
 | Local bot upstream | `http://127.0.0.1:3000` |
 
-GitHub Pages hosts a **static HTML shell** under `docs/` (like [ezcrypto](https://haemkung.github.io/ezcrypto/)).  
+GitHub Pages hosts a **full React SPA** under `docs/` (Vite build of the same `src/components` as Workers).  
 It never shows Cloudflare plain-text `Internal Server Error`. Data still comes from the Workers `/api/*` (CORS enabled for `*.github.io`).
+
+Rebuild Pages UI after UI changes:
+
+```bash
+npm run pages:build   # writes into docs/ (base /crypto-pump-screener/)
+git add docs && git commit -m "…" && git push
+```
 
 ## Architecture (important)
 

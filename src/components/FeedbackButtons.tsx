@@ -1,4 +1,5 @@
 "use client";
+import { apiUrl } from "@/lib/apiBase";
 
 import { useState } from "react";
 
@@ -33,7 +34,7 @@ export function FeedbackButtons({
     setErr(null);
     setMsg(null);
     try {
-      const res = await fetch("/api/feedback", {
+      const res = await fetch(apiUrl("/api/feedback"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1,11 +1,16 @@
 import { proxyToUpstream } from "@/lib/upstreamProxy";
 import { NextRequest, NextResponse } from "next/server";
 import type { NowAlertsResponse } from "@/lib/types";
+import { withCors, corsPreflight } from "@/lib/cors";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const ALERTS_TTL_MS = 35_000;
+
+export async function OPTIONS(req: NextRequest) {
+  return corsPreflight(req) || new NextResponse(null, { status: 204 });
+}
 
 /**
  * NOW alerts only — for Telegram / routine consumers.
@@ -15,7 +20,7 @@ const ALERTS_TTL_MS = 35_000;
 export async function GET(req: NextRequest) {
   try {
     const proxied = await proxyToUpstream(`/api/alerts/now${req.nextUrl.search}`);
-    if (proxied) return proxied;
+    if (proxied) return withCors(req, proxied);
     const [{ buildScreen }, { cacheGet, cacheSet }, { sortNowRows, toNowAlertRow }] =
       await Promise.all([
         import("@/lib/screen"),
@@ -27,7 +32,7 @@ export async function GET(req: NextRequest) {
 
     if (!force) {
       const hit = cacheGet<NowAlertsResponse>(cacheKey);
-      if (hit) return NextResponse.json(hit);
+      if (hit) return withCors(req, NextResponse.json(hit));
     }
 
     const screen = await buildScreen({ oiTopN: 0, forceRefresh: force });
@@ -67,8 +72,11 @@ export async function GET(req: NextRequest) {
     };
 
     cacheSet(cacheKey, payload, ALERTS_TTL_MS);
-    return NextResponse.json(payload);
+    return withCors(req, NextResponse.json(payload));
   } catch (e) {
-    return NextResponse.json({ error: String(e) }, { status: 502 });
+    return withCors(
+      req,
+      NextResponse.json({ error: String(e) }, { status: 502 })
+    );
   }
 }

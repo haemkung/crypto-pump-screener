@@ -1,42 +1,53 @@
 import { proxyToUpstream } from "@/lib/upstreamProxy";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { withCors, corsPreflight } from "@/lib/cors";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+export async function OPTIONS(req: NextRequest) {
+  return corsPreflight(req) || new NextResponse(null, { status: 204 });
+}
+
 /** GET current Telegram alert mode (creates sharp defaults if missing). */
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     const proxied = await proxyToUpstream("/api/alert-settings");
-    if (proxied) return proxied;
+    if (proxied) return withCors(req, proxied);
     const { readAlertSettings, defaultAlertSettings } = await import(
       "@/lib/alertSettings"
     );
     const settings = readAlertSettings(true);
     const defaults = defaultAlertSettings();
-    return NextResponse.json({
-      ...settings,
-      defaults: {
-        mode: defaults.mode,
-        minLongScore: defaults.minLongScore,
-        minShortScore: defaults.minShortScore,
-        poorWrSkipBelow: defaults.poorWrSkipBelow,
-        minGrade: defaults.minGrade,
-      },
-      labelsTh: {
-        all: "ส่งทั้งหมด",
-        sharp: "เฉพาะสัญญาณคม",
-      },
-      disclaimerTh:
-        "โหมดคม = กรอง Telegram ให้เหลือเกรด A (และ B แรง) — ไม่ใช่คำแนะนำการลงทุน",
-    });
+    return withCors(
+      req,
+      NextResponse.json({
+        ...settings,
+        defaults: {
+          mode: defaults.mode,
+          minLongScore: defaults.minLongScore,
+          minShortScore: defaults.minShortScore,
+          poorWrSkipBelow: defaults.poorWrSkipBelow,
+          minGrade: defaults.minGrade,
+        },
+        labelsTh: {
+          all: "ส่งทั้งหมด",
+          sharp: "เฉพาะสัญญาณคม",
+        },
+        disclaimerTh:
+          "โหมดคม = กรอง Telegram ให้เหลือเกรด A (และ B แรง) — ไม่ใช่คำแนะนำการลงทุน",
+      })
+    );
   } catch (e) {
-    return NextResponse.json({ error: String(e) }, { status: 500 });
+    return withCors(
+      req,
+      NextResponse.json({ error: String(e) }, { status: 500 })
+    );
   }
 }
 
 /** POST { mode, minLongScore?, minShortScore?, poorWrSkipBelow?, minGrade? } */
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const raw = await req.text();
     const proxied = await proxyToUpstream("/api/alert-settings", {
@@ -44,7 +55,7 @@ export async function POST(req: Request) {
       body: raw,
       contentType: req.headers.get("content-type") || "application/json",
     });
-    if (proxied) return proxied;
+    if (proxied) return withCors(req, proxied);
 
     const { writeAlertSettings } = await import("@/lib/alertSettings");
     const body = raw ? JSON.parse(raw) : {};
@@ -65,14 +76,20 @@ export async function POST(req: Request) {
       patch.minGrade = body.minGrade;
     }
     if (Object.keys(patch).length === 0) {
-      return NextResponse.json(
-        { error: "Provide mode and/or score thresholds / minGrade" },
-        { status: 400 }
+      return withCors(
+        req,
+        NextResponse.json(
+          { error: "Provide mode and/or score thresholds / minGrade" },
+          { status: 400 }
+        )
       );
     }
     const settings = writeAlertSettings(patch);
-    return NextResponse.json({ ok: true, ...settings });
+    return withCors(req, NextResponse.json({ ok: true, ...settings }));
   } catch (e) {
-    return NextResponse.json({ error: String(e) }, { status: 500 });
+    return withCors(
+      req,
+      NextResponse.json({ error: String(e) }, { status: 500 })
+    );
   }
 }

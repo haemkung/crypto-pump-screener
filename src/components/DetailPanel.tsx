@@ -12,6 +12,7 @@ import {
   entryModeBadgeClass,
   qualityBadgeClass,
 } from "@/lib/format";
+import { apiUrl } from "@/lib/apiBase";
 import { FeedbackButtons } from "./FeedbackButtons";
 import { MiniSparkline } from "./MiniSparkline";
 
@@ -43,7 +44,7 @@ export function DetailPanel({
     let cancelled = false;
     setLoading(true);
     setDetail(null);
-    fetch(`/api/oi-detail?symbol=${encodeURIComponent(row.symbol)}`)
+    fetch(apiUrl(`/api/oi-detail?symbol=${encodeURIComponent(row.symbol)}`))
       .then(async (r) => {
         const j = await r.json();
         if (!cancelled) setDetail(j);
