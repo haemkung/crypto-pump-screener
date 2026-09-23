@@ -25,11 +25,18 @@ export interface AlertSettings {
   minLongScore: number;
   /** Absolute min score for sharp short (default: NOW_SHORT_MIN_SCORE + 5) */
   minShortScore: number;
-  /** Skip side temporarily when learned WR known and below this (0–1). Default 0.35 */
+  /** Skip side temporarily when learned WR known and below this (0–1). Default 0.4 */
   poorWrSkipBelow: number;
-  /** Sharp mode: mainly send this grade and above (A default; strong B allowed) */
+  /** Min graded cases before poor-WR skip applies. Default 4 */
+  poorWrMinGraded: number;
+  /** Sharp mode: mainly send this grade and above (A default) */
   minGrade: QualityGrade;
+  /** Hard-pause Short Telegram alerts while Short paper WR is weak */
+  pauseShort: boolean;
+  /** When true, only grade A (no strong-B exception) */
+  requireGradeAOnly: boolean;
   updatedAt: string | null;
+  noteTh?: string;
 }
 
 const DATA_DIR = resolve(process.cwd(), "data");
@@ -40,8 +47,11 @@ export function defaultAlertSettings(): AlertSettings {
     mode: "sharp",
     minLongScore: NOW_LONG_MIN_SCORE + 5,
     minShortScore: NOW_SHORT_MIN_SCORE + 5,
-    poorWrSkipBelow: 0.35,
+    poorWrSkipBelow: 0.4,
+    poorWrMinGraded: 4,
     minGrade: "A",
+    pauseShort: true,
+    requireGradeAOnly: true,
     updatedAt: null,
   };
 }
@@ -88,8 +98,15 @@ export function readAlertSettings(createIfMissing = true): AlertSettings {
         typeof raw?.poorWrSkipBelow === "number"
           ? raw.poorWrSkipBelow
           : defaults.poorWrSkipBelow,
+      poorWrMinGraded:
+        typeof raw?.poorWrMinGraded === "number"
+          ? raw.poorWrMinGraded
+          : defaults.poorWrMinGraded,
       minGrade: parseGrade(raw?.minGrade, defaults.minGrade),
+      pauseShort: raw?.pauseShort !== false,
+      requireGradeAOnly: raw?.requireGradeAOnly !== false,
       updatedAt: typeof raw?.updatedAt === "string" ? raw.updatedAt : null,
+      noteTh: typeof raw?.noteTh === "string" ? raw.noteTh : undefined,
     };
   } catch {
     return defaults;
@@ -115,6 +132,15 @@ export function writeAlertSettings(
   }
   if (typeof patch.poorWrSkipBelow === "number") {
     next.poorWrSkipBelow = patch.poorWrSkipBelow;
+  }
+  if (typeof patch.poorWrMinGraded === "number") {
+    next.poorWrMinGraded = patch.poorWrMinGraded;
+  }
+  if (typeof patch.pauseShort === "boolean") {
+    next.pauseShort = patch.pauseShort;
+  }
+  if (typeof patch.requireGradeAOnly === "boolean") {
+    next.requireGradeAOnly = patch.requireGradeAOnly;
   }
   ensureDataDir();
   writeFileSync(SETTINGS_PATH, JSON.stringify(next, null, 2) + "\n", "utf8");

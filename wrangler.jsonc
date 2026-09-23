@@ -3,7 +3,10 @@
   "name": "crypto-pump-screener",
   "main": ".open-next/worker.js",
   "compatibility_date": "2025-03-01",
-  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
@@ -13,5 +16,15 @@
       "binding": "WORKER_SELF_REFERENCE",
       "service": "crypto-pump-screener"
     }
-  ]
+  ],
+  "vpc_services": [
+    {
+      "binding": "BOT_UPSTREAM",
+      "service_id": "01a0ad80-f924-7971-b2aa-fed5a7b6dfb3",
+      "remote": true
+    }
+  ],
+  "vars": {
+    "UPSTREAM_ORIGIN": ""
+  }
 }

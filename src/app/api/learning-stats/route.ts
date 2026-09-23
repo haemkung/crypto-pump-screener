@@ -1,16 +1,5 @@
+import { proxyToUpstream } from "@/lib/upstreamProxy";
 import { NextResponse } from "next/server";
-import {
-  readLearnedCases,
-  computeLearningStatsFromCases,
-} from "@/lib/learnedCases";
-import { getNowThresholds } from "@/lib/learnedWeights";
-import { computePaperPnlSummary } from "@/lib/learningStore";
-import {
-  NOW_LONG_MIN_SCORE,
-  NOW_SHORT_MIN_SCORE,
-  NOW_LONG_PCT_MAX,
-  NOW_SHORT_PCT_MIN,
-} from "@/lib/urgencyDefaults";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -18,6 +7,26 @@ export const runtime = "nodejs";
 /** Rolling win-rate + effective NOW thresholds + paper P&L from continuous learning. */
 export async function GET() {
   try {
+    const proxied = await proxyToUpstream("/api/learning-stats");
+    if (proxied) return proxied;
+
+    const [
+      { readLearnedCases, computeLearningStatsFromCases },
+      { getNowThresholds },
+      { computePaperPnlSummary },
+      {
+        NOW_LONG_MIN_SCORE,
+        NOW_SHORT_MIN_SCORE,
+        NOW_LONG_PCT_MAX,
+        NOW_SHORT_PCT_MIN,
+      },
+    ] = await Promise.all([
+      import("@/lib/learnedCases"),
+      import("@/lib/learnedWeights"),
+      import("@/lib/learningStore"),
+      import("@/lib/urgencyDefaults"),
+    ]);
+
     const cases = readLearnedCases();
     const t = getNowThresholds(true);
     const rollingN = t.learned?.rollingN ?? 30;
@@ -41,7 +50,6 @@ export async function GET() {
         shortN: paper.shortN,
         totalN: paper.totalN,
       },
-      /** Convenience aliases for UI */
       paperPnlPctSum: paper.totalSum,
       paperPnlPctAvg: paper.totalAvg,
       thresholds: {

@@ -60,8 +60,11 @@ function loadAlertSettings() {
     mode: "sharp",
     minLongScore: DEFAULT_NOW_LONG + 5,
     minShortScore: DEFAULT_NOW_SHORT + 5,
-    poorWrSkipBelow: 0.35,
+    poorWrSkipBelow: 0.4,
+    poorWrMinGraded: 4,
     minGrade: "A",
+    pauseShort: true,
+    requireGradeAOnly: true,
     updatedAt: null,
   };
   let raw = readJson(ALERT_SETTINGS_FILE, null);
@@ -92,7 +95,13 @@ function loadAlertSettings() {
       typeof raw.poorWrSkipBelow === "number"
         ? raw.poorWrSkipBelow
         : defaults.poorWrSkipBelow,
+    poorWrMinGraded:
+      typeof raw.poorWrMinGraded === "number"
+        ? raw.poorWrMinGraded
+        : defaults.poorWrMinGraded,
     minGrade,
+    pauseShort: raw.pauseShort !== false, // default true until Short WR recovers
+    requireGradeAOnly: raw.requireGradeAOnly !== false,
   };
 }
 
@@ -114,8 +123,9 @@ function loadLearnedSideMeta() {
  * OR (urgency present AND score >= 60 long / 55 short).
  * Skip side if learned WR known (graded>=5) and WR < poorWrSkipBelow.
  */
-function meetsMinGrade(grade, minGrade, score) {
+function meetsMinGrade(grade, minGrade, score, requireAOnly) {
   const g = grade === "A" || grade === "B" || grade === "C" ? grade : "C";
+  if (requireAOnly) return g === "A";
   const min = minGrade === "A" || minGrade === "B" || minGrade === "C" ? minGrade : "A";
   if (min === "C") return true;
   if (min === "B") return g === "A" || g === "B";
@@ -125,13 +135,51 @@ function meetsMinGrade(grade, minGrade, score) {
   return false;
 }
 
+function sideGrade(side, row) {
+  if (side === "short") {
+    return row.shortQualityGrade || row.qualityGrade || "C";
+  }
+  return row.qualityGrade || "C";
+}
+
+function entryModeOf(side, row) {
+  if (side === "short") {
+    return (
+      row.shortEntryMode ||
+      (row.shortEntry && row.shortEntry.mode) ||
+      null
+    );
+  }
+  return row.entryMode || (row.entry && row.entry.mode) || null;
+}
+
+/** Enter-now telegram only after opposite-side sweep+reclaim. Fail closed. */
+function sweepConfirmed(row) {
+  if (!row || row.sweepConfirmed !== true) return false;
+  const u = row.urgency;
+  if (u === "wait_sweep_long" || u === "wait_sweep_short") return false;
+  const lab = String(row.urgencyLabelTh || "");
+  if (lab.includes("รอกิน") || lab.includes("รอแท่งกลับ")) return false;
+  return true;
+}
+
 function passesAlertFilter(side, row, settings, meta) {
-  if (settings.mode === "all") return true;
+  // "all" skips sharp score/grade filters but still must not send before sweep.
+  // pauseShort stays inside sharp mode only — do not change that gate.
+  if (settings.mode === "all") {
+    return sweepConfirmed(row);
+  }
+
+  // Hard pause Short Telegram while paper Short WR is weak.
+  if (side === "short" && settings.pauseShort) return false;
+
+  if (!sweepConfirmed(row)) return false;
 
   const wr = side === "long" ? meta.longWr : meta.shortWr;
   const graded = side === "long" ? meta.longGraded : meta.shortGraded;
+  const minGraded = settings.poorWrMinGraded ?? 4;
   if (
-    graded >= 5 &&
+    graded >= minGraded &&
     wr != null &&
     Number.isFinite(wr) &&
     wr < settings.poorWrSkipBelow
@@ -142,8 +190,19 @@ function passesAlertFilter(side, row, settings, meta) {
   const score = Number(side === "long" ? row.score : row.shortScore);
   if (!Number.isFinite(score)) return false;
 
-  // Sharp: prefer quality grade A (strong B ok)
-  if (!meetsMinGrade(row.qualityGrade, settings.minGrade || "A", score)) {
+  // Skip late/chase entries for Telegram — those have been losing recently.
+  const mode = entryModeOf(side, row);
+  if (mode === "late" || mode === "chase" || mode === "สายแล้ว") return false;
+
+  const grade = sideGrade(side, row);
+  if (
+    !meetsMinGrade(
+      grade,
+      settings.minGrade || "A",
+      score,
+      !!settings.requireGradeAOnly,
+    )
+  ) {
     return false;
   }
 
@@ -151,7 +210,7 @@ function passesAlertFilter(side, row, settings, meta) {
   const settingsMin =
     side === "long" ? settings.minLongScore : settings.minShortScore;
   const raisedFloor = Math.max(settingsMin, eff + 5);
-  const urgencyFloor = side === "long" ? 60 : 55;
+  const urgencyFloor = side === "long" ? 65 : 60;
   const hasUrgency = !!row.urgency;
 
   if (score >= raisedFloor) return true;
@@ -267,8 +326,10 @@ function formatRow(row, side) {
   const grade = row.qualityGrade ? `เกรด ${row.qualityGrade}` : "";
   const mtf = row.mtfAlign ? row.mtfAlign.replace("mtf_", "MTF ") : "";
   const reason = (row.urgencyReasonTh || "").trim();
+  const sweptLabel = String(row.urgencyLabelTh || "").trim();
+  const head = sweptLabel || `เข้าตอนนี้ (${label})`;
   const lines = [
-    `⚡ เข้าตอนนี้ (${label}) ${symbol}` + (grade ? ` · ${grade}` : ""),
+    `⚡ ${head} · ${symbol}` + (grade ? ` · ${grade}` : ""),
     `ราคา ${price} | 24h ${pct}` + (score != null ? ` | score ${score}` : "") + (mtf ? ` | ${mtf}` : ""),
   ];
   if (reason) lines.push(reason);
@@ -339,6 +400,46 @@ for (const row of shortRows) {
 }
 
 if (fresh.length === 0) {
+  // Quieter heads-up so Telegram is not dead-silent. Not an enter-now.
+  const waits = []
+    .concat(Array.isArray(data.waitingLong) ? data.waitingLong.map((r) => ({ side: "long", row: r })) : [])
+    .concat(Array.isArray(data.waitingShort) ? data.waitingShort.map((r) => ({ side: "short", row: r })) : []);
+  const waitFresh = [];
+  for (const item of waits) {
+    const row = item.row;
+    const symbol = row && row.symbol;
+    if (!symbol) continue;
+    const k = "wait|" + keyFor(symbol, item.side);
+    if (state.sent[k] && now - state.sent[k] < DEDUPE_MS) continue;
+    const score = item.side === "long" ? row.score : row.shortScore;
+    waitFresh.push({
+      key: k,
+      text:
+        `⏳ รอแท่งกลับหลังทะลุ — ยังไม่เข้า (${item.side === "long" ? "Long" : "Short"}) · ${symbol}\n` +
+        `ราคา ${fmtPrice(row.price)} | 24h ${fmtPct(row.priceChangePercent)}` +
+        (score != null ? ` | score ${score}` : "") +
+        `\nยังไม่ใช่เข้าตอนนี้`,
+    });
+    if (waitFresh.length >= 2) break;
+  }
+  if (waitFresh.length && process.env.TELEGRAM_BOT_TOKEN?.trim() && existsSync(CHAT_ID_FILE)) {
+    const body =
+      `แจ้งเตือน crypto-pump-screener · รอแท่งกลับ (${waitFresh.length})\n` +
+      `ไม่ใช่คำแนะนำการลงทุน\n—\n\n` +
+      waitFresh.map((w) => w.text).join("\n\n");
+    const send = spawnSync(
+      process.execPath,
+      [resolve(__dirname, "send-telegram.mjs"), body],
+      { env: process.env, encoding: "utf8" },
+    );
+    if (send.status === 0) {
+      for (const w of waitFresh) state.sent[w.key] = now;
+      saveState(state);
+      console.log(`sent_wait=${waitFresh.length} mode=${settings.mode} skipped_filter=${skippedSharp}`);
+      quietExit(0);
+    }
+    if (send.stderr) process.stderr.write(send.stderr);
+  }
   if (skippedSharp > 0) {
     console.log(`sent_new=0 mode=${settings.mode} skipped_filter=${skippedSharp}`);
   }

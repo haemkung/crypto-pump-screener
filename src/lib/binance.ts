@@ -17,13 +17,23 @@ import type {
 
 const FAPI_HOSTS = [
   "https://www.binance.com",
+  "https://fstream.binance.com",
   "https://fapi.binance.com",
 ];
 const SPOT_HOSTS = [
-  "https://data-api.binance.vision",
   "https://www.binance.com",
+  "https://data-api.binance.vision",
   "https://api.binance.com",
 ];
+
+const BROWSER_HEADERS: HeadersInit = {
+  Accept: "application/json,text/plain,*/*",
+  "Accept-Language": "en-US,en;q=0.9",
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+  Origin: "https://www.binance.com",
+  Referer: "https://www.binance.com/",
+};
 
 const BULK_TTL = 45_000;
 const DETAIL_TTL = 60_000;
@@ -41,7 +51,7 @@ async function fetchJsonFromHosts<T>(
     const url = `${host}${path}`;
     try {
       const res = await fetch(url, {
-        headers: { Accept: "application/json" },
+        headers: BROWSER_HEADERS,
         cache: "no-store",
       });
       if (!res.ok) {

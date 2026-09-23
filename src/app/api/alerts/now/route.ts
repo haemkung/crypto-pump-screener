@@ -1,7 +1,5 @@
+import { proxyToUpstream } from "@/lib/upstreamProxy";
 import { NextRequest, NextResponse } from "next/server";
-import { buildScreen } from "@/lib/screen";
-import { cacheGet, cacheSet } from "@/lib/cache";
-import { sortNowRows, toNowAlertRow } from "@/lib/urgency";
 import type { NowAlertsResponse } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -16,8 +14,16 @@ const ALERTS_TTL_MS = 35_000;
  */
 export async function GET(req: NextRequest) {
   try {
+    const proxied = await proxyToUpstream(`/api/alerts/now${req.nextUrl.search}`);
+    if (proxied) return proxied;
+    const [{ buildScreen }, { cacheGet, cacheSet }, { sortNowRows, toNowAlertRow }] =
+      await Promise.all([
+        import("@/lib/screen"),
+        import("@/lib/cache"),
+        import("@/lib/urgency"),
+      ]);
     const force = req.nextUrl.searchParams.get("refresh") === "1";
-    const cacheKey = "alerts:now:v2";
+    const cacheKey = "alerts:now:v4";
 
     if (!force) {
       const hit = cacheGet<NowAlertsResponse>(cacheKey);
@@ -26,11 +32,27 @@ export async function GET(req: NextRequest) {
 
     const screen = await buildScreen({ oiTopN: 0, forceRefresh: force });
 
-    const longRaw = screen.rows.filter((r) => r.urgency === "now_long");
-    const shortRaw = screen.rows.filter((r) => r.urgency === "now_short");
+    const longRaw = screen.rows.filter(
+      (r) => r.urgency === "now_long" && r.sweepConfirmed === true
+    );
+    const shortRaw = screen.rows.filter(
+      (r) => r.urgency === "now_short" && r.sweepConfirmed === true
+    );
 
     const long = sortNowRows(longRaw, "long").map(toNowAlertRow);
     const short = sortNowRows(shortRaw, "short").map(toNowAlertRow);
+    const waitingLong = sortNowRows(
+      screen.rows.filter((r) => r.urgency === "wait_sweep_long"),
+      "long"
+    )
+      .slice(0, 3)
+      .map(toNowAlertRow);
+    const waitingShort = sortNowRows(
+      screen.rows.filter((r) => r.urgency === "wait_sweep_short"),
+      "short"
+    )
+      .slice(0, 3)
+      .map(toNowAlertRow);
 
     const payload: NowAlertsResponse = {
       updatedAt: screen.updatedAt,
@@ -40,6 +62,8 @@ export async function GET(req: NextRequest) {
       regime: screen.meta.regime,
       long,
       short,
+      waitingLong,
+      waitingShort,
     };
 
     cacheSet(cacheKey, payload, ALERTS_TTL_MS);

@@ -1,5 +1,5 @@
+import { proxyToUpstream } from "@/lib/upstreamProxy";
 import { NextRequest, NextResponse } from "next/server";
-import { readCoachNotes } from "@/lib/coachNotes";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -7,6 +7,11 @@ export const runtime = "nodejs";
 /** GET /api/coach-notes?limit=12 — last N Thai post-trade coach notes */
 export async function GET(req: NextRequest) {
   try {
+    const proxied = await proxyToUpstream(
+      `/api/coach-notes${req.nextUrl.search}`
+    );
+    if (proxied) return proxied;
+    const { readCoachNotes } = await import("@/lib/coachNotes");
     const limit = Math.min(
       50,
       Math.max(1, Number(req.nextUrl.searchParams.get("limit") || 12) || 12)

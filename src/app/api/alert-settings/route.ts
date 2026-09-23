@@ -1,9 +1,5 @@
+import { proxyToUpstream } from "@/lib/upstreamProxy";
 import { NextResponse } from "next/server";
-import {
-  readAlertSettings,
-  writeAlertSettings,
-  defaultAlertSettings,
-} from "@/lib/alertSettings";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -11,6 +7,11 @@ export const runtime = "nodejs";
 /** GET current Telegram alert mode (creates sharp defaults if missing). */
 export async function GET() {
   try {
+    const proxied = await proxyToUpstream("/api/alert-settings");
+    if (proxied) return proxied;
+    const { readAlertSettings, defaultAlertSettings } = await import(
+      "@/lib/alertSettings"
+    );
     const settings = readAlertSettings(true);
     const defaults = defaultAlertSettings();
     return NextResponse.json({
@@ -37,7 +38,16 @@ export async function GET() {
 /** POST { mode, minLongScore?, minShortScore?, poorWrSkipBelow?, minGrade? } */
 export async function POST(req: Request) {
   try {
-    const body = await req.json().catch(() => ({}));
+    const raw = await req.text();
+    const proxied = await proxyToUpstream("/api/alert-settings", {
+      method: "POST",
+      body: raw,
+      contentType: req.headers.get("content-type") || "application/json",
+    });
+    if (proxied) return proxied;
+
+    const { writeAlertSettings } = await import("@/lib/alertSettings");
+    const body = raw ? JSON.parse(raw) : {};
     const patch: Parameters<typeof writeAlertSettings>[0] = {};
     if (body?.mode === "all" || body?.mode === "sharp") {
       patch.mode = body.mode;

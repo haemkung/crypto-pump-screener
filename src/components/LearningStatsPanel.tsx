@@ -65,6 +65,7 @@ export function LearningStatsPanel({ refreshKey = 0 }: { refreshKey?: number }) 
   const [stats, setStats] = useState<StatsPayload | null>(null);
   const [settings, setSettings] = useState<AlertSettingsPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
   const [toggling, setToggling] = useState(false);
 
   const load = useCallback(async () => {
@@ -82,6 +83,8 @@ export function LearningStatsPanel({ refreshKey = 0 }: { refreshKey?: number }) 
       }
     } catch (e) {
       setError(String(e));
+    } finally {
+      setLoaded(true);
     }
   }, []);
 
@@ -108,9 +111,11 @@ export function LearningStatsPanel({ refreshKey = 0 }: { refreshKey?: number }) 
   }
 
   const empty =
-    !stats ||
-    stats.empty ||
-    (stats.long.graded === 0 && stats.short.graded === 0 && stats.totalCases === 0);
+    !!stats &&
+    (stats.empty ||
+      ((stats.long?.graded ?? 0) === 0 &&
+        (stats.short?.graded ?? 0) === 0 &&
+        (stats.totalCases ?? 0) === 0));
 
   return (
     <section className="mt-4 rounded-xl border border-sky-900/50 bg-sky-950/20 p-4">
@@ -158,7 +163,11 @@ export function LearningStatsPanel({ refreshKey = 0 }: { refreshKey?: number }) 
         <p className="mb-2 text-xs text-rose-400">โหลดไม่สำเร็จ: {error}</p>
       )}
 
-      {empty ? (
+      {!loaded && !stats ? (
+        <p className="rounded-lg border border-dashed border-zinc-700 bg-zinc-950/40 px-3 py-4 text-center text-sm text-zinc-400">
+          กำลังโหลดสถิติการเรียนรู้…
+        </p>
+      ) : empty ? (
         <p className="rounded-lg border border-dashed border-zinc-700 bg-zinc-950/40 px-3 py-4 text-center text-sm text-zinc-500">
           {stats?.emptyMessageTh ||
             "ยังไม่มีเคสเรียนรู้ — ระบบประเมินจากราคาอัตโนมัติ (ไม่ต้องกดเอง)"}

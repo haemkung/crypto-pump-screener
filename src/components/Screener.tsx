@@ -26,6 +26,13 @@ const PAGE_SIZE_OPTIONS = [50, 80, 100, 200] as const;
 const LOAD_MORE_STEP = 50;
 const OI_TOP_DEFAULT = 40;
 
+function isEnterNow(u: ScreenRow["urgency"]): boolean {
+  return u === "now_long" || u === "now_short";
+}
+function isWaitSweep(u: ScreenRow["urgency"]): boolean {
+  return u === "wait_sweep_long" || u === "wait_sweep_short";
+}
+
 export function Screener() {
   const [data, setData] = useState<ScreenResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -152,6 +159,17 @@ export function Screener() {
     return { long, short };
   }, [data]);
 
+  const waitAlerts = useMemo(() => {
+    if (!data) return { long: [] as ScreenRow[], short: [] as ScreenRow[] };
+    const long = data.rows
+      .filter((r) => r.urgency === "wait_sweep_long")
+      .sort((a, b) => b.score - a.score);
+    const short = data.rows
+      .filter((r) => r.urgency === "wait_sweep_short")
+      .sort((a, b) => b.shortScore - a.shortScore);
+    return { long, short };
+  }, [data]);
+
   const filtered = useMemo(() => {
     if (!data) return [];
     const rows = data.rows.filter((r) => {
@@ -171,19 +189,26 @@ export function Screener() {
     });
 
     const sorted = [...rows];
+    const rank = (u: ScreenRow["urgency"], side: "long" | "short") => {
+      if (side === "short") {
+        if (u === "now_short") return 2;
+        if (u === "wait_sweep_short") return 1;
+        return 0;
+      }
+      if (u === "now_long") return 2;
+      if (u === "wait_sweep_long") return 1;
+      return 0;
+    };
     if (mode === "short") {
       sorted.sort((a, b) => {
-        // NOW rows float to top within Short tab
-        const au = a.urgency === "now_short" ? 1 : 0;
-        const bu = b.urgency === "now_short" ? 1 : 0;
-        if (bu !== au) return bu - au;
+        const d = rank(b.urgency, "short") - rank(a.urgency, "short");
+        if (d !== 0) return d;
         return b.shortScore - a.shortScore;
       });
     } else {
       sorted.sort((a, b) => {
-        const au = a.urgency === "now_long" ? 1 : 0;
-        const bu = b.urgency === "now_long" ? 1 : 0;
-        if (bu !== au) return bu - au;
+        const d = rank(b.urgency, "long") - rank(a.urgency, "long");
+        if (d !== 0) return d;
         return b.score - a.score;
       });
     }
@@ -312,7 +337,9 @@ export function Screener() {
                     <span className="ml-2 font-mono text-xs text-emerald-400">
                       {fmtPct(r.priceChangePercent)}
                     </span>
-                    <span className="ml-2 text-[10px] text-orange-300">Long NOW</span>
+                    <span className="ml-2 text-[10px] text-orange-200">
+                      {r.urgencyLabelTh ?? "ลงมากิน SL อีกฝั่งแล้ว — เข้าตอนนี้"}
+                    </span>
                     <span
                       className={`ml-1 rounded px-1 py-0.5 text-[9px] font-black ${qualityBadgeClass(
                         r.qualityGrade
@@ -349,7 +376,9 @@ export function Screener() {
                     <span className="ml-2 font-mono text-xs text-rose-400">
                       {fmtPct(r.priceChangePercent)}
                     </span>
-                    <span className="ml-2 text-[10px] text-orange-300">Short NOW</span>
+                    <span className="ml-2 text-[10px] text-orange-200">
+                      {r.urgencyLabelTh ?? "ขึ้นมากิน SL อีกฝั่งแล้ว — เข้าตอนนี้"}
+                    </span>
                     <span
                       className={`ml-1 rounded px-1 py-0.5 text-[9px] font-black ${qualityBadgeClass(
                         r.shortQualityGrade
@@ -367,6 +396,60 @@ export function Screener() {
                     onDone={() => setFeedbackRefresh((n) => n + 1)}
                   />
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {(waitAlerts.long.length > 0 || waitAlerts.short.length > 0) && (
+          <div className="mt-3 rounded-xl border border-amber-700/60 bg-amber-950/40 px-4 py-3">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <span className="rounded bg-amber-400 px-2 py-0.5 text-xs font-black uppercase tracking-widest text-black">
+                รอ
+              </span>
+              <span className="text-sm font-bold text-amber-100">
+                รอแท่งกลับหลังทะลุ — ยังไม่เข้าตอนนี้
+              </span>
+              <span className="text-[10px] text-amber-200/70">
+                Long {waitAlerts.long.length} · Short {waitAlerts.short.length}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {waitAlerts.long.slice(0, 10).map((r) => (
+                <button
+                  key={`wl-${r.symbol}`}
+                  type="button"
+                  onClick={() => {
+                    setMode("long");
+                    setSelected(r);
+                    setNowOnly(false);
+                  }}
+                  className="rounded-lg border border-amber-700/50 bg-zinc-950/70 px-2.5 py-1.5 text-left hover:border-amber-400"
+                >
+                  <span className="font-bold text-amber-200">{r.baseAsset}</span>
+                  <span className="ml-2 font-mono text-xs text-zinc-400">
+                    {fmtPct(r.priceChangePercent)}
+                  </span>
+                  <span className="ml-2 text-[10px] text-amber-300">รอแท่งกลับหลังทะลุ</span>
+                </button>
+              ))}
+              {waitAlerts.short.slice(0, 8).map((r) => (
+                <button
+                  key={`ws-${r.symbol}`}
+                  type="button"
+                  onClick={() => {
+                    setMode("short");
+                    setSelected(r);
+                    setNowOnly(false);
+                  }}
+                  className="rounded-lg border border-amber-800/50 bg-zinc-950/70 px-2.5 py-1.5 text-left hover:border-amber-400"
+                >
+                  <span className="font-bold text-rose-200">{r.baseAsset}</span>
+                  <span className="ml-2 font-mono text-xs text-zinc-400">
+                    {fmtPct(r.priceChangePercent)}
+                  </span>
+                  <span className="ml-2 text-[10px] text-amber-300">รอแท่งกลับหลังทะลุ</span>
+                </button>
               ))}
             </div>
           </div>
@@ -587,13 +670,15 @@ export function Screener() {
                     key={r.symbol}
                     onClick={() => setSelected(r)}
                     className={`cursor-pointer border-t border-zinc-900 transition-colors hover:bg-zinc-900/80 ${
-                      r.urgency
+                      isEnterNow(r.urgency)
                         ? "bg-orange-950/50 ring-1 ring-inset ring-orange-500/40"
-                        : active
-                          ? isShort
-                            ? "bg-rose-950/40"
-                            : "bg-emerald-950/40"
-                          : ""
+                        : isWaitSweep(r.urgency)
+                          ? "bg-amber-950/30 ring-1 ring-inset ring-amber-700/40"
+                          : active
+                            ? isShort
+                              ? "bg-rose-950/40"
+                              : "bg-emerald-950/40"
+                            : ""
                     }`}
                   >
                     <td className="px-3 py-2 font-mono text-[11px] text-zinc-600">
@@ -602,9 +687,14 @@ export function Screener() {
                     <td className="px-3 py-2 font-semibold text-white">
                       <span className="inline-flex items-center gap-1.5">
                         {r.baseAsset}
-                        {r.urgency && (
+                        {isEnterNow(r.urgency) && (
                           <span className="animate-pulse rounded bg-orange-500 px-1 py-0.5 text-[9px] font-black uppercase tracking-wide text-black">
-                            ตอนนี้
+                            เข้า
+                          </span>
+                        )}
+                        {isWaitSweep(r.urgency) && (
+                          <span className="rounded bg-amber-400 px-1 py-0.5 text-[9px] font-black uppercase tracking-wide text-black">
+                            รอ
                           </span>
                         )}
                         {r.mtfAlign != null && r.mtfAlign === "mtf_align" && (
@@ -679,6 +769,18 @@ export function Screener() {
                           >
                             {entry.labelTh}
                           </span>
+                          {r.urgencyLabelTh &&
+                            (isEnterNow(r.urgency) || isWaitSweep(r.urgency)) && (
+                              <span
+                                className={`max-w-[180px] text-[10px] leading-tight ${
+                                  isEnterNow(r.urgency)
+                                    ? "font-semibold text-orange-300"
+                                    : "text-amber-300"
+                                }`}
+                              >
+                                {r.urgencyLabelTh}
+                              </span>
+                            )}
                           {entry.entryLow != null && entry.entryHigh != null ? (
                             <span className="font-mono text-[10px] text-zinc-500">
                               {fmtPrice(entry.entryLow)}–

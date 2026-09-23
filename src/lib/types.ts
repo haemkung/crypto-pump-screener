@@ -2,7 +2,11 @@
 
 export type ScreenMode = "long" | "short";
 
-export type UrgencyKind = "now_long" | "now_short";
+export type UrgencyKind =
+  | "now_long"
+  | "now_short"
+  | "wait_sweep_long"
+  | "wait_sweep_short";
 
 export type MtfAlign = "mtf_align" | "mtf_mixed" | "mtf_against";
 
@@ -137,6 +141,8 @@ export interface ScreenRow {
   qualityGrade: QualityGrade;
   shortQualityGrade: QualityGrade;
   falsePatternRisk: boolean;
+  /** Opposite-side sweep+reclaim already confirmed. False/absent = not enter-now. */
+  sweepConfirmed?: boolean;
 }
 
 export interface NowAlertRow {
@@ -161,6 +167,8 @@ export interface NowAlertRow {
   qualityGrade: QualityGrade;
   mtfAlign: MtfAlign | null;
   falsePatternRisk: boolean;
+  /** true only after opposite-side sweep+reclaim. Absent on wait rows. */
+  sweepConfirmed?: boolean;
 }
 
 export interface NowAlertsResponse {
@@ -170,6 +178,9 @@ export interface NowAlertsResponse {
   regime: MarketRegime | null;
   long: NowAlertRow[];
   short: NowAlertRow[];
+  /** Hot setups still waiting for opposite-side SL sweep. Not enter-now. */
+  waitingLong?: NowAlertRow[];
+  waitingShort?: NowAlertRow[];
 }
 
 
@@ -182,6 +193,8 @@ export interface ScreenResponse {
     spotMatched: number;
     oiEnriched: number;
     mtfEnriched: number;
+    /** NOW candidates checked for opposite-side SL sweep */
+    sweepChecked: number;
     warnings: string[];
     regime: MarketRegime | null;
   };
@@ -254,6 +267,11 @@ export interface HotRow {
   qualityGrade: QualityGrade;
   /** true when still in early band (catch window) */
   early: boolean;
+  /**
+   * Opposite-side SL sweep on 5m/15m.
+   * swept = wick through swing then reclaim; wait = not yet (do not treat as เข้า).
+   */
+  slSweep?: "swept" | "wait";
 }
 
 export interface HotResponse {

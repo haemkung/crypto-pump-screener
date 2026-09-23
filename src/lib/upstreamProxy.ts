@@ -1,10 +1,11 @@
 /**
- * On Cloudflare Workers, Binance often returns 403 from edge IPs, and
- * learning JSON (data/*.json) lives only on the bot machine.
+ * On Cloudflare Workers, Binance can be blocked from some edge IPs, and
+ * learning JSON (data/*.json) lives primarily on the bot machine.
  *
  * Prefer Workers VPC binding BOT_UPSTREAM → named Cloudflare Tunnel → local Next :3000.
  * Fall back to UPSTREAM_ORIGIN / BOT_ORIGIN (public URL) when set.
- * No public trycloudflare URL — only workers.dev is public.
+ * If VPC/tunnel is down (5xx / timeout / error), fall through to null so each
+ * route can handle the request locally (Workers → Binance multi-host, etc.).
  *
  * CRITICAL: local Next (the bot upstream) must NEVER use BOT_UPSTREAM — remote
  * bindings can hang on getCloudflareContext and/or self-proxy :3000 → deadlock.
@@ -12,6 +13,7 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 const CF_CONTEXT_TIMEOUT_MS = 600;
+const VPC_FETCH_TIMEOUT_MS = 4_000;
 
 export function upstreamOrigin(): string | null {
   const v =
@@ -26,9 +28,13 @@ export type ProxyToUpstreamOptions = {
   method?: string;
   body?: string | null;
   contentType?: string | null;
+  /** When true, 5xx from VPC is returned as-is (rare). Default: fall through. */
+  requireUpstream?: boolean;
 };
 
-type FetcherLike = { fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response> };
+type FetcherLike = {
+  fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+};
 
 function proxyDisabledOnThisProcess(): boolean {
   const v = (process.env.DISABLE_BOT_UPSTREAM || "").trim().toLowerCase();
@@ -87,7 +93,8 @@ function wrap(
 /**
  * Proxy a request to the bot (VPC tunnel or UPSTREAM_ORIGIN).
  * Defaults to GET (existing callers). Pass method + body for POST.
- * Returns null when this process should handle the request locally.
+ * Returns null when this process should handle the request locally
+ * (including when VPC/tunnel returns 5xx — so Workers can fetch Binance).
  */
 export async function proxyToUpstream(
   pathWithQuery: string,
@@ -116,25 +123,41 @@ export async function proxyToUpstream(
   const vpc = await botUpstreamFetcher();
   if (vpc) {
     try {
-      const res = await vpc.fetch(`http://127.0.0.1:3000${path}`, init);
-      const text = await res.text();
-      return wrap(
-        text,
-        res.status,
-        res.headers.get("Content-Type"),
-        `vpc:${res.status}`
+      const res = await withTimeout(
+        vpc.fetch(`http://127.0.0.1:3000${path}`, init),
+        VPC_FETCH_TIMEOUT_MS
       );
+      if (!res) {
+        console.error("BOT_UPSTREAM timed out; falling through to local handler");
+      } else if (res.status >= 500 && !opts?.requireUpstream) {
+        // Broken tunnel / Cloudflare 1101 — do not poison the public UI with 500.
+        console.error(
+          "BOT_UPSTREAM returned",
+          res.status,
+          "; falling through to local handler"
+        );
+      } else {
+        const text = await res.text();
+        return wrap(
+          text,
+          res.status,
+          res.headers.get("Content-Type"),
+          `vpc:${res.status}`
+        );
+      }
     } catch (e) {
-      console.error("BOT_UPSTREAM fetch failed", String(e));
-      return wrap(
-        JSON.stringify({
-          error: "BOT_UPSTREAM unreachable (named tunnel / local :3000?)",
-          detail: String(e),
-        }),
-        502,
-        "application/json",
-        "vpc-fail"
-      );
+      console.error("BOT_UPSTREAM fetch failed; falling through", String(e));
+      if (opts?.requireUpstream) {
+        return wrap(
+          JSON.stringify({
+            error: "BOT_UPSTREAM unreachable (named tunnel / local :3000?)",
+            detail: String(e),
+          }),
+          502,
+          "application/json",
+          "vpc-fail"
+        );
+      }
     }
   }
 
@@ -143,7 +166,9 @@ export async function proxyToUpstream(
   if (!origin) return null;
   const url = `${origin}${path}`;
   try {
-    const res = await fetch(url, init);
+    const res = await withTimeout(fetch(url, init), VPC_FETCH_TIMEOUT_MS);
+    if (!res) return null;
+    if (res.status >= 500 && !opts?.requireUpstream) return null;
     const text = await res.text();
     return wrap(
       text,

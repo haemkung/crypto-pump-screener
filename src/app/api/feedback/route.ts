@@ -1,5 +1,5 @@
+import { proxyToUpstream } from "@/lib/upstreamProxy";
 import { NextResponse } from "next/server";
-import { applyManualFeedback } from "@/lib/learningStore";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -7,10 +7,20 @@ export const runtime = "nodejs";
 /**
  * POST { symbol, side: 'long'|'short', outcome: 'win'|'loss', note? }
  * Manual ถูก/ผิด feedback → alert-log + learned-cases + refresh weights.
+ * On Workers, proxy to UPSTREAM so Learn buttons write bot data/*.json.
  */
 export async function POST(req: Request) {
   try {
-    const body = await req.json().catch(() => ({}));
+    const raw = await req.text();
+    const proxied = await proxyToUpstream("/api/feedback", {
+      method: "POST",
+      body: raw,
+      contentType: req.headers.get("content-type") || "application/json",
+    });
+    if (proxied) return proxied;
+
+    const { applyManualFeedback } = await import("@/lib/learningStore");
+    const body = raw ? JSON.parse(raw) : {};
     const symbol = String(body?.symbol || "").trim();
     const side = body?.side === "short" ? "short" : body?.side === "long" ? "long" : null;
     const outcome =

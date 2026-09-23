@@ -14,7 +14,8 @@ import {
 } from "./binance";
 import { computePatternScore, computeShortScore, volumePercentiles } from "./scoring";
 import { computeEntryHint, computeShortEntryHint } from "./entry";
-import { computeUrgency } from "./urgency";
+import { applySweepGate, computeUrgency } from "./urgency";
+import { batchConfirmSweep, SWEEP_BATCH_CAP } from "./sweep";
 import { getCatalystNote } from "./catalysts";
 import { getMarketRegime } from "./regime";
 import { batchMtfConfirm } from "./mtf";
@@ -62,7 +63,7 @@ export async function buildScreen(options?: {
   skipMtf?: boolean;
 }): Promise<ScreenResponse> {
   const oiTopN = options?.oiTopN ?? DEFAULT_OI_TOP_N;
-  const cacheKey = `screen:v6:${oiTopN}:${options?.skipMtf ? "nomtf" : "mtf"}`;
+  const cacheKey = `screen:v7:${oiTopN}:${options?.skipMtf ? "nomtf" : "mtf"}`;
   if (!options?.forceRefresh) {
     const hit = cacheGet<ScreenResponse>(cacheKey);
     if (hit) return hit;
@@ -346,6 +347,86 @@ export async function buildScreen(options?: {
     };
   });
 
+  // Opposite-side SL sweep gate. Only NOW candidates (capped) hit klines.
+  // Anything not confirmed — including unfetched overflow and fetch errors —
+  // becomes "รอกิน SL อีกฝั่ง", never เข้าตอนนี้.
+  let sweepChecked = 0;
+  const nowIdx: number[] = [];
+  rows.forEach((r, i) => {
+    if (r.urgency === "now_long" || r.urgency === "now_short") nowIdx.push(i);
+  });
+  nowIdx.sort((ia, ib) => {
+    const a = rows[ia];
+    const b = rows[ib];
+    return Math.max(b.score, b.shortScore) - Math.max(a.score, a.shortScore);
+  });
+  const checkIdx = nowIdx.slice(0, SWEEP_BATCH_CAP);
+  const skipIdx = nowIdx.slice(SWEEP_BATCH_CAP);
+  try {
+    const sweepMap = await batchConfirmSweep(checkIdx.map((i) => rows[i].symbol));
+    sweepChecked = sweepMap.size;
+    for (const i of checkIdx) {
+      const r = rows[i];
+      const side = r.urgency === "now_short" ? "short" : "long";
+      const hit = sweepMap.get(r.symbol);
+      const confirmed = hit
+        ? side === "long"
+          ? hit.longSwept
+          : hit.shortSwept
+        : false;
+      const gated = applySweepGate(
+        {
+          urgency: r.urgency,
+          urgencyLabelTh: r.urgencyLabelTh,
+          urgencyReasonTh: r.urgencyReasonTh,
+          missRiskTh: r.missRiskTh,
+        },
+        { confirmed, interval: confirmed ? hit?.interval ?? null : null }
+      );
+      r.urgency = gated.urgency;
+      r.urgencyLabelTh = gated.urgencyLabelTh;
+      r.urgencyReasonTh = gated.urgencyReasonTh;
+      r.missRiskTh = gated.missRiskTh;
+      r.sweepConfirmed = confirmed && (gated.urgency === "now_long" || gated.urgency === "now_short");
+    }
+  } catch (e) {
+    warnings.push(`Sweep batch failed: ${String(e)}`);
+    for (const i of checkIdx) {
+      const r = rows[i];
+      const gated = applySweepGate(
+        {
+          urgency: r.urgency,
+          urgencyLabelTh: r.urgencyLabelTh,
+          urgencyReasonTh: r.urgencyReasonTh,
+          missRiskTh: r.missRiskTh,
+        },
+        { confirmed: false }
+      );
+      r.urgency = gated.urgency;
+      r.urgencyLabelTh = gated.urgencyLabelTh;
+      r.urgencyReasonTh = gated.urgencyReasonTh;
+      r.missRiskTh = gated.missRiskTh;
+      r.sweepConfirmed = false;
+    }
+  }
+  for (const i of skipIdx) {
+    const r = rows[i];
+    const gated = applySweepGate(
+      {
+        urgency: r.urgency,
+        urgencyLabelTh: r.urgencyLabelTh,
+        urgencyReasonTh: r.urgencyReasonTh,
+        missRiskTh: r.missRiskTh,
+      },
+      { confirmed: false }
+    );
+    r.urgency = gated.urgency;
+    r.urgencyLabelTh = gated.urgencyLabelTh;
+    r.urgencyReasonTh = gated.urgencyReasonTh;
+    r.missRiskTh = gated.missRiskTh;
+    r.sweepConfirmed = false;
+  }
+
   rows.sort((a, b) => b.score - a.score);
 
   const response: ScreenResponse = {
@@ -357,6 +438,7 @@ export async function buildScreen(options?: {
       spotMatched: spotOk ? rows.filter((r) => r.hasSpot).length : 0,
       oiEnriched: [...oiMap.values()].filter((v) => v != null).length,
       mtfEnriched,
+      sweepChecked,
       warnings,
       regime,
     },

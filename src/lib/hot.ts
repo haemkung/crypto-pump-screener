@@ -14,6 +14,7 @@ import {
   isUsdtPerpetual,
 } from "./binance";
 import { cacheGet, cacheSet } from "./cache";
+import { confirmSweepFrom5m, SWEEP_5M_LIMIT } from "./sweep";
 import type { EntryMode, Flag, HotResponse, HotRow, QualityGrade } from "./types";
 
 const HOT_TTL = 35_000;
@@ -38,6 +39,8 @@ export interface AccelMetrics {
   pct1h: number | null;
   pct15m: number | null;
   pct5m: number | null;
+  /** long-side opposite SL sweep; missing on synthetic empty bars */
+  slSweep?: "swept" | "wait";
 }
 
 /** Derive 5m / ~15m / ~1h % from one 5m kline fetch (limit 13). */
@@ -74,10 +77,12 @@ export async function batchAccelMetrics(
     await Promise.all(
       chunk.map(async (sym) => {
         try {
-          const bars = await getKlines(sym, "5m", 13);
-          out.set(sym, metricsFrom5mBars(bars));
+          const bars = await getKlines(sym, "5m", SWEEP_5M_LIMIT);
+          const m = metricsFrom5mBars(bars);
+          const sweep = confirmSweepFrom5m(bars, "long");
+          out.set(sym, { ...m, slSweep: sweep.swept ? "swept" as const : "wait" as const });
         } catch {
-          out.set(sym, { pct1h: null, pct15m: null, pct5m: null });
+          out.set(sym, { pct1h: null, pct15m: null, pct5m: null, slSweep: "wait" });
         }
       })
     );
@@ -137,13 +142,15 @@ function toHotRow(
     entryMode: (early ? "early_entry" : "too_late") as EntryMode,
     qualityGrade: "C" as QualityGrade,
     early,
+    // Fail closed: unknown sweep is รอ, never เข้า.
+    slSweep: m.slSweep === "swept" ? "swept" : "wait",
   };
 }
 
 export async function buildHot(options?: {
   forceRefresh?: boolean;
 }): Promise<HotResponse> {
-  const cacheKey = "hot:v2:all-perps";
+  const cacheKey = "hot:v3:sweep";
   if (!options?.forceRefresh) {
     const hit = cacheGet<HotResponse>(cacheKey);
     if (hit) return hit;
@@ -208,25 +215,21 @@ export async function buildHot(options?: {
     hot.push(toHotRow(sym, c.price, c.pct24h, c.quoteVolume, m, true));
   }
 
-  hot.sort(
-    (a, b) =>
-      accelStrength(
-        {
-          pct1h: b.pct1h,
-          pct15m: metricsMap.get(b.symbol)?.pct15m ?? null,
-          pct5m: metricsMap.get(b.symbol)?.pct5m ?? null,
-        },
-        b.pct24h
-      ) -
-      accelStrength(
-        {
-          pct1h: a.pct1h,
-          pct15m: metricsMap.get(a.symbol)?.pct15m ?? null,
-          pct5m: metricsMap.get(a.symbol)?.pct5m ?? null,
-        },
-        a.pct24h
-      )
-  );
+  const strengthOf = (row: HotRow) =>
+    accelStrength(
+      {
+        pct1h: row.pct1h,
+        pct15m: metricsMap.get(row.symbol)?.pct15m ?? row.pct15m ?? null,
+        pct5m: metricsMap.get(row.symbol)?.pct5m ?? null,
+      },
+      row.pct24h
+    );
+  hot.sort((a, b) => {
+    const as = a.slSweep === "swept" ? 1 : 0;
+    const bs = b.slSweep === "swept" ? 1 : 0;
+    if (bs !== as) return bs - as;
+    return strengthOf(b) - strengthOf(a);
+  });
 
   const late = liquid
     .filter((c) => c.pct24h >= LATE_24H)
@@ -255,7 +258,7 @@ export async function buildHot(options?: {
       enriched1h,
       warnings,
       noteTh:
-        `กำลังเร่งตัว = สแกนทุกคู่ USDT-M (vol≥${(MIN_VOL / 1e3).toFixed(0)}k) ด้วย %1h/%15m จริง — ไม่กรอง score/เกรด/funding · หลัง 24h≥${LATE_24H}% ย้ายไปรายการสาย`,
+        `กำลังเร่งตัว = สแกนทุกคู่ USDT-M (vol≥${(MIN_VOL / 1e3).toFixed(0)}k) ด้วย %1h/%15m จริง — ไม่กรอง score/เกรด/funding · กิน SL แล้วขึ้นก่อน, ที่ยังไม่กิน SL ติดป้าย รอ (ไม่ใช่ เข้า) · หลัง 24h≥${LATE_24H}% ย้ายไปรายการสาย`,
     },
   };
 

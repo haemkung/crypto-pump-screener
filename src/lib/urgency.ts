@@ -2,6 +2,9 @@
  * "เข้าตอนนี้" / NOW urgency — research heuristic only, not trade signals.
  * Tunable thresholds: defaults in urgencyDefaults; adaptive overrides via learnedWeights.
  * MTF against blocks NOW; regime risk-off dampens thin Long NOW; false patterns can block.
+ *
+ * computeUrgency is the setup gate only. applySweepGate then withholds now_*
+ * until an opposite-side SL sweep+reclaim is confirmed (see sweep.ts).
  */
 
 import type {
@@ -169,6 +172,50 @@ export function computeUrgency(input: UrgencyInput): UrgencyFields {
   };
 }
 
+
+export interface SweepGateInput {
+  /** Opposite-side sweep already reclaimed. Missing/false = wait, never enter-now. */
+  confirmed: boolean;
+  interval?: "5m" | "15m" | null;
+}
+
+/**
+ * If the setup is hot but the opposite-side sweep has not reclaimed, downgrade
+ * to a wait state. Enter-now labels only after confirmation.
+ */
+export function applySweepGate(
+  fields: UrgencyFields,
+  sweep: SweepGateInput
+): UrgencyFields {
+  if (fields.urgency !== "now_long" && fields.urgency !== "now_short") {
+    return fields;
+  }
+  const isLong = fields.urgency === "now_long";
+  const tf = sweep.interval === "5m" || sweep.interval === "15m" ? sweep.interval : null;
+  if (sweep.confirmed) {
+    const label = isLong
+      ? "ทะลุแนวรับแล้วแท่งกลับ — เข้าตรงนี้"
+      : "ทะลุแนวต้านแล้วแท่งกลับ — เข้าตรงนี้";
+    const tfNote = tf ? ` (${tf})` : "";
+    return {
+      urgency: fields.urgency,
+      urgencyLabelTh: label,
+      urgencyReasonTh: `${fields.urgencyReasonTh ?? ""} · แท่งกลับตัวหลังทะลุ${tfNote}`.trim(),
+      missRiskTh: isLong
+        ? "ลงมากิน SL อีกฝั่งแล้ว — ถ้าไม่เข้าอาจพลาดขาต่อ (heuristic)"
+        : "ขึ้นมากิน SL อีกฝั่งแล้ว — ถ้าไม่ Short อาจพลาดขาต่อ (heuristic, ระวังเด้ง)",
+    };
+  }
+  return {
+    urgency: isLong ? "wait_sweep_long" : "wait_sweep_short",
+    urgencyLabelTh: "รอแท่งกลับหลังทะลุ",
+    urgencyReasonTh: isLong
+      ? "ยังไม่ใช่จังหวะ — รอให้ทะลุแนวรับแล้วมีแท่งกลับตัวปิดเหนือแนว ถึงจะเข้า"
+      : "ยังไม่ใช่จังหวะ — รอให้ทะลุแนวต้านแล้วมีแท่งกลับตัวปิดใต้แนว ถึงจะเข้า",
+    missRiskTh: "ยังไม่ใช่จังหวะเข้า — รอกิน SL อีกฝั่งก่อน",
+  };
+}
+
 /** Soft preference: high_volume first, then quality grade, then score. */
 export function sortNowRows(rows: ScreenRow[], side: "long" | "short"): ScreenRow[] {
   return [...rows].sort((a, b) => {
@@ -227,5 +274,6 @@ export function toNowAlertRow(r: ScreenRow): NowAlertRow {
     qualityGrade: isLong ? r.qualityGrade : r.shortQualityGrade,
     mtfAlign: r.mtfAlign,
     falsePatternRisk: r.falsePatternRisk,
+    sweepConfirmed: r.urgency === "now_long" || r.urgency === "now_short",
   };
 }

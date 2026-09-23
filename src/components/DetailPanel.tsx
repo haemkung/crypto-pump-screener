@@ -148,11 +148,11 @@ export function DetailPanel({
         <MiniSparkline symbol={row.symbol} interval="15m" limit={48} />
       </div>
 
-      {row.urgency && (
+      {(row.urgency === "now_long" || row.urgency === "now_short") && (
         <div className="mb-4 animate-pulse rounded-xl border-2 border-orange-500/70 bg-gradient-to-br from-orange-950 to-rose-950 p-3">
           <div className="mb-1 flex items-center gap-2">
             <span className="rounded bg-orange-500 px-1.5 py-0.5 text-[10px] font-black uppercase text-black">
-              ตอนนี้
+              เข้า
             </span>
             <span className="text-sm font-bold text-orange-100">
               {row.urgencyLabelTh}
@@ -169,6 +169,23 @@ export function DetailPanel({
           <p className="mb-2 text-xs font-medium text-rose-200">{row.missRiskTh}</p>
           <p className="text-[10px] leading-relaxed text-orange-200/60">
             &quot;เข้าตอนนี้&quot; เป็น heuristic จากแพทเทิร์น ไม่ใช่คำสั่งซื้อ/ขาย และไม่ใช่คำแนะนำการลงทุน
+          </p>
+        </div>
+      )}
+
+      {(row.urgency === "wait_sweep_long" || row.urgency === "wait_sweep_short") && (
+        <div className="mb-4 rounded-xl border border-amber-600/70 bg-amber-950/50 p-3">
+          <div className="mb-1 flex items-center gap-2">
+            <span className="rounded bg-amber-400 px-1.5 py-0.5 text-[10px] font-black uppercase text-black">
+              รอ
+            </span>
+            <span className="text-sm font-bold text-amber-100">
+              {row.urgencyLabelTh ?? "รอกิน SL อีกฝั่ง"}
+            </span>
+          </div>
+          <p className="mb-1 text-xs text-amber-100/90">{row.urgencyReasonTh}</p>
+          <p className="text-[10px] leading-relaxed text-amber-200/70">
+            ยังไม่เข้าตอนนี้ — heuristic ไม่ใช่คำสั่งซื้อ/ขาย และไม่ใช่คำแนะนำการลงทุน
           </p>
         </div>
       )}

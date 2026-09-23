@@ -1,23 +1,31 @@
+import { proxyToUpstream } from "@/lib/upstreamProxy";
 import { NextRequest, NextResponse } from "next/server";
-import {
-  getOpenInterest,
-  getOpenInterestHist,
-  getGlobalLongShortAccountRatio,
-  getTopLongShortPositionRatio,
-  getTakerLongShortRatio,
-  isUsdtPerpetual,
-} from "@/lib/binance";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
   const symbol = (req.nextUrl.searchParams.get("symbol") || "").toUpperCase();
-  if (!symbol || !isUsdtPerpetual(symbol)) {
+  if (!symbol || !symbol.endsWith("USDT") || symbol.includes("_")) {
     return NextResponse.json({ error: "Invalid symbol" }, { status: 400 });
   }
 
   try {
+    const proxied = await proxyToUpstream(`/api/oi-detail${req.nextUrl.search}`);
+    if (proxied) return proxied;
+
+    const {
+      getOpenInterest,
+      getOpenInterestHist,
+      getGlobalLongShortAccountRatio,
+      getTopLongShortPositionRatio,
+      getTakerLongShortRatio,
+      isUsdtPerpetual,
+    } = await import("@/lib/binance");
+    if (!isUsdtPerpetual(symbol)) {
+      return NextResponse.json({ error: "Invalid symbol" }, { status: 400 });
+    }
+
     const [oi, hist, globalLS, topLS, taker] = await Promise.all([
       getOpenInterest(symbol).catch(() => null),
       getOpenInterestHist(symbol, "1h", 12).catch(() => null),

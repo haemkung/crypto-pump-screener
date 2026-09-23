@@ -140,6 +140,7 @@ export function HotStrip({ screenRows, onSelect, onSelectMode }: Props) {
             entryMode: r.entry.mode,
             qualityGrade: r.qualityGrade,
             early: true,
+            slSweep: "wait",
           }))
       : [];
 
@@ -229,6 +230,15 @@ export function HotStrip({ screenRows, onSelect, onSelectMode }: Props) {
                     </span>
                     <span className="ml-2 text-[10px] text-zinc-500">
                       {fmtVol(h.quoteVolume)}
+                    </span>
+                    <span
+                      className={`ml-2 rounded px-1 py-0.5 text-[9px] font-black ${
+                        h.slSweep === "swept"
+                          ? "bg-emerald-400 text-black"
+                          : "bg-amber-400 text-black"
+                      }`}
+                    >
+                      {h.slSweep === "swept" ? "แท่งกลับ" : "รอ"}
                     </span>
                   </button>
                 );

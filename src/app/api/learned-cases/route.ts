@@ -1,5 +1,5 @@
+import { proxyToUpstream } from "@/lib/upstreamProxy";
 import { NextResponse } from "next/server";
-import { readLearnedCases } from "@/lib/learnedCases";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -10,6 +10,9 @@ export const runtime = "nodejs";
  */
 export async function GET() {
   try {
+    const proxied = await proxyToUpstream("/api/learned-cases");
+    if (proxied) return proxied;
+    const { readLearnedCases } = await import("@/lib/learnedCases");
     const all = readLearnedCases();
     const cases = [...all]
       .sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1))

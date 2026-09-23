@@ -15,6 +15,7 @@ interface CoachNote {
 export function CoachNotesPanel({ refreshKey = 0 }: { refreshKey?: number }) {
   const [notes, setNotes] = useState<CoachNote[]>([]);
   const [err, setErr] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -28,13 +29,29 @@ export function CoachNotesPanel({ refreshKey = 0 }: { refreshKey?: number }) {
       })
       .catch((e) => {
         if (!cancelled) setErr(String(e));
+      })
+      .finally(() => {
+        if (!cancelled) setLoaded(true);
       });
     return () => {
       cancelled = true;
     };
   }, [refreshKey]);
 
-  if (err) return null;
+  if (!loaded) {
+    return (
+      <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-xs text-zinc-400">
+        โค้ชหลังเทรด: กำลังโหลด…
+      </div>
+    );
+  }
+  if (err) {
+    return (
+      <div className="mt-4 rounded-xl border border-rose-900/50 bg-rose-950/20 px-3 py-2 text-xs text-rose-300">
+        โค้ชหลังเทรด โหลดไม่สำเร็จ
+      </div>
+    );
+  }
   if (notes.length === 0) {
     return (
       <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-xs text-zinc-500">

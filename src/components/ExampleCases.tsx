@@ -13,6 +13,7 @@ interface LearnedCasesResponse {
 export function ExampleCases() {
   const [learned, setLearned] = useState<LearnedCase[]>([]);
   const [learnedErr, setLearnedErr] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -24,6 +25,8 @@ export function ExampleCases() {
         if (!cancelled) setLearned(Array.isArray(data.cases) ? data.cases : []);
       } catch (e) {
         if (!cancelled) setLearnedErr(String(e));
+      } finally {
+        if (!cancelled) setLoaded(true);
       }
     })();
     return () => {
@@ -86,7 +89,11 @@ export function ExampleCases() {
             <span className="ml-2 text-rose-400">โหลดไม่สำเร็จ: {learnedErr}</span>
           )}
         </p>
-        {showLearned.length === 0 ? (
+        {!loaded ? (
+          <p className="rounded-xl border border-dashed border-zinc-700 bg-zinc-900/40 px-4 py-6 text-center text-sm text-zinc-400">
+            กำลังโหลดเคสที่ระบบเรียนรู้…
+          </p>
+        ) : showLearned.length === 0 ? (
           <p className="rounded-xl border border-dashed border-zinc-700 bg-zinc-900/40 px-4 py-6 text-center text-sm text-zinc-500">
             ยังไม่มีเคสเรียนรู้ — รอประเมินอัตโนมัติหรือกดถูก/ผิด · หรือรัน{" "}
             <code className="text-zinc-400">npm run evaluate-outcomes</code>
