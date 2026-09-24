@@ -24,7 +24,10 @@
     "upstream:next": "bash scripts/start-upstream-next.sh",
     "pages:dev": "vite --config pages-spa/vite.config.mts",
     "pages:build": "vite build --config pages-spa/vite.config.mts",
-    "pages:preview": "vite preview --config pages-spa/vite.config.mts --base /crypto-pump-screener/"
+    "pages:preview": "vite preview --config pages-spa/vite.config.mts --base /crypto-pump-screener/",
+    "early:fetch-30d": "node scripts/fetch-early-backtest-30d.mjs",
+    "early:walkforward": "node scripts/walkforward-early.mjs",
+    "start:all": "bash scripts/start-all.sh"
   },
   "dependencies": {
     "next": "15.5.25",

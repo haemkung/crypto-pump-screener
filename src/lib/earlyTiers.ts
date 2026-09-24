@@ -26,6 +26,8 @@ export interface EarlyTierRow {
   firstFlaggedAt: string;
   telegram: "sent" | "off" | "capped" | "failed";
   trigger?: { moveWindow: number; movePct: number; volMult: number; breakoutPct: number } | null;
+  plan?: { entry: number; sl: number; slPct: number; tp1: number; tp2: number; slSkip: boolean; slNoteTh?: string } | null;
+  trade?: { tp1: boolean; tp2: boolean; r: number } | null;
 }
 
 export interface EarlyTiersFile {
@@ -33,6 +35,10 @@ export interface EarlyTiersFile {
   daemonAt?: string | null;
   rules?: Record<string, number>;
   telegram?: Record<string, boolean>;
+  risk?: Record<string, number>;
+  tiers?: Record<string, unknown>;
+  backtest?: unknown;
+  live?: Record<string, unknown>;
   watch: EarlyTierRow[];
   ignition: EarlyTierRow[];
   noteTh?: string;
@@ -48,6 +54,10 @@ export function readEarlyTiers(): EarlyTiersFile {
       daemonAt: raw.daemonAt ?? null,
       rules: raw.rules,
       telegram: raw.telegram,
+      risk: raw.risk,
+      tiers: raw.tiers,
+      backtest: raw.backtest,
+      live: raw.live,
       watch: Array.isArray(raw.watch) ? raw.watch : [],
       ignition: Array.isArray(raw.ignition) ? raw.ignition : [],
       noteTh: raw.noteTh,

@@ -1,0 +1,357 @@
+{
+ "generatedAt": "2026-09-24T21:34:19.787Z",
+ "data": {
+  "symbols": 289,
+  "from": "2026-08-27T08:30:00.000Z",
+  "split": "2026-09-16T08:30:00.000Z",
+  "to": "2026-09-24T19:30:00.000Z",
+  "trainDays": 20,
+  "testDays": 8.5
+ },
+ "risk": {
+  "minSlPct": 0.6,
+  "maxSlPct": 2.5,
+  "skipSlPct": 3,
+  "bufferPct": 0.1,
+  "tp1R": 1.5,
+  "tp2R": 3,
+  "costPct": 0.1,
+  "horizonMin": 720
+ },
+ "tiers": {
+  "ignition_long": {
+   "params": {
+    "minFactors": 3,
+    "minDirectional": 2,
+    "requireRelMove": true,
+    "slMode": "swing15"
+   },
+   "train": {
+    "n": 36,
+    "perDay": 1.8,
+    "tp1Rate": 30.6,
+    "tp1Wilson": [
+     18,
+     46.9
+    ],
+    "expR": -0.174,
+    "sumR": -6.25,
+    "maxConsecLoss": 4,
+    "tp2Rate": 13.9,
+    "bigRate": 11.1,
+    "medRate": 22.2,
+    "avgSlPct": 1.91,
+    "skippedWideSl": 0,
+    "days": 20
+   },
+   "test": {
+    "n": 20,
+    "perDay": 2.4,
+    "tp1Rate": 50,
+    "tp1Wilson": [
+     29.9,
+     70.1
+    ],
+    "expR": 0.353,
+    "sumR": 7.06,
+    "maxConsecLoss": 3,
+    "tp2Rate": 30,
+    "bigRate": 20,
+    "medRate": 40,
+    "avgSlPct": 1.96,
+    "skippedWideSl": 0,
+    "days": 8.5
+   },
+   "baselines": {
+    "priceOnlyTest": {
+     "n": 87,
+     "perDay": 10.3,
+     "tp1Rate": 44.8,
+     "tp1Wilson": [
+      34.8,
+      55.3
+     ],
+     "expR": 0.188,
+     "sumR": 16.33,
+     "maxConsecLoss": 7,
+     "tp2Rate": 12.6,
+     "bigRate": 10.3,
+     "medRate": 28.7,
+     "avgSlPct": 2.06,
+     "skippedWideSl": 0
+    },
+    "randomTest": {
+     "n": 115439,
+     "perDay": 13648,
+     "tp1Rate": 43.5,
+     "tp1Wilson": [
+      43.2,
+      43.8
+     ],
+     "expR": -0.021,
+     "sumR": -2474.67,
+     "maxConsecLoss": 81,
+     "tp2Rate": 23.6,
+     "bigRate": 10.7,
+     "medRate": 33.2,
+     "avgSlPct": 0.75,
+     "skippedWideSl": 1615
+    }
+   },
+   "verdict": {
+    "telegram": false,
+    "reason": "train expectancy <= 0"
+   }
+  },
+  "watch_long": {
+   "params": {
+    "minFactors": 3,
+    "minDirectional": 1,
+    "slMode": "swing60"
+   },
+   "train": {
+    "n": 135,
+    "perDay": 6.8,
+    "tp1Rate": 38.5,
+    "tp1Wilson": [
+     30.7,
+     46.9
+    ],
+    "expR": -0.105,
+    "sumR": -14.13,
+    "maxConsecLoss": 10,
+    "tp2Rate": 18.5,
+    "bigRate": 5.2,
+    "medRate": 22.2,
+    "avgSlPct": 1.08,
+    "skippedWideSl": 0,
+    "days": 20
+   },
+   "test": {
+    "n": 78,
+    "perDay": 9.2,
+    "tp1Rate": 43.6,
+    "tp1Wilson": [
+     33.1,
+     54.6
+    ],
+    "expR": 0.086,
+    "sumR": 6.69,
+    "maxConsecLoss": 9,
+    "tp2Rate": 26.9,
+    "bigRate": 10.3,
+    "medRate": 29.5,
+    "avgSlPct": 1.12,
+    "skippedWideSl": 0,
+    "days": 8.5
+   },
+   "baselines": {
+    "priceOnlyTest": {
+     "n": 87,
+     "perDay": 10.3,
+     "tp1Rate": 44.8,
+     "tp1Wilson": [
+      34.8,
+      55.3
+     ],
+     "expR": 0.188,
+     "sumR": 16.33,
+     "maxConsecLoss": 7,
+     "tp2Rate": 12.6,
+     "bigRate": 10.3,
+     "medRate": 28.7,
+     "avgSlPct": 2.06,
+     "skippedWideSl": 0
+    },
+    "randomTest": {
+     "n": 115439,
+     "perDay": 13648,
+     "tp1Rate": 43.5,
+     "tp1Wilson": [
+      43.2,
+      43.8
+     ],
+     "expR": -0.021,
+     "sumR": -2474.67,
+     "maxConsecLoss": 81,
+     "tp2Rate": 23.6,
+     "bigRate": 10.7,
+     "medRate": 33.2,
+     "avgSlPct": 0.75,
+     "skippedWideSl": 1615
+    }
+   },
+   "verdict": {
+    "telegram": false,
+    "reason": "OOS expectancy 0.086R < 0.15R"
+   }
+  },
+  "ignition_short": {
+   "params": {
+    "minFactors": 3,
+    "minDirectional": 1,
+    "requireRelMove": false,
+    "slMode": "swing15"
+   },
+   "train": {
+    "n": 49,
+    "perDay": 2.5,
+    "tp1Rate": 34.7,
+    "tp1Wilson": [
+     22.9,
+     48.7
+    ],
+    "expR": -0.12,
+    "sumR": -5.86,
+    "maxConsecLoss": 7,
+    "tp2Rate": 12.2,
+    "bigRate": 10.2,
+    "medRate": 26.5,
+    "avgSlPct": 1.86,
+    "skippedWideSl": 0,
+    "days": 20
+   },
+   "test": {
+    "n": 31,
+    "perDay": 3.7,
+    "tp1Rate": 25.8,
+    "tp1Wilson": [
+     13.7,
+     43.2
+    ],
+    "expR": -0.467,
+    "sumR": -14.47,
+    "maxConsecLoss": 9,
+    "tp2Rate": 6.5,
+    "bigRate": 6.5,
+    "medRate": 16.1,
+    "avgSlPct": 1.91,
+    "skippedWideSl": 0,
+    "days": 8.5
+   },
+   "baselines": {
+    "priceOnlyTest": {
+     "n": 48,
+     "perDay": 5.7,
+     "tp1Rate": 31.3,
+     "tp1Wilson": [
+      19.9,
+      45.3
+     ],
+     "expR": 0.055,
+     "sumR": 2.66,
+     "maxConsecLoss": 7,
+     "tp2Rate": 16.7,
+     "bigRate": 12.5,
+     "medRate": 29.2,
+     "avgSlPct": 2.22,
+     "skippedWideSl": 0
+    },
+    "randomTest": {
+     "n": 115612,
+     "perDay": 13668.4,
+     "tp1Rate": 35.4,
+     "tp1Wilson": [
+      35.1,
+      35.7
+     ],
+     "expR": -0.302,
+     "sumR": -34939.72,
+     "maxConsecLoss": 95,
+     "tp2Rate": 14.4,
+     "bigRate": 4.4,
+     "medRate": 14.6,
+     "avgSlPct": 0.74,
+     "skippedWideSl": 1424
+    }
+   },
+   "verdict": {
+    "telegram": false,
+    "reason": "OOS expectancy -0.467R < 0.15R"
+   }
+  },
+  "watch_short": {
+   "params": {
+    "minFactors": 4,
+    "minDirectional": 1,
+    "slMode": "swing180"
+   },
+   "train": {
+    "n": 32,
+    "perDay": 1.6,
+    "tp1Rate": 46.9,
+    "tp1Wilson": [
+     30.9,
+     63.6
+    ],
+    "expR": 0.296,
+    "sumR": 9.49,
+    "maxConsecLoss": 3,
+    "tp2Rate": 9.4,
+    "bigRate": 0,
+    "medRate": 21.9,
+    "avgSlPct": 1.7,
+    "skippedWideSl": 0,
+    "days": 20
+   },
+   "test": {
+    "n": 19,
+    "perDay": 2.2,
+    "tp1Rate": 21.1,
+    "tp1Wilson": [
+     8.5,
+     43.3
+    ],
+    "expR": -0.228,
+    "sumR": -4.33,
+    "maxConsecLoss": 5,
+    "tp2Rate": 15.8,
+    "bigRate": 5.3,
+    "medRate": 10.5,
+    "avgSlPct": 1.76,
+    "skippedWideSl": 0,
+    "days": 8.5
+   },
+   "baselines": {
+    "priceOnlyTest": {
+     "n": 48,
+     "perDay": 5.7,
+     "tp1Rate": 31.3,
+     "tp1Wilson": [
+      19.9,
+      45.3
+     ],
+     "expR": 0.055,
+     "sumR": 2.66,
+     "maxConsecLoss": 7,
+     "tp2Rate": 16.7,
+     "bigRate": 12.5,
+     "medRate": 29.2,
+     "avgSlPct": 2.22,
+     "skippedWideSl": 0
+    },
+    "randomTest": {
+     "n": 115612,
+     "perDay": 13668.4,
+     "tp1Rate": 35.4,
+     "tp1Wilson": [
+      35.1,
+      35.7
+     ],
+     "expR": -0.302,
+     "sumR": -34939.72,
+     "maxConsecLoss": 95,
+     "tp2Rate": 14.4,
+     "bigRate": 4.4,
+     "medRate": 14.6,
+     "avgSlPct": 0.74,
+     "skippedWideSl": 1424
+    }
+   },
+   "verdict": {
+    "telegram": false,
+    "reason": "OOS expectancy -0.228R < 0.15R"
+   }
+  }
+ }
+}

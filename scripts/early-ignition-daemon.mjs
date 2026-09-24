@@ -6,6 +6,9 @@
  * measured BEFORE the move (lib/early-ignition-core.mjs → evaluateEvidence):
  *   F1 OI build while price flat · F2 funding against the crowd · F3 crowded opposite side (global L/S)
  *   F4 taker buy/sell imbalance · F5 quiet volume inflow · F6 spot leading · F7 (short) pumped & fading
+ *   F8 top traders positioned against the crowd
+ * Risk: every alert states a structural SL capped at RISK.maxSlPct (skip if > RISK.skipSlPct), TP1 1.5R / TP2 3R;
+ * the same functions grade the backtest (scripts/walkforward-early.mjs) and live alerts (a.trade).
  *
  * Tiers
  *   👀 กำลังสะสม / 👀 กำลังแจกของ (watch, every 5 min): F1 required + total >= WATCH_MIN_FACTORS.
@@ -41,6 +44,9 @@ import {
   DEDUPE_MS,
   MIN_REL_MOVE,
   FACTOR_LABELS,
+  structuralStop,
+  simulateTrade,
+  RISK,
 } from "./lib/early-ignition-core.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -55,6 +61,26 @@ const SETTINGS_FILE = resolve(DATA_DIR, "early-alert-settings.json");
 /** small public snapshot served by /api/early-tiers (web UI) */
 const TIERS_FILE = resolve(DATA_DIR, "early-tiers.json");
 const TIERS_SHOW_MS = { watch: 8 * 3600e3, ignition: 6 * 3600e3 };
+/** frozen walk-forward parameters + OOS stats (scripts/walkforward-early.mjs → data/early-tier-config.json) */
+const TIER_CONFIG_FILE = resolve(DATA_DIR, "early-tier-config.json");
+const DEFAULT_TIER_CFG = {
+  ignition_long: { params: { minFactors: 3, minDirectional: 1, requireRelMove: true, slMode: "swing15" } },
+  ignition_short: { params: { minFactors: 3, minDirectional: 1, requireRelMove: true, slMode: "swing15" } },
+  watch_long: { params: { minFactors: 3, minDirectional: 2, slMode: "swing60" } },
+  watch_short: { params: { minFactors: 3, minDirectional: 2, slMode: "swing60" } },
+};
+function loadTierConfig() {
+  const raw = readJson(TIER_CONFIG_FILE, null);
+  const out = {};
+  for (const k of Object.keys(DEFAULT_TIER_CFG)) {
+    const t = raw?.tiers?.[k];
+    const params = { ...DEFAULT_TIER_CFG[k].params, ...(t?.params || {}) };
+    params.minFactors = Math.max(3, Number(params.minFactors) || 3); // hard user rule: >= 3 hidden factors
+    out[k] = { params, oos: t?.test || null, train: t?.train || null, baselines: t?.baselines || null, verdict: t?.verdict || null };
+  }
+  out._meta = raw ? { generatedAt: raw.generatedAt, data: raw.data } : null;
+  return out;
+}
 
 const ONCE = process.argv.includes("--once");
 const DRY = process.argv.includes("--dry-run") || process.env.EARLY_DRY_RUN === "1";
@@ -66,9 +92,40 @@ const DEFAULT_SETTINGS = {
   sendIgnitionShort: false,
   sendWatchLong: false,
   sendWatchShort: false,
-  maxIgnitionPer24h: 10,
-  maxWatchPer24h: 10,
+  maxIgnitionPer24h: 7,
+  maxWatchPer24h: 3,
+  /** paper-trade → promote: a web-only tier is switched to Telegram automatically once its LIVE forward test
+   *  (every confluent alert, graded with its exact SL) reaches n>=20, TP1 rate>=55%, avg>=+0.25R; an auto-enabled
+   *  tier is switched back off if its last 20 graded alerts average < -0.1R. */
+  autoPromote: true,
 };
+const PROMOTE = { minN: 20, minTp1: 0.55, minAvgR: 0.25, demoteLastN: 20, demoteMinN: 10, demoteAvgR: -0.1 };
+const TIER_SWITCH = [["ignition", "long", "sendIgnitionLong", "🚀 เริ่มขยับ (Long)"], ["ignition", "short", "sendIgnitionShort", "🔻 เริ่มทุบ (Short)"], ["watch", "long", "sendWatchLong", "👀 กำลังสะสม (Long)"], ["watch", "short", "sendWatchShort", "👀 กำลังแจกของ (Short)"]];
+function autoPromote(logObj, settings) {
+  if (!settings.autoPromote || DRY) return;
+  const raw = readJson(SETTINGS_FILE, null);
+  if (!raw || typeof raw !== "object") return;
+  const notes = [];
+  for (const [type, side, key, name] of TIER_SWITCH) {
+    const rows = logObj.alerts.filter((a) => a.type === type && a.side === side && a.trade && Number.isFinite(a.slPct) && !a.slSkip).sort((x, y) => Date.parse(x.sentAt) - Date.parse(y.sentAt));
+    const n = rows.length, avg = (rs) => rs.reduce((x, a) => x + a.trade.r, 0) / Math.max(1, rs.length);
+    const tp1 = rows.filter((a) => a.trade.tp1).length / Math.max(1, n);
+    if (!raw[key] && n >= PROMOTE.minN && tp1 >= PROMOTE.minTp1 && avg(rows) >= PROMOTE.minAvgR) {
+      raw[key] = true; raw[`${key}Auto`] = true;
+      notes.push(`✅ เปิดส่ง Telegram อัตโนมัติ: ${name}\nทดสอบจริงล่วงหน้า (paper) ${n} ครั้ง ถึง TP1 ก่อน SL ${(tp1 * 100).toFixed(0)}% · เฉลี่ย ${avg(rows) >= 0 ? "+" : ""}${avg(rows).toFixed(2)}R/ไม้ (SL ≤${RISK.maxSlPct}%)`);
+    }
+    const last = rows.slice(-PROMOTE.demoteLastN);
+    if (raw[key] && raw[`${key}Auto`] && last.length >= PROMOTE.demoteMinN && avg(last) < PROMOTE.demoteAvgR) {
+      raw[key] = false; raw[`${key}Auto`] = false;
+      notes.push(`⏸ ปิดส่ง Telegram อัตโนมัติ: ${name}\n${last.length} สัญญาณล่าสุดเฉลี่ย ${avg(last).toFixed(2)}R/ไม้ — กลับไปแสดงบนเว็บอย่างเดียว`);
+    }
+  }
+  if (!notes.length) return;
+  raw.updatedAt = new Date().toISOString();
+  raw.note = `auto-promote/demote from live forward test (${notes.length} change)`;
+  try { writeJsonAtomic(SETTINGS_FILE, raw); } catch (e) { log("settings write failed:", String(e)); return; }
+  for (const t of notes) { const r = sendTelegram(t); log("auto-promote:", t.split("\n")[0], r.ok ? "sent" : r.err); }
+}
 
 const TRIG = { ...TRIGGER_THRESHOLDS };
 const RULES = { ...CONFLUENCE_RULES };
@@ -76,7 +133,7 @@ const SHORTLIST_PCT = 0.9;
 const KLINE_CAP = 40;
 const EVIDENCE_CAP = 6;
 const EVAL_COOLDOWN_MS = 15 * 60e3;
-const MAX_PER_HOUR = 6;
+const MAX_PER_HOUR = 4;
 const SNAP_KEEP_MS = 4 * 3600e3 + 10 * 60e3;
 const WATCH_BATCH = 120;
 const WATCH_FULL_CAP = 10;
@@ -200,7 +257,7 @@ async function fundingMap() {
 /** Timestamps normalised like the backtest: futures/data bucket ts + 5m - 1 (= when it is known). */
 async function fetchEvidenceData(symbol, tk) {
   const now = Date.now();
-  const d = { p5: [], oi5: [], ls5: [], tk5: [], spot5: null, fundingPct: null, day: { high24: tk.high24, low24: tk.low24 } };
+  const d = { p5: [], oi5: [], ls5: [], top5: [], tk5: [], spot5: null, fundingPct: null, day: { high24: tk.high24, low24: tk.low24 } };
   const k = await fapi(`/fapi/v1/klines?symbol=${symbol}&interval=5m&limit=300`);
   d.p5 = k.filter((x) => Number(x[6]) < now).map((x) => [Number(x[6]), +x[2], +x[3], +x[4], +x[7]]);
   const oi = await fapi(`/futures/data/openInterestHist?symbol=${symbol}&period=5m&limit=60`);
@@ -208,6 +265,10 @@ async function fetchEvidenceData(symbol, tk) {
   try {
     const ls = await fapi(`/futures/data/globalLongShortAccountRatio?symbol=${symbol}&period=5m&limit=60`);
     d.ls5 = ls.map((x) => [Number(x.timestamp) + 299999, Number(x.longShortRatio)]).sort((a, b) => a[0] - b[0]);
+  } catch (e) { if (isRate(e)) throw e; }
+  try {
+    const tp = await fapi(`/futures/data/topLongShortPositionRatio?symbol=${symbol}&period=5m&limit=60`);
+    d.top5 = tp.map((x) => [Number(x.timestamp) + 299999, Number(x.longShortRatio)]).sort((a, b) => a[0] - b[0]);
   } catch (e) { if (isRate(e)) throw e; }
   try {
     const t = await fapi(`/futures/data/takerlongshortRatio?symbol=${symbol}&period=5m&limit=40`);
@@ -241,29 +302,63 @@ function fmtPrice(n) {
 const fmtPct = (n) => (Number.isFinite(n) ? `${n > 0 ? "+" : ""}${n.toFixed(2)}%` : "?");
 const fmtIct = (ms) => new Date(ms).toLocaleTimeString("en-GB", { timeZone: "Asia/Bangkok", hour12: false }).slice(0, 5);
 function evidenceLines(factors) {
-  return factors.map((f, i) => ` ${i + 1}) ${f.labelTh}: ${f.detailTh}`);
+  return factors.map((f, i) => ` ${i + 1}) ${f.labelTh || FACTOR_LABELS[f.key] || f.key}: ${f.detailTh}`);
 }
-function formatIgnition(a) {
-  const head = a.side === "long" ? "🚀 เริ่มขยับ (ระยะต้น)" : "🔻 เริ่มทุบ (ระยะต้น)";
+const pctTxt = (a, b) => { const v = (b / a - 1) * 100; return `${v > 0 ? "+" : ""}${v.toFixed(2)}%`; };
+/** grade from frozen OOS stats of the tier (A/B/C) */
+function gradeOf(oos) {
+  if (!oos || !oos.n) return { g: "-", txt: "ยังไม่มีสถิติย้อนหลังพอ" };
+  const g = oos.tp1Rate >= 60 && oos.expR >= 0.4 ? "A" : oos.expR >= 0.2 ? "B" : "C";
+  return { g, txt: `ทดสอบย้อนหลัง (นอกช่วงจูน ${oos.days ?? "?"} วัน): ถึง TP1 ก่อน SL ${oos.tp1Rate}% จาก ${oos.n} ครั้ง · คาดหวัง ${oos.expR > 0 ? "+" : ""}${oos.expR}R/ไม้ · แพ้ติดกันสูงสุด ${oos.maxConsecLoss}` };
+}
+function tradeLines(a) {
+  const d = a.side === "long" ? 1 : -1;
+  const zoneA = a.entry * (1 - (d * 0.2 * a.slPct) / 100), zoneB = a.entry * (1 + (d * 0.15) / 100);
+  const [z1, z2] = a.side === "long" ? [zoneA, zoneB] : [zoneB, zoneA];
+  return [
+    `🎯 โซนเข้า: ${fmtPrice(z1)} – ${fmtPrice(z2)} (ราคาสัญญาณ ${fmtPrice(a.entry)})`,
+    `🛑 SL: ${fmtPrice(a.sl)} (ห่าง ${a.slPct.toFixed(2)}% · ${a.slNoteTh})`,
+    `✅ TP1: ${fmtPrice(a.tp1)} (${pctTxt(a.entry, a.tp1)} · ${RISK.tp1R}R) · TP2: ${fmtPrice(a.tp2)} (${pctTxt(a.entry, a.tp2)} · ${RISK.tp2R}R)`,
+    `⚖️ R:R 1:${RISK.tp1R} / 1:${RISK.tp2R} · ปิดครึ่งที่ TP1 แล้วเลื่อน SL มาทุน`,
+  ];
+}
+function formatIgnition(a, cfg) {
+  const head = a.side === "long" ? "🚀 เริ่มขยับ · LONG" : "🔻 เริ่มทุบ · SHORT";
+  const gr = gradeOf(cfg?.oos);
   const lines = [
     `${head} · ${a.symbol}`,
-    `หลักฐานก่อนราคาขยับ ${a.factors.length} ข้อ (ขั้นต่ำ ${RULES.ignitionMinFactors}):`,
+    `ราคา ${fmtPrice(a.price)} · 24h ${fmtPct(a.pct24h)} · ${fmtIct(a.barCloseMs)} ICT`,
+    ...tradeLines(a),
+    `📊 เกรด ${gr.g} · ${gr.txt}`,
+    `🔎 หลักฐานก่อนราคาขยับ ${a.factors.length} ข้อ (ขั้นต่ำ ${cfg?.params?.minFactors ?? 3}):`,
     ...evidenceLines(a.factors),
-    `จังหวะ (trigger ราคา): ${a.moveWindow}m ${fmtPct(a.movePct)} · วอลุ่ม 5m ×${a.volMult} · ${a.side === "long" ? "ทะลุกรอบ 4h" : "หลุดกรอบ 4h"} ${fmtPct(a.breakoutPct)} · ฐาน 2h ${a.baseRangePct}%`,
-    `ราคา ${fmtPrice(a.price)} · 24h ${fmtPct(a.pct24h)} · เวลา ${fmtIct(a.barCloseMs)} ICT`,
+    `⏱ จังหวะ (ราคาเป็นแค่ตัวจับเวลา): ${a.moveWindow}m ${fmtPct(a.movePct)} · วอลุ่ม 5m ×${a.volMult} · ${a.side === "long" ? "ทะลุกรอบ 4h" : "หลุดกรอบ 4h"} ${fmtPct(a.breakoutPct)}`,
   ];
   if (a.watchFlag) lines.push(`👀 เคยติด "${a.watchFlag.tier === "accumulation" ? "กำลังสะสม" : "กำลังแจกของ"}" เมื่อ ${(a.watchFlag.agoMin / 60).toFixed(1)} ชม.ก่อน`);
+  lines.push("⚠️ ไม่ใช่คำแนะนำการลงทุน · เสี่ยงสูง ใช้ SL ทุกครั้ง");
   return lines.join("\n");
 }
-function formatWatch(w) {
-  const head = w.tier === "accumulation" ? "👀 กำลังสะสม (เฝ้าดู)" : "👀 กำลังแจกของ (เฝ้าดู Short)";
+function formatWatch(w, cfg) {
+  const head = w.tier === "accumulation" ? "👀 กำลังสะสม · LONG (เฝ้าดู)" : "👀 กำลังแจกของ · SHORT (เฝ้าดู)";
+  const gr = gradeOf(cfg?.oos);
   return [
     `${head} · ${w.symbol}`,
-    `หลักฐาน ${w.factors.length} ข้อ (ขั้นต่ำ ${RULES.watchMinFactors}):`,
+    `ราคา ${fmtPrice(w.price)} · 24h ${fmtPct(w.pct24h)} · ${fmtIct(w.ts)} ICT`,
+    ...tradeLines(w),
+    `📊 เกรด ${gr.g} · ${gr.txt}`,
+    `🔎 หลักฐาน ${w.factors.length} ข้อ (ขั้นต่ำ ${cfg?.params?.minFactors ?? 3}):`,
     ...evidenceLines(w.factors),
-    `ราคา ${fmtPrice(w.price)} · 24h ${fmtPct(w.pct24h)} · เวลา ${fmtIct(w.ts)} ICT`,
-    `ยังไม่ใช่จุดเข้า — รอ trigger ราคา`,
+    "⚠️ ไม่ใช่คำแนะนำการลงทุน · เสี่ยงสูง ใช้ SL ทุกครั้ง",
   ].join("\n");
+}
+/** stop/targets for an alert (same function the backtest graded) */
+function planTrade(side, entry, mode, bars, t, level) {
+  const st = structuralStop(side, entry, { mode, bars, t, level });
+  const noteTh = st.structPct > RISK.maxSlPct ? `โครงสร้างต้องการ ${st.structPct}% → ตัดที่เพดาน ${RISK.maxSlPct}%`
+    : st.structPct < RISK.minSlPct ? `ขั้นต่ำ ${RISK.minSlPct}% (โครงสร้าง ${st.structPct}%)`
+    : mode === "breakout" ? (side === "long" ? "ใต้กรอบ 4 ชม. ที่เพิ่งทะลุ" : "เหนือกรอบ 4 ชม. ที่เพิ่งหลุด")
+    : `${side === "long" ? "ใต้โลว์" : "เหนือไฮ"} ${mode.replace("swing", "")} นาทีล่าสุด`;
+  return { entry, sl: st.sl, slPct: st.slPct, structPct: st.structPct, tp1: st.tp1, tp2: st.tp2, slSkip: st.skip, slMode: mode, slNoteTh: noteTh };
 }
 
 // ---------- telegram ----------
@@ -294,12 +389,16 @@ async function gradeOpen(logObj, priceMap, now) {
       }
       changed = true;
     }
-    if (!a.big && age >= 12 * 3600e3 + 120e3 && budget > 0) {
+    if (!a.big && age >= (RISK.horizonMin + 2) * 60e3 && budget > 0) {
       budget--;
       try {
-        const k = await fapi(`/fapi/v1/klines?symbol=${a.symbol}&interval=1m&startTime=${a.barCloseMs - 60e3}&limit=722`);
+        const k = await fapi(`/fapi/v1/klines?symbol=${a.symbol}&interval=1m&startTime=${a.barCloseMs - 60e3}&limit=${RISK.horizonMin + 2}`);
         const bars = k.map((x) => [x[0], +x[1], +x[2], +x[3], +x[4], +x[7]]);
         if (bars.length > 30) {
+          if (Number.isFinite(a.slPct)) {
+            const e = bars.findIndex((b) => b[0] >= a.barCloseMs);
+            if (e >= 0) { const sim = simulateTrade(bars, e, a.side, a.slPct); a.trade = { tp1: sim.tp1, tp2: sim.tp2, r: sim.r, fill: sim.entry, gradedAt: new Date(now).toISOString() }; }
+          }
           const big = gradePath(bars, 0, a.side, 8, 2, 720);
           const small = gradePath(bars, 0, a.side, 3, 2, 240);
           a.big = { rule: a.side === "long" ? "+8% before -2% in 12h" : "-8% before +2% in 12h", result: big.result, mfePct: Math.round(big.mfe * 100) / 100 };
@@ -319,10 +418,22 @@ async function gradeOpen(logObj, priceMap, now) {
     }
     logObj.stats = stats;
   }
+  return changed;
+}
+
+/** live self-graded stats of confluence-era alerts (trade simulated with the exact stated SL) */
+function liveStats(logObj) {
+  const out = {};
+  for (const type of ["ignition", "watch"]) for (const side of ["long", "short"]) {
+    const rows = logObj.alerts.filter((a) => a.type === type && a.side === side && a.trade && Number.isFinite(a.slPct));
+    const f = (sel) => { const n = sel.length; const w = sel.filter((a) => a.trade.tp1).length; return { n, tp1Rate: n ? Math.round((w / n) * 1000) / 10 : null, avgR: n ? Math.round((sel.reduce((x, a) => x + a.trade.r, 0) / n) * 100) / 100 : null }; };
+    out[`${type}_${side}`] = { sent: f(rows.filter((a) => a.delivered)), all: f(rows.filter((a) => !a.slSkip)) };
+  }
+  return out;
 }
 
 // ---------- web snapshot ----------
-function writeTiersSnapshot(logObj, settings, now) {
+function writeTiersSnapshot(logObj, settings, now, tierCfg) {
   // only confluence-era rows (factors listed and >= rule minimum); legacy price-only rows never shown
   const recent = logObj.alerts.filter((a) => (a.type === "watch" || a.type === "ignition") && Array.isArray(a.factors) &&
     a.factors.length >= (a.type === "watch" ? RULES.watchMinFactors : RULES.ignitionMinFactors) && now - Date.parse(a.sentAt) <= 24 * 3600e3);
@@ -347,21 +458,27 @@ function writeTiersSnapshot(logObj, settings, now) {
         factors: (a.factors || []).map((f) => ({ key: f.key, labelTh: FACTOR_LABELS[f.key] || f.key, detailTh: f.detailTh })),
         factorCount: a.factorCount ?? (a.factors || []).length, directional: a.directional ?? null,
         flaggedAt: a.sentAt, firstFlaggedAt: new Date(first.get(`${a.symbol}|${a.side}`) ?? Date.parse(a.sentAt)).toISOString(),
-        telegram: a.delivered ? "sent" : /disabled/.test(a.suppressed || "") ? "off" : a.suppressed === "cap" ? "capped" : a.suppressed ? "off" : "failed",
+        telegram: a.delivered ? "sent" : a.suppressed === "sl_too_wide" ? "sl_wide" : /disabled/.test(a.suppressed || "") ? "off" : a.suppressed === "cap" ? "capped" : a.suppressed ? "off" : "failed",
         trigger: a.type === "ignition" ? { moveWindow: a.moveWindow, movePct: a.movePct, volMult: a.volMult, breakoutPct: a.breakoutPct } : null,
+        plan: Number.isFinite(a.slPct) ? { entry: a.entry, sl: a.sl, slPct: a.slPct, tp1: a.tp1, tp2: a.tp2, slSkip: !!a.slSkip, slNoteTh: a.slNoteTh } : null,
+        trade: a.trade || null,
       }));
   };
   writeJsonAtomic(TIERS_FILE, {
     updatedAt: new Date(now).toISOString(),
     rules: RULES,
+    risk: RISK,
     telegram: { ignitionLong: settings.sendIgnitionLong, ignitionShort: settings.sendIgnitionShort, watchLong: settings.sendWatchLong, watchShort: settings.sendWatchShort },
+    tiers: Object.fromEntries(["ignition_long", "ignition_short", "watch_long", "watch_short"].map((k) => [k, { params: tierCfg[k].params, oos: tierCfg[k].oos, baselines: tierCfg[k].baselines ? { priceOnly: tierCfg[k].baselines.priceOnlyTest, random: tierCfg[k].baselines.randomTest } : null, verdict: tierCfg[k].verdict }])),
+    backtest: tierCfg._meta,
+    live: liveStats(logObj),
     watch: latest("watch"),
     ignition: latest("ignition"),
   });
 }
 
 // ---------- ignition ----------
-async function ignitionScan(tickMap, shortlist, state, now, settings) {
+async function ignitionScan(tickMap, shortlist, state, now, settings, tierCfg) {
   const picked = shortlist.slice(0, KLINE_CAP);
   let btcBars = null;
   if (picked.length) {
@@ -384,8 +501,11 @@ async function ignitionScan(tickMap, shortlist, state, now, settings) {
             if (bi >= sig.moveWindow) btcMove = (btcBars[bi][4] / btcBars[bi - sig.moveWindow][4] - 1) * 100;
           }
           const rel = relMove(sig, btcMove);
-          if (c.s !== "BTCUSDT" && rel < MIN_REL_MOVE[sig.side]) continue;
-          priceHits.push({ ...sig, symbol: c.s, relMovePct: Math.round(rel * 100) / 100, barCloseMs: bars[t][0] + 60e3, asOf: bars[t - sig.moveWindow][0] + 59999 });
+          const relOk = c.s === "BTCUSDT" || rel >= MIN_REL_MOVE[sig.side];
+          const p = tierCfg[`ignition_${sig.side}`].params;
+          if (p.requireRelMove && !relOk) continue;
+          const plan = planTrade(sig.side, sig.close, p.slMode, bars, t, sig.side === "long" ? sig.rangeHigh : sig.rangeLow);
+          priceHits.push({ ...sig, ...plan, symbol: c.s, relMovePct: Math.round(rel * 100) / 100, barCloseMs: bars[t][0] + 60e3, asOf: bars[t - sig.moveWindow][0] + 59999 });
           break;
         }
       } catch (e) { if (isRate(e)) throw e; }
@@ -407,7 +527,8 @@ async function ignitionScan(tickMap, shortlist, state, now, settings) {
       const ev = evaluateEvidence(h.side, data, h.asOf);
       h.factors = ev.factors;
       h.directional = ev.directional;
-      h.confluent = passes(ev, RULES.ignitionMinFactors, RULES.ignitionMinDirectional, null);
+      const p = tierCfg[`ignition_${h.side}`].params;
+      h.confluent = passes(ev, p.minFactors, p.minDirectional, null);
       h.fundingPct = data.fundingPct;
     } catch (e) {
       if (isRate(e)) throw e;
@@ -417,7 +538,7 @@ async function ignitionScan(tickMap, shortlist, state, now, settings) {
     }
     const wf = state.watchFlags?.[h.symbol];
     if (wf && wf.side === h.side && now - wf.at <= WATCH_MENTION_MS) h.watchFlag = { tier: wf.tier, agoMin: Math.round((now - wf.at) / 60e3) };
-    h.suppressed = !h.confluent ? "no_confluence" : h.side === "long" ? (settings.sendIgnitionLong ? null : "long_disabled") : settings.sendIgnitionShort ? null : "short_disabled";
+    h.suppressed = !h.confluent ? "no_confluence" : h.slSkip ? "sl_too_wide" : h.side === "long" ? (settings.sendIgnitionLong ? null : "long_disabled") : settings.sendIgnitionShort ? null : "short_disabled";
     out.push(h);
   }
   return { priceHits: priceHits.length, evaluated: out };
@@ -427,7 +548,7 @@ async function ignitionScan(tickMap, shortlist, state, now, settings) {
 let lastWatchSlot = null;
 let lastWatchSummary = null;
 const watchChecked = new Map();
-async function watchScan(tickMap, state, now, settings) {
+async function watchScan(tickMap, state, now, settings, tierCfg) {
   const L = 48;
   const elig = [];
   for (const [s, t] of tickMap) {
@@ -465,14 +586,24 @@ async function watchScan(tickMap, state, now, settings) {
       let best = null;
       for (const side of ["long", "short"]) {
         const ev = evaluateEvidence(side, data, asOf);
-        if (!passes(ev, RULES.watchMinFactors, RULES.watchMinDirectional, "oiBuild")) continue;
+        const p = tierCfg[`watch_${side}`].params;
+        if (!passes(ev, p.minFactors, p.minDirectional, "oiBuild")) continue;
         if (!best || ev.count > best.ev.count) best = { side, ev };
       }
-      if (best) hits.push({ symbol: s, side: best.side, tier: best.side === "long" ? "accumulation" : "distribution", factors: best.ev.factors, directional: best.ev.directional, price: tk.p, pct24h: tk.pct24h, fundingPct: data.fundingPct });
+      if (best) {
+        // 5m bars as [ts, o, h, l, c]; swing60 = last 12 closed 5m bars
+        const b5 = data.p5.map((x) => [x[0], x[3], x[1], x[2], x[3]]);
+        const mode = tierCfg[`watch_${best.side}`].params.slMode;
+        const n5 = Math.max(1, Math.round((Number(String(mode).replace(/\D/g, "")) || 60) / 5));
+        const plan = planTrade(best.side, tk.p, `swing${n5}`, b5, b5.length - 1, null);
+        plan.slMode = mode;
+        plan.slNoteTh = plan.slNoteTh.replace(/swing?\d+ นาทีล่าสุด|\d+ นาทีล่าสุด/, `${n5 * 5} นาทีล่าสุด`);
+        hits.push({ symbol: s, side: best.side, tier: best.side === "long" ? "accumulation" : "distribution", factors: best.ev.factors, directional: best.ev.directional, price: tk.p, pct24h: tk.pct24h, fundingPct: data.fundingPct, ...plan });
+      }
     } catch (e) { if (isRate(e)) throw e; }
   }
   const fresh = hits.filter((h) => !(state.watchSent[`${h.symbol}|${h.tier}`] && now - state.watchSent[`${h.symbol}|${h.tier}`] < WATCH_DEDUPE_MS));
-  for (const h of fresh) h.suppressed = h.side === "long" ? (settings.sendWatchLong ? null : "long_disabled") : settings.sendWatchShort ? null : "short_disabled";
+  for (const h of fresh) h.suppressed = h.slSkip ? "sl_too_wide" : h.side === "long" ? (settings.sendWatchLong ? null : "long_disabled") : settings.sendWatchShort ? null : "short_disabled";
   fresh.sort((a, b) => b.factors.length - a.factors.length);
   return { eligible: elig.length, checked, oiPass: oiPass.length, hits: fresh };
 }
@@ -481,6 +612,7 @@ async function watchScan(tickMap, state, now, settings) {
 async function cycle() {
   const t0 = Date.now();
   const settings = loadSettings();
+  const tierCfg = loadTierConfig();
   await refreshPerps();
   const tickers = await fapi("/fapi/v1/ticker/24hr", 15_000);
   const now = Date.now();
@@ -525,7 +657,7 @@ async function cycle() {
   const messages = [];
 
   // ----- ignition
-  const ign = await ignitionScan(tickMap, shortlist, state, now, settings);
+  const ign = await ignitionScan(tickMap, shortlist, state, now, settings, tierCfg);
   const confl = ign.evaluated.filter((h) => h.confluent);
   const room = Math.max(0, Math.min(MAX_PER_CYCLE, MAX_PER_HOUR - state.recent.length, settings.maxIgnitionPer24h - state.recent24h.length));
   const sendIgn = confl.filter((h) => !h.suppressed).sort((a, b) => b.factors.length - a.factors.length).slice(0, room);
@@ -538,18 +670,13 @@ async function cycle() {
     factors: (h.factors || []).map((f) => ({ key: f.key, detailTh: f.detailTh })), factorCount: (h.factors || []).length, directional: h.directional ?? 0,
     fundingPct: Number.isFinite(h.fundingPct) ? Math.round(h.fundingPct * 10000) / 10000 : null,
     watchFlag: h.watchFlag || null,
+    entry: h.entry, sl: h.sl, slPct: h.slPct, structPct: h.structPct, tp1: h.tp1, tp2: h.tp2, slSkip: !!h.slSkip, slMode: h.slMode, slNoteTh: h.slNoteTh,
     suppressed: sendIgn.includes(h) ? null : h.suppressed || "cap",
     delivered: false, dryRun: DRY, outcomes: { "5m": null, "15m": null, "60m": null },
     _h: h,
   }));
   const ignSendable = ignAlerts.filter((a) => !a.suppressed);
-  if (ignSendable.length) {
-    messages.push({
-      alerts: ignSendable,
-      body: `แจ้งเตือน crypto-pump-screener · ระยะต้น (${ignSendable.length})\nสัญญาณระยะต้น เสี่ยงหลอกสูงกว่า ไม่ใช่คำแนะนำการลงทุน\n—\n\n` +
-        ignSendable.map((a) => formatIgnition({ ...a, factors: a._h.factors })).join("\n\n"),
-    });
-  }
+  for (const a of ignSendable) messages.push({ alerts: [a], body: formatIgnition({ ...a, factors: a._h.factors }, tierCfg[`ignition_${a.side}`]) });
 
   // ----- watch (once per 5-min slot, >= 55s into it so the last futures/data bucket is published)
   let watch = null;
@@ -558,7 +685,7 @@ async function cycle() {
   if (slot !== lastWatchSlot && now % 300e3 >= 55e3) {
     lastWatchSlot = slot;
     try {
-      watch = await watchScan(tickMap, state, now, settings);
+      watch = await watchScan(tickMap, state, now, settings, tierCfg);
       const wroom = Math.max(0, Math.min(WATCH_MAX_PER_CYCLE, settings.maxWatchPer24h - state.watchRecent.length));
       const sendW = watch.hits.filter((h) => !h.suppressed).slice(0, wroom);
       watchAlerts = watch.hits.map((h) => ({
@@ -566,17 +693,12 @@ async function cycle() {
         price: h.price, pct24h: Math.round(h.pct24h * 100) / 100,
         factors: h.factors.map((f) => ({ key: f.key, detailTh: f.detailTh })), factorCount: h.factors.length, directional: h.directional,
         fundingPct: Number.isFinite(h.fundingPct) ? Math.round(h.fundingPct * 10000) / 10000 : null,
+        entry: h.entry, sl: h.sl, slPct: h.slPct, structPct: h.structPct, tp1: h.tp1, tp2: h.tp2, slSkip: !!h.slSkip, slMode: h.slMode, slNoteTh: h.slNoteTh,
         suppressed: sendW.includes(h) ? null : h.suppressed || "cap",
         delivered: false, dryRun: DRY, outcomes: { "5m": null, "15m": null, "60m": null }, _h: h,
       }));
       const ws = watchAlerts.filter((a) => !a.suppressed);
-      if (ws.length) {
-        messages.push({
-          alerts: ws,
-          body: `แจ้งเตือน crypto-pump-screener · เฝ้าดู (${ws.length})\nรายการเฝ้าดู ยังไม่ใช่จุดเข้า · ไม่ใช่คำแนะนำการลงทุน\n—\n\n` +
-            ws.map((a) => formatWatch({ ...a, factors: a._h.factors })).join("\n\n"),
-        });
-      }
+      for (const a of ws) messages.push({ alerts: [a], body: formatWatch({ ...a, factors: a._h.factors }, tierCfg[`watch_${a.side}`]) });
     } catch (e) {
       log("watch error:", String(e?.message || e).slice(0, 200));
     }
@@ -607,10 +729,11 @@ async function cycle() {
       if (!a.suppressed) state.watchRecent.push(now);
     }
     await gradeOpen(logObj, priceMap, now);
+    try { autoPromote(logObj, settings); } catch (e) { log("autoPromote error:", String(e).slice(0, 120)); }
     if (logObj.alerts.length > LOG_KEEP) logObj.alerts = logObj.alerts.slice(-LOG_KEEP);
     writeJsonAtomic(LOG_FILE, logObj);
     writeJsonAtomic(STATE_FILE, state);
-    try { writeTiersSnapshot(logObj, settings, now); } catch (e) { log("snapshot error:", String(e).slice(0, 120)); }
+    try { writeTiersSnapshot(logObj, settings, now, tierCfg); } catch (e) { log("snapshot error:", String(e).slice(0, 120)); }
   }
 
   const lbl = (a) => `${a.symbol}:${a.side}:${a.factorCount}f${a.suppressed ? "(" + a.suppressed + ")" : ""}`;
@@ -622,7 +745,7 @@ async function cycle() {
       ` weight1m=${usedWeight}`,
   );
   try {
-    writeJsonAtomic(STATUS_FILE, { at: ts(), pid: process.pid, dryRun: DRY, warm, shortlist: shortlist.length, priceHits: ign.priceHits, evaluated: ign.evaluated.length, confluent: confl.length, sent: DRY ? 0 : ignSendable.length, watch: lastWatchSummary, settings, trigger: TRIG, rules: RULES, weight1m: usedWeight });
+    writeJsonAtomic(STATUS_FILE, { at: ts(), pid: process.pid, ok: true, consecutiveErrors: 0, dryRun: DRY, warm, shortlist: shortlist.length, priceHits: ign.priceHits, evaluated: ign.evaluated.length, confluent: confl.length, sent: DRY ? 0 : ignSendable.length, watch: lastWatchSummary, settings, trigger: TRIG, rules: RULES, weight1m: usedWeight });
   } catch {}
 }
 
@@ -643,14 +766,20 @@ async function main() {
   log(`early daemon (confluence-first) start pid=${process.pid} dryRun=${DRY} once=${ONCE}`);
   process.on("SIGTERM", () => { log("SIGTERM — exiting"); process.exit(0); });
   process.on("SIGINT", () => process.exit(0));
+  process.on("uncaughtException", (e) => log("uncaughtException (kept running):", String(e?.stack || e).slice(0, 300)));
+  process.on("unhandledRejection", (e) => log("unhandledRejection (kept running):", String(e?.stack || e).slice(0, 300)));
+  let consecutiveErrors = 0;
   let backoff = 0;
   for (;;) {
     try {
       await cycle();
       backoff = 0;
+      consecutiveErrors = 0;
     } catch (e) {
       const msg = String(e?.message || e);
+      consecutiveErrors++;
       log("cycle error:", msg.slice(0, 200));
+      try { writeJsonAtomic(STATUS_FILE, { at: ts(), pid: process.pid, ok: false, consecutiveErrors, lastError: msg.slice(0, 200) }); } catch {}
       if (isRate(e)) backoff = Math.min(600_000, (backoff || 60_000) * 2);
     }
     if (ONCE) break;

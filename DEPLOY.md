@@ -116,3 +116,29 @@ Override API from the static UI: `?api=https://crypto-pump-screener.jakahome2.wo
 - สถิติเรียนรู้บนเว็บถาวร sync ผ่าน tunnel; ถ้า tunnel ลง API จะ soft-fail / stale ไม่ 1102
 - **ไม่ใช้ Vercel** (มือถือจอดำในไทย)
 - Remaining SPOFs: bot machine itself, Cloudflare tunnel account/token, VPC binding, Workers API for live data (Pages HTML stays up regardless)
+
+## Early tiers v3 — walk-forward validated, tight-stop risk model (2026-09)
+
+- Data cache (not committed): `node scripts/fetch-early-backtest-30d.mjs --out /workspace/cache/early-bt-30d`
+  (top-250 perps by volume ∪ >15% daily-range movers; 1m klines, 5m spot, funding, 15m OI / global L/S / top-trader L/S / taker).
+  Shard with `--lanes fapi|data --shard i/n`; resumable.
+- Validation: `node scripts/walkforward-early.mjs --data /workspace/cache/early-bt-30d` → tunes a coarse grid on the first 20 days,
+  freezes it, scores the rest out-of-sample, writes `data/early-tier-config.json` (frozen params + OOS stats + verdict, read live by the daemon).
+- Risk model (user rule, high leverage): structural SL, floor 0.6%, cap 2.5%, **skip if structure needs >3%** (web shows "SL กว้างเกิน");
+  TP1 1.5R (close half, SL→breakeven), TP2 3R; fill = next bar open; 0.1% round-trip cost. Same code (`structuralStop`, `simulateTrade`
+  in `scripts/lib/early-ignition-core.mjs`) grades the backtest and every live alert (`a.trade` in `data/early-alerts.json`, 12h after the alert).
+- Telegram per tier: `data/early-alert-settings.json` (`sendIgnitionLong/Short`, `sendWatchLong/Short`, daily caps) — only tiers whose OOS
+  result clearly beat price-only and random entry are switched on.
+- Replay a coin: `node scripts/replay-symbol-early.mjs --symbol QNTUSDT --from ... --to ...`.
+
+## Always-on ("ห้ามล่ม")
+
+- `bash scripts/start-all.sh` — idempotent boot. Starts (if missing) `scripts/watchdog.sh`, `supervise-bot-upstream.sh`
+  (Next :3000 + cloudflared + early daemon) and `supervise-local-scheduler.sh`. Installs `@reboot` cron when crontab exists.
+- `scripts/watchdog.sh` (flock single instance, 30s loop): restarts missing supervisors with exponential backoff (60s→10min), kills a
+  hung early daemon (heartbeat `logs/early-ignition/status.json` older than 5 min) so the supervisor restarts it, checks local
+  `/api/early-tiers` and the public Workers URL (every 5 min). Telegram warning only after sustained failure (e.g. public down 15 min,
+  Next down ~5 min), max once per 2h per problem, plus one recovery message. Status: `logs/watchdog-status.json`.
+- `scripts/local-scheduler.sh` re-runs `start-all.sh --quiet` every 5 min, so watchdog and scheduler supervise each other.
+- Workers `/api/early-tiers` serves the last good snapshot (header `X-Early-Tiers-Stale: 1`) if the upstream is down; the web panel
+  also keeps a localStorage copy and shows "แสดงข้อมูลล่าสุดที่มี (อัปเดต …)".

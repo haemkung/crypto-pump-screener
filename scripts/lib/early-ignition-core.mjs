@@ -367,6 +367,8 @@ export const EVIDENCE_THRESHOLDS = {
   /** F7 short only: already pumped and fading */
   fadeMinPumpPct: 15,
   fadeMinBelowHighPct: 3,
+  /** F8 top-trader positions diverge from the crowd (top position L/S vs global account L/S over 4h) */
+  topMinChangePct: 5,
 };
 
 /** Factor keys + Thai labels (used in messages). */
@@ -378,6 +380,7 @@ export const FACTOR_LABELS = {
   inflow: "วอลุ่มไหลเข้าเงียบ",
   spot: "spot นำ",
   fade: "พุ่งแรงแล้วหมดแรง",
+  smart: "รายใหญ่สวนรายย่อย (top trader)",
 };
 
 function lastIdxAtOrBefore(arr, ts) {
@@ -484,6 +487,18 @@ export function evaluateEvidence(side, data, asOf, th = EVIDENCE_THRESHOLDS) {
     if (pump >= th.fadeMinPumpPct && below >= th.fadeMinBelowHighPct) add("fade", `24h พุ่ง ${pump.toFixed(0)}% แล้วย่อจากยอด ${below.toFixed(1)}%`, { pump, below });
   }
 
+  // F8 top traders positioning against the crowd (needs data.top5 = [[ts, topPositionRatio]])
+  const top5 = data.top5 || [];
+  const tpi = lastIdxAtOrBefore(top5, asOf);
+  if (tpi >= L && li >= L) {
+    const tNow = top5[tpi][1], tPrev = top5[tpi - L][1];
+    const tChg = tPrev > 0 ? (tNow / tPrev - 1) * 100 : 0;
+    const gNow = ls5[li][1], gPrev = ls5[li - L][1];
+    const gChg = gPrev > 0 ? (gNow / gPrev - 1) * 100 : 0;
+    if (side === "long" && tChg >= th.topMinChangePct && gChg <= 0) add("smart", `top trader L/S ${f2(tChg)}% ใน 4 ชม. ขณะรายย่อย ${f2(gChg)}%`, { tChg, gChg });
+    if (side === "short" && tChg <= -th.topMinChangePct && gChg >= 0) add("smart", `top trader L/S ${f2(tChg)}% ใน 4 ชม. ขณะรายย่อย ${f2(gChg)}%`, { tChg, gChg });
+  }
+
   const directional = factors.filter((f) => f.key !== "oiBuild" && f.key !== "inflow").length;
   return { count: factors.length, directional, factors };
 }
@@ -510,3 +525,84 @@ export const CONFLUENCE_RULES = {
   watchMinFactors: 3,
   watchMinDirectional: 2,
 };
+
+// ---------------------------------------------------------------------------
+// RISK MODEL (user hard rule: high leverage → max loss per trade 2–3% price move).
+// Stop = structure-based, floored at minSlPct, capped at maxSlPct; if the structural stop needs
+// more than skipSlPct the signal is NOT sent (web shows "SL กว้างเกิน"). TP1 = 1.5R, TP2 = 3R.
+// Backtest and live use the same function so the stated SL is exactly what was graded.
+// ---------------------------------------------------------------------------
+export const RISK = { minSlPct: 0.6, maxSlPct: 2.5, skipSlPct: 3, bufferPct: 0.1, tp1R: 1.5, tp2R: 3, costPct: 0.1, horizonMin: 720 };
+
+/**
+ * Structural stop for an entry at `entry`.
+ * mode "breakout": just beyond the broken 4h range edge (level = rangeHigh long / rangeLow short).
+ * mode "swingN":   beyond the extreme of the last N closed 1m bars (bars[t-N+1..t]).
+ * Returns { structPct, slPct, sl, tp1, tp2, skip }.
+ */
+export function structuralStop(side, entry, { mode, bars, t, level }, risk = RISK) {
+  let ref;
+  if (mode === "breakout" && Number.isFinite(level)) ref = level;
+  else {
+    const n = Number(String(mode).replace(/\D/g, "")) || 15;
+    ref = side === "long" ? Infinity : -Infinity;
+    for (let i = Math.max(0, t - n + 1); i <= t; i++) ref = side === "long" ? Math.min(ref, bars[i][3]) : Math.max(ref, bars[i][2]);
+  }
+  const stopPx = side === "long" ? ref * (1 - risk.bufferPct / 100) : ref * (1 + risk.bufferPct / 100);
+  let structPct = side === "long" ? (1 - stopPx / entry) * 100 : (stopPx / entry - 1) * 100;
+  if (!Number.isFinite(structPct) || structPct < 0) structPct = 0;
+  const slPct = Math.min(risk.maxSlPct, Math.max(risk.minSlPct, structPct));
+  const d = side === "long" ? 1 : -1;
+  return {
+    structPct: Math.round(structPct * 100) / 100,
+    slPct: Math.round(slPct * 100) / 100,
+    sl: entry * (1 - (d * slPct) / 100),
+    tp1: entry * (1 + (d * slPct * risk.tp1R) / 100),
+    tp2: entry * (1 + (d * slPct * risk.tp2R) / 100),
+    skip: structPct > risk.skipSlPct,
+  };
+}
+
+/**
+ * Simulate the stated trade on 1m bars [[openTime,o,h,l,c,...]] from entry bar index `e` (fill at its OPEN).
+ * Plan: 50% off at TP1 (1.5R) then stop → breakeven; rest at TP2 (3R); time exit at horizon close.
+ * Same-bar SL/TP ambiguity counts as SL (conservative). Cost (fees+slippage round trip) subtracted in R.
+ * Returns { tp1, tp2, r, entry, bars, mfePct, big, medium } (big: +8% before -2%; medium: +4% before -2%).
+ */
+export function simulateTrade(bars, e, side, slPct, risk = RISK) {
+  const entry = bars[e][1];
+  const d = side === "long" ? 1 : -1;
+  const fav = (px) => d * (px / entry - 1) * 100; // favourable % move
+  const tp1P = slPct * risk.tp1R, tp2P = slPct * risk.tp2R;
+  const end = Math.min(bars.length - 1, e + risk.horizonMin - 1);
+  let tp1 = false, tp2 = false, r = null, mfe = 0, i = e, big = null, medium = null;
+  for (; i <= end; i++) {
+    const hiF = fav(side === "long" ? bars[i][2] : bars[i][3]);
+    const loF = fav(side === "long" ? bars[i][3] : bars[i][2]);
+    if (hiF > mfe) mfe = hiF;
+    if (big == null) { if (loF <= -2) big = false; else if (hiF >= 8) big = true; }
+    if (medium == null) { if (loF <= -2) medium = false; else if (hiF >= 4) medium = true; }
+    if (r != null) { if (big != null && medium != null) break; continue; }
+    if (!tp1) {
+      if (loF <= -slPct) { r = -1; continue; }
+      if (hiF >= tp1P) { tp1 = true; if (hiF >= tp2P) { tp2 = true; r = 0.5 * risk.tp1R + 0.5 * risk.tp2R; } continue; }
+    } else {
+      if (loF <= 0) { r = 0.5 * risk.tp1R; continue; }
+      if (hiF >= tp2P) { tp2 = true; r = 0.5 * risk.tp1R + 0.5 * risk.tp2R; continue; }
+    }
+  }
+  const complete = r != null || end - e >= risk.horizonMin - 1;
+  if (r == null) {
+    const lastF = fav(bars[end][4]) / slPct;
+    r = tp1 ? 0.5 * risk.tp1R + 0.5 * Math.max(0, lastF) : Math.max(-1, lastF);
+  }
+  r -= risk.costPct / slPct;
+  return { tp1, tp2, r: Math.round(r * 1000) / 1000, entry, complete, mfePct: Math.round(mfe * 100) / 100, big: !!big, medium: !!medium };
+}
+
+/** Wilson score interval (95%) for k wins of n. */
+export function wilson(k, n, z = 1.96) {
+  if (!n) return [0, 0];
+  const p = k / n, den = 1 + (z * z) / n, c = p + (z * z) / (2 * n), m = z * Math.sqrt((p * (1 - p)) / n + (z * z) / (4 * n * n));
+  return [Math.max(0, (c - m) / den), Math.min(1, (c + m) / den)];
+}
