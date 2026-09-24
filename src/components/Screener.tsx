@@ -18,6 +18,7 @@ import { FeedbackButtons } from "./FeedbackButtons";
 import { LearningStatsPanel } from "./LearningStatsPanel";
 import { CoachNotesPanel } from "./CoachNotesPanel";
 import { HotStrip } from "./HotStrip";
+import { EarlyTiersPanel } from "./EarlyTiersPanel";
 import { qualityBadgeClass, regimeChipClass } from "@/lib/format";
 import { apiUrl } from "@/lib/apiBase";
 
@@ -298,6 +299,9 @@ export function Screener() {
           }}
           onSelectMode={setMode}
         />
+
+        {/* Early tiers (confluence-first) from the local daemon */}
+        <EarlyTiersPanel />
 
         {/* Optional panels — failures should not blank the page */}
         <div className="contents">

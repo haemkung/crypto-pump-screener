@@ -14,6 +14,8 @@
     "early:dry": "node scripts/early-ignition-daemon.mjs --once --dry-run",
     "early:backtest": "node scripts/backtest-early-ignition.mjs",
     "early:backtest-watch": "node scripts/backtest-early-watch.mjs",
+    "early:backtest-confluence": "node scripts/backtest-early-confluence.mjs",
+    "early:fetch-bt": "node scripts/fetch-early-backtest-data.mjs",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",

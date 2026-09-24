@@ -333,3 +333,180 @@ export function gradePath5(price5, t, side, winPct = 3, lossPct = 2, horizon = 9
   }
   return { result: end - t < horizon ? "open" : "timeout", bars: end - t, mfe };
 }
+
+// ---------------------------------------------------------------------------
+// CONFLUENCE evidence ("hidden" positioning before the move). Rule-based, each factor independent.
+// A price move alone NEVER qualifies; alerts need >= minFactors of these, measured BEFORE the move.
+// ---------------------------------------------------------------------------
+
+export const EVIDENCE_THRESHOLDS = {
+  /** F1 OI build: OI rise over lookback while price stays flat */
+  oiLookbackBars: 48, // 5m bars = 4h
+  oiMinRisePct: 5,
+  oiMaxPriceChangePct: 2.5,
+  oiMaxPriceRangePct: 5,
+  /** F2 funding: long wants shorts paying, short wants crowded longs paying */
+  fundingLongMaxPct: -0.005,
+  fundingShortMinPct: 0.03,
+  /** F3 crowded opposite side via global long/short account ratio */
+  lsLongMax: 1.0, // or falling >= lsDropPct over lookback
+  lsShortMin: 2.5, // or rising >= lsDropPct
+  lsChangePct: 8,
+  /** F4 taker imbalance (futures taker buy/sell volume) */
+  takerLong1h: 1.15,
+  takerLong3h: 1.05,
+  takerShort1h: 0.87,
+  takerShort3h: 0.95,
+  /** F5 quiet inflow: 2h perp volume vs prior 22h, price 2h range small */
+  inflowMult: 1.8,
+  inflowMaxRangePct: 3,
+  /** F6 spot leading: spot 1h volume vs prior 24h hourly avg + spot taker side */
+  spotVolMult: 2,
+  spotTakerLongMin: 55,
+  spotTakerShortMax: 45,
+  /** F7 short only: already pumped and fading */
+  fadeMinPumpPct: 15,
+  fadeMinBelowHighPct: 3,
+};
+
+/** Factor keys + Thai labels (used in messages). */
+export const FACTOR_LABELS = {
+  oiBuild: "OI สะสมขณะราคานิ่ง",
+  funding: "funding เอียงฝั่งตรงข้าม",
+  crowded: "ฝั่งตรงข้ามแน่น (L/S)",
+  taker: "แรง taker เอียง",
+  inflow: "วอลุ่มไหลเข้าเงียบ",
+  spot: "spot นำ",
+  fade: "พุ่งแรงแล้วหมดแรง",
+};
+
+function lastIdxAtOrBefore(arr, ts) {
+  let lo = 0, hi = arr.length - 1, ans = -1;
+  while (lo <= hi) { const m = (lo + hi) >> 1; if (arr[m][0] <= ts) { ans = m; lo = m + 1; } else hi = m - 1; }
+  return ans;
+}
+
+/**
+ * Evaluate confluence factors for `side` as of timestamp `asOf` (ms; use the time BEFORE the price move).
+ * data: {
+ *   p5: [[ts, high, low, close, quoteVol]] perp 5m (ascending), oi5: [[ts, oi]], ls5: [[ts, ratio]],
+ *   tk5: [[ts, buyVol, sellVol]], spot5: [[ts, close, quoteVol, takerBuyQuoteVol]] | null,
+ *   fundingPct: number | null, day: { high24, low24 } | null
+ * }
+ * Returns { count, directional, factors: [{ key, labelTh, detailTh, value }] }.
+ */
+export function evaluateEvidence(side, data, asOf, th = EVIDENCE_THRESHOLDS) {
+  const factors = [];
+  const add = (key, detailTh, value) => factors.push({ key, labelTh: FACTOR_LABELS[key], detailTh, value });
+  const L = th.oiLookbackBars;
+  const f2 = (n) => (n > 0 ? "+" : "") + n.toFixed(2);
+
+  // F1 OI build with flat price
+  const p5 = data.p5 || [];
+  const pi = lastIdxAtOrBefore(p5, asOf);
+  const oi5 = data.oi5 || [];
+  const oi = lastIdxAtOrBefore(oi5, asOf);
+  if (pi >= L && oi >= L) {
+    const oiNow = oi5[oi][1];
+    let oiMin = Infinity;
+    for (let i = oi - L; i <= oi - L / 2; i++) if (oi5[i][1] > 0 && oi5[i][1] < oiMin) oiMin = oi5[i][1];
+    const oiRise = (oiNow / oiMin - 1) * 100;
+    let hi = -Infinity, lo = Infinity;
+    for (let i = pi - L + 1; i <= pi; i++) { hi = Math.max(hi, p5[i][1]); lo = Math.min(lo, p5[i][2]); }
+    const pChg = (p5[pi][3] / p5[pi - L][3] - 1) * 100;
+    const rng = ((hi - lo) / lo) * 100;
+    if (oiRise >= th.oiMinRisePct && Math.abs(pChg) <= th.oiMaxPriceChangePct && rng <= th.oiMaxPriceRangePct) {
+      add("oiBuild", `OI ${f2(oiRise)}% ใน ${(L * 5) / 60} ชม. ขณะราคา ${f2(pChg)}% (กรอบ ${rng.toFixed(1)}%)`, { oiRise, pChg, rng });
+    }
+  }
+
+  // F2 funding
+  const fr = data.fundingPct;
+  if (Number.isFinite(fr)) {
+    if (side === "long" && fr <= th.fundingLongMaxPct) add("funding", `funding ${fr.toFixed(4)}% (short จ่าย long)`, fr);
+    if (side === "short" && fr >= th.fundingShortMinPct) add("funding", `funding ${fr.toFixed(4)}% (long จ่ายแพง)`, fr);
+  }
+
+  // F3 crowded opposite side (global L/S account ratio)
+  const ls5 = data.ls5 || [];
+  const li = lastIdxAtOrBefore(ls5, asOf);
+  if (li >= L) {
+    const now = ls5[li][1], prev = ls5[li - L][1];
+    const chg = prev > 0 ? (now / prev - 1) * 100 : 0;
+    if (side === "long" && (now <= th.lsLongMax || chg <= -th.lsChangePct)) add("crowded", `L/S ${now.toFixed(2)} (4 ชม. ${f2(chg)}%) — short แน่น`, { now, chg });
+    if (side === "short" && (now >= th.lsShortMin || chg >= th.lsChangePct)) add("crowded", `L/S ${now.toFixed(2)} (4 ชม. ${f2(chg)}%) — long แน่น`, { now, chg });
+  }
+
+  // F4 taker imbalance
+  const tk5 = data.tk5 || [];
+  const ti = lastIdxAtOrBefore(tk5, asOf);
+  if (ti >= 36) {
+    const r = (a, b) => { let bu = 0, se = 0; for (let i = a; i <= b; i++) { bu += tk5[i][1]; se += tk5[i][2]; } return se > 0 ? bu / se : null; };
+    const r1 = r(ti - 11, ti), r3 = r(ti - 35, ti);
+    if (r1 != null && r3 != null) {
+      if (side === "long" && r1 >= th.takerLong1h && r3 >= th.takerLong3h) add("taker", `taker buy/sell 1h ${r1.toFixed(2)} · 3h ${r3.toFixed(2)}`, { r1, r3 });
+      if (side === "short" && r1 <= th.takerShort1h && r3 <= th.takerShort3h) add("taker", `taker buy/sell 1h ${r1.toFixed(2)} · 3h ${r3.toFixed(2)}`, { r1, r3 });
+    }
+  }
+
+  // F5 quiet inflow (non-directional support)
+  if (pi >= 288) {
+    let v2 = 0, v22 = 0, hi = -Infinity, lo = Infinity;
+    for (let i = pi - 23; i <= pi; i++) { v2 += p5[i][4]; hi = Math.max(hi, p5[i][1]); lo = Math.min(lo, p5[i][2]); }
+    for (let i = pi - 287; i < pi - 23; i++) v22 += p5[i][4];
+    const mult = v22 > 0 ? v2 / 24 / (v22 / 264) : 0;
+    const rng = ((hi - lo) / lo) * 100;
+    if (mult >= th.inflowMult && rng <= th.inflowMaxRangePct) add("inflow", `วอลุ่ม 2 ชม. ×${mult.toFixed(1)} ของเฉลี่ย 22 ชม. ขณะกรอบราคา ${rng.toFixed(1)}%`, { mult, rng });
+  }
+
+  // F6 spot leading
+  const s5 = data.spot5;
+  if (s5 && s5.length) {
+    const si = lastIdxAtOrBefore(s5, asOf);
+    if (si >= 300) {
+      let v1 = 0, tb = 0, v24 = 0;
+      for (let i = si - 11; i <= si; i++) { v1 += s5[i][2]; tb += s5[i][3]; }
+      for (let i = si - 299; i < si - 11; i++) v24 += s5[i][2];
+      const mult = v24 > 0 ? v1 / (v24 / 24) : 0;
+      const buyPct = v1 > 0 ? (tb / v1) * 100 : 50;
+      if (mult >= th.spotVolMult) {
+        if (side === "long" && buyPct >= th.spotTakerLongMin) add("spot", `spot วอลุ่ม 1 ชม. ×${mult.toFixed(1)} · spot ซื้อ ${buyPct.toFixed(0)}%`, { mult, buyPct });
+        if (side === "short" && buyPct <= th.spotTakerShortMax) add("spot", `spot วอลุ่ม 1 ชม. ×${mult.toFixed(1)} · spot ขาย ${(100 - buyPct).toFixed(0)}%`, { mult, buyPct });
+      }
+    }
+  }
+
+  // F7 short only: pumped then fading
+  if (side === "short" && data.day && pi >= 0) {
+    const { high24, low24 } = data.day;
+    const pump = low24 > 0 ? (high24 / low24 - 1) * 100 : 0;
+    const below = high24 > 0 ? (1 - p5[pi][3] / high24) * 100 : 0;
+    if (pump >= th.fadeMinPumpPct && below >= th.fadeMinBelowHighPct) add("fade", `24h พุ่ง ${pump.toFixed(0)}% แล้วย่อจากยอด ${below.toFixed(1)}%`, { pump, below });
+  }
+
+  const directional = factors.filter((f) => f.key !== "oiBuild" && f.key !== "inflow").length;
+  return { count: factors.length, directional, factors };
+}
+
+/**
+ * Price TIMING trigger used after confluence (looser than DEFAULT_THRESHOLDS — the price move is
+ * never sufficient on its own; evidence factors do the filtering).
+ */
+export const TRIGGER_THRESHOLDS = {
+  ...DEFAULT_THRESHOLDS,
+  minMovePct: 1.0,
+  maxMovePct: 6,
+  maxBaseRangePct: 4,
+  minVolMult: 3,
+  minVol5mUsd: 50_000,
+  max24hAbsPct: 8,
+  opposite24hLimitPct: 30,
+};
+
+/** Minimum evidence required per tier (tuned for precision; see scripts/backtest-early-confluence.mjs). */
+export const CONFLUENCE_RULES = {
+  ignitionMinFactors: 3,
+  ignitionMinDirectional: 1,
+  watchMinFactors: 3,
+  watchMinDirectional: 2,
+};
