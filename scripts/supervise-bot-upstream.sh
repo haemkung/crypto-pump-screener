@@ -28,6 +28,14 @@ NEXT_FAIL_THRESHOLD="${BOT_UPSTREAM_NEXT_FAIL_THRESHOLD:-3}"
 RESTART_BACKOFF_SEC="${BOT_UPSTREAM_RESTART_BACKOFF_SEC:-3}"
 CF_DOWNLOAD_URL="${CLOUDFLARED_DOWNLOAD_URL:-https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64}"
 
+# Early-ignition Telegram daemon (local Node, ~60s cycle). Set EARLY_IGNITION_ENABLED=0 to disable.
+EARLY_ENABLED="${EARLY_IGNITION_ENABLED:-1}"
+EARLY_LOG_DIR="$ROOT/logs/early-ignition"
+EARLY_LOG="$EARLY_LOG_DIR/daemon.log"
+EARLY_PID_FILE="$EARLY_LOG_DIR/daemon.pid"
+EARLY_SCRIPT="$ROOT/scripts/early-ignition-daemon.mjs"
+EARLY_LOG_MAX_BYTES="${EARLY_LOG_MAX_BYTES:-5000000}"
+
 NEXT_FAILS=0
 STARTED_AT="$(date -Iseconds)"
 
@@ -138,6 +146,7 @@ start_tunnel() {
   log "starting named cloudflared tunnel"
   # shellcheck disable=SC2094
   (
+    exec 9>&-
     export TUNNEL_TOKEN
     TUNNEL_TOKEN="$(cat "$TOKEN_FILE")"
     exec "$CF_BIN" tunnel --no-autoupdate run --token "$TUNNEL_TOKEN"
@@ -168,6 +177,7 @@ start_next() {
   log "starting local Next upstream on :$NEXT_PORT"
   (
     cd "$ROOT"
+    exec 9>&- # children must not inherit the supervisor flock (else a restarted supervisor cannot start)
     export DISABLE_BOT_UPSTREAM=1
     export BOT_ROLE=upstream
     # Preserve Telegram token if already in environment for alert scripts / routes
@@ -293,10 +303,49 @@ health_tick() {
   write_status "$next_ok" "$tunnel_ok" "$code" "$note"
 }
 
+find_early_pid() {
+  if [[ -f "$EARLY_PID_FILE" ]]; then
+    local p
+    p="$(cat "$EARLY_PID_FILE" 2>/dev/null || true)"
+    if [[ -n "${p:-}" ]] && kill -0 "$p" 2>/dev/null; then
+      if tr '\0' ' ' <"/proc/$p/cmdline" 2>/dev/null | grep -q 'early-ignition-daemon'; then
+        echo "$p"
+        return 0
+      fi
+    fi
+  fi
+  pgrep -af "node .*scripts/early-ignition-daemon.mjs" 2>/dev/null | grep -v -- '--dry-run' | awk '{print $1}' | head -1 || true
+}
+
+ensure_early() {
+  [[ "$EARLY_ENABLED" == "1" ]] || return 0
+  [[ -f "$EARLY_SCRIPT" ]] || return 0
+  mkdir -p "$EARLY_LOG_DIR"
+  # keep the daemon log bounded (child appends with O_APPEND, truncation is safe)
+  if [[ -f "$EARLY_LOG" ]] && [[ "$(stat -c %s "$EARLY_LOG" 2>/dev/null || echo 0)" -gt "$EARLY_LOG_MAX_BYTES" ]]; then
+    tail -n 3000 "$EARLY_LOG" >"$EARLY_LOG.tmp" 2>/dev/null && cat "$EARLY_LOG.tmp" >"$EARLY_LOG" && rm -f "$EARLY_LOG.tmp"
+  fi
+  local p
+  p="$(find_early_pid)"
+  if [[ -n "${p:-}" ]]; then
+    echo "$p" >"$EARLY_PID_FILE"
+    return 0
+  fi
+  log "early-ignition daemon not running — starting"
+  (
+    cd "$ROOT"
+    exec 9>&- # do not let the daemon inherit the supervisor flock
+    exec node "$EARLY_SCRIPT"
+  ) >>"$EARLY_LOG" 2>&1 &
+  echo "$!" >"$EARLY_PID_FILE"
+  sleep "$RESTART_BACKOFF_SEC"
+}
+
 main_loop() {
   log "bot-upstream supervisor start root=$ROOT logDir=$LOG_DIR"
   ensure_cloudflared
   ensure_children
+  ensure_early
   # Initial status
   health_tick
   while true; do
@@ -311,6 +360,7 @@ main_loop() {
       restart_next
     fi
     health_tick
+    ensure_early
   done
 }
 

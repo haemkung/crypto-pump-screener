@@ -61,3 +61,8 @@ next-env.d.ts
 
 # bot-upstream supervisor runtime
 /logs/
+
+# early-ignition daemon runtime (local alert log / dedupe state / Telegram switches)
+.early-alert-state.json
+/data/early-alerts.json
+/data/early-alert-settings.json

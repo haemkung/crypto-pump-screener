@@ -57,6 +57,30 @@ curl -sS -o /dev/null -w '%{http_code}\n' https://crypto-pump-screener.jakahome2
 curl -sS -o /dev/null -w '%{http_code}\n' https://haemkung.github.io/crypto-pump-screener/
 ```
 
+## Early tiers daemon (เริ่มขยับ / เริ่มทุบ / กำลังสะสม / กำลังแจกของ)
+
+`scripts/early-ignition-daemon.mjs` runs **locally only** (never on Workers) and is started + auto-restarted by
+`scripts/supervise-bot-upstream.sh` (`ensure_early` every poll; disable with `EARLY_IGNITION_ENABLED=0`).
+Start the supervisor from a shell that has `TELEGRAM_BOT_TOKEN` exported (the daemon inherits it; chat id from `.telegram-chat-id`).
+
+- **Ignition** (every ~60s): 1× `/fapi/v1/ticker/24hr` → price snapshots → 1m klines only for movers (cap 40).
+  Fires on +/-1.2–4.5% in 5–15m from a tight 2h base (≤2%), close beyond the prior 4h range, 5m vol ≥6× prior 1h,
+  24h still within ±3%, ≥1.3% (long) / 1.5% (short) move vs BTC. Dedupe 2h/symbol/side (unless new +3% leg), max 3/cycle, 8/h, 20/24h.
+- **Watch** (every 5 min): rotating batch of ≤120 `openInterestHist` calls. กำลังสะสม = 3h price range ≤3.5% + OI ≥+6%, |24h|<8%.
+  กำลังแจกของ = 24h pump ≥15%, price ≥2% under 24h high, 3h range ≤5%, OI ≥+5%. Hits enriched with funding, long/short ratios, taker ratio, spot volume.
+  Dedupe 4h/symbol/tier, max 2/cycle, 10/24h.
+- Telegram switches: `data/early-alert-settings.json` (`sendIgnitionLong`, `sendIgnitionShort`, `sendWatchLong`, `sendWatchShort`).
+  Short tiers ship **off**; suppressed signals are still logged + graded.
+- Log / self-grading: `data/early-alerts.json` (5m/15m/60m + path rule; kept separate from `alert-log.json` so the main learning weights are untouched).
+  Dedupe state `.early-alert-state.json`; daemon log + status under `logs/early-ignition/`.
+
+```bash
+npm run early:dry                         # one dry-run cycle, no Telegram, no state writes
+tail -f logs/early-ignition/daemon.log
+cat logs/early-ignition/status.json | jq .
+npm run early:backtest -- --cache /tmp/k1m --hours 24 --symbols QNTUSDT,BTCUSDT
+```
+
 ## GitHub Pages
 
 Source: branch `main`, folder `/docs`.
