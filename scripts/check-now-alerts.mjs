@@ -33,6 +33,13 @@ const LEARNED_WEIGHTS_FILE = resolve(DATA_DIR, "learned-weights.json");
 const ALERTS_URL = process.env.ALERTS_NOW_URL || "http://127.0.0.1:3000/api/alerts/now";
 const DEDUPE_MS = 30 * 60 * 1000;
 
+/** Hard-off: score-based NOW / ต้นทาง·เข้าตอนนี้ Telegram path loses; early-ignition-daemon owns signals. */
+const NOW_ALERTS_DISABLED = process.env.NOW_ALERTS_ENABLED === "1" ? false : true;
+if (NOW_ALERTS_DISABLED) {
+  console.log("now_alerts=disabled (score-based NOW path off; early-ignition only)");
+  process.exit(0);
+}
+
 const DEFAULT_NOW_LONG = 55;
 const DEFAULT_NOW_SHORT = 50;
 

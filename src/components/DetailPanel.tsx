@@ -150,13 +150,13 @@ export function DetailPanel({
       </div>
 
       {(row.urgency === "now_long" || row.urgency === "now_short") && (
-        <div className="mb-4 animate-pulse rounded-xl border-2 border-orange-500/70 bg-gradient-to-br from-orange-950 to-rose-950 p-3">
+        <div className="mb-4 rounded-lg border border-zinc-700 bg-zinc-950/50 p-3">
           <div className="mb-1 flex items-center gap-2">
-            <span className="rounded bg-orange-500 px-1.5 py-0.5 text-[10px] font-black uppercase text-black">
-              เข้า
+            <span className="rounded bg-zinc-700 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-zinc-200">
+              เฝ้าดู
             </span>
-            <span className="text-sm font-bold text-orange-100">
-              {isShort ? "ต้นทาง Short · เข้าตอนนี้" : "ต้นทาง · เข้าตอนนี้"}
+            <span className="text-sm font-medium text-zinc-300">
+              คะแนนตาราง (ไม่ใช่สัญญาณเข้า)
             </span>
             <span
               className={`rounded px-1.5 py-0.5 text-[10px] font-black ${qualityBadgeClass(
@@ -166,10 +166,11 @@ export function DetailPanel({
               {(isShort ? row.shortQualityGrade : row.qualityGrade) ?? "C"}
             </span>
           </div>
-          <p className="mb-1 text-xs text-orange-100/90">{row.urgencyReasonTh}</p>
-          <p className="mb-2 text-xs font-medium text-rose-200">{row.missRiskTh}</p>
-          <p className="text-[10px] leading-relaxed text-orange-200/60">
-            &quot;เข้าตอนนี้&quot; เป็น heuristic จากแพทเทิร์น ไม่ใช่คำสั่งซื้อ/ขาย และไม่ใช่คำแนะนำการลงทุน
+          {row.urgencyReasonTh ? (
+            <p className="mb-1 text-xs text-zinc-400">{row.urgencyReasonTh}</p>
+          ) : null}
+          <p className="text-[10px] leading-relaxed text-zinc-500">
+            ใช้แผงระยะต้นด้านบนเป็นหลัก — คะแนน/urgency ในตารางเป็น screening เท่านั้น ไม่ใช่คำสั่งเทรด
           </p>
         </div>
       )}
@@ -192,10 +193,10 @@ export function DetailPanel({
       </div>
 
       {entry && (
-        <div className="mb-4 rounded-lg border border-zinc-700 bg-zinc-950/50 p-3">
+        <div className="mb-4 rounded-lg border border-zinc-800 bg-zinc-950/40 p-3">
           <div className="mb-2 flex items-center gap-2">
-            <h4 className="text-sm font-semibold text-amber-300">
-              {isShort ? "จุด Short (heuristic)" : "จุดเข้า (heuristic)"}
+            <h4 className="text-sm font-semibold text-zinc-400">
+              บริบทคะแนน (ไม่ใช่สัญญาณเข้า)
             </h4>
             <span
               className={`rounded-md px-1.5 py-0.5 text-[10px] font-medium ring-1 ${entryModeBadgeClass(entry.mode)}`}
@@ -204,21 +205,19 @@ export function DetailPanel({
             </span>
           </div>
           {entry.entryLow != null && entry.entryHigh != null ? (
-            <p className="mb-1 font-mono text-sm text-zinc-200">
-              โซน: {fmtPrice(entry.entryLow)} – {fmtPrice(entry.entryHigh)}
+            <p className="mb-1 font-mono text-sm text-zinc-400">
+              โซนอ้างอิง: {fmtPrice(entry.entryLow)} – {fmtPrice(entry.entryHigh)}
             </p>
           ) : (
-            <p className="mb-1 text-sm text-zinc-400">ไม่มีโซนเข้าแนะนำ</p>
+            <p className="mb-1 text-sm text-zinc-500">ไม่มีโซนอ้างอิง</p>
           )}
-          <p className="mb-1 text-xs text-zinc-300">{entry.entryNote}</p>
-          <p className="mb-2 text-xs text-zinc-500">
-            <span className="text-zinc-400">Invalidation:</span>{" "}
+          <p className="mb-1 text-xs text-zinc-500">{entry.entryNote}</p>
+          <p className="mb-2 text-xs text-zinc-600">
+            <span className="text-zinc-500">Invalidation:</span>{" "}
             {entry.invalidation}
           </p>
-          <p className="text-[10px] leading-relaxed text-amber-200/70">
-            {isShort
-              ? "จุด Short เป็น heuristic จากแพทเทิร์น ไม่ใช่คำสั่งขายชอร์ต — ขาลงอาจเด้งแรง / squeeze ได้"
-              : "จุดเข้าเป็น heuristic จากแพทเทิร์น ไม่ใช่คำสั่งซื้อ"}
+          <p className="text-[10px] leading-relaxed text-zinc-500">
+            screening เท่านั้น — ดูสัญญาณเข้าที่แผงระยะต้นด้านบน
           </p>
         </div>
       )}

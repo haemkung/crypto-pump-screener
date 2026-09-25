@@ -10,7 +10,6 @@ import {
   fmtRatio,
   fmtVol,
   flagLabelTh,
-  entryModeBadgeClass,
 } from "@/lib/format";
 import { DetailPanel } from "./DetailPanel";
 import { FeedbackButtons } from "./FeedbackButtons";
@@ -48,10 +47,6 @@ function writeScreenLastGood(json: ScreenResponse): void {
   }
 }
 
-function isEnterNow(u: ScreenRow["urgency"]): boolean {
-  return u === "now_long" || u === "now_short";
-}
-
 export function Screener() {
   const [data, setData] = useState<ScreenResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -63,7 +58,6 @@ export function Screener() {
   const [minVol, setMinVol] = useState(1_000_000);
   const [minScore, setMinScore] = useState(20);
   const [hideLate, setHideLate] = useState(true);
-  const [nowOnly, setNowOnly] = useState(false);
   const [selected, setSelected] = useState<ScreenRow | null>(null);
   const [lastFetchLocal, setLastFetchLocal] = useState<string>("—");
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
@@ -186,10 +180,6 @@ export function Screener() {
     if (!data) return [];
     const rows = data.rows.filter((r) => {
       if (r.quoteVolume < minVol) return false;
-      if (nowOnly) {
-        if (mode === "long") return r.urgency === "now_long";
-        return r.urgency === "now_short";
-      }
       if (mode === "long") {
         if (r.score < minScore) return false;
         if (hideLate && r.flags.includes("late_chase")) return false;
@@ -201,29 +191,13 @@ export function Screener() {
     });
 
     const sorted = [...rows];
-    const rank = (u: ScreenRow["urgency"], side: "long" | "short") => {
-      if (side === "short") {
-        if (u === "now_short") return 2;
-        return 0;
-      }
-      if (u === "now_long") return 2;
-      return 0;
-    };
     if (mode === "short") {
-      sorted.sort((a, b) => {
-        const d = rank(b.urgency, "short") - rank(a.urgency, "short");
-        if (d !== 0) return d;
-        return b.shortScore - a.shortScore;
-      });
+      sorted.sort((a, b) => b.shortScore - a.shortScore);
     } else {
-      sorted.sort((a, b) => {
-        const d = rank(b.urgency, "long") - rank(a.urgency, "long");
-        if (d !== 0) return d;
-        return b.score - a.score;
-      });
+      sorted.sort((a, b) => b.score - a.score);
     }
     return sorted;
-  }, [data, minVol, minScore, hideLate, mode, nowOnly]);
+  }, [data, minVol, minScore, hideLate, mode]);
 
   const visible = useMemo(
     () => filtered.slice(0, pageSize),
@@ -292,7 +266,7 @@ export function Screener() {
           อาจผิดพลาด / ล่าช้า — ใช้ศึกษาและคัดกรองเบื้องต้นเท่านั้น ความเสี่ยงสูง
           {isShort && (
             <span className="mt-1 block text-rose-200/90">
-              โหมด Short: ราคาขาลงอาจเด้งแรง / long squeeze ได้ — จุด Short เป็น heuristic
+              โหมด Short: ราคาขาลงอาจเด้งแรง / long squeeze ได้ — คะแนนเป็น heuristic
               ไม่ใช่คำสั่งเทรด
             </span>
           )}
@@ -381,17 +355,6 @@ export function Screener() {
               : "เช่น BR ที่ +192% จะหายจากตารางหลัง >50% โดยตั้งใจ (ไม่ไล่ราคา) — จับตอนต้นที่แผงระยะต้นด้านบน"}
           </p>
         </div>
-        <label htmlFor="now-only" className="flex items-center gap-2 text-sm font-semibold text-orange-300">
-          <input
-            id="now-only"
-            name="nowOnly"
-            type="checkbox"
-            checked={nowOnly}
-            onChange={(e) => setNowOnly(e.target.checked)}
-            className="size-4 accent-orange-500"
-          />
-          แสดงเฉพาะตอนนี้
-        </label>
         <label htmlFor="page-size" className="flex flex-col gap-1 text-xs text-zinc-400">
           แสดงต่อหน้า
           <select
@@ -513,9 +476,6 @@ export function Screener() {
                   {isShort ? "Short Score" : "Score"}
                 </th>
                 <th className="px-3 py-2">เกรด</th>
-                <th className="px-3 py-2">
-                  {isShort ? "จุด Short" : "จุดเข้า"}
-                </th>
                 <th className="px-3 py-2">Flags</th>
               </tr>
             </thead>
@@ -525,7 +485,6 @@ export function Screener() {
                 const score = isShort ? r.shortScore : r.score;
                 const flagsRaw = isShort ? r.shortFlags : r.flags;
                 const flags = Array.isArray(flagsRaw) ? flagsRaw : [];
-                const entry = isShort ? r.shortEntry : r.entry;
                 const grade =
                   (isShort ? r.shortQualityGrade : r.qualityGrade) ?? "C";
                 const fundingHot = isShort
@@ -537,13 +496,11 @@ export function Screener() {
                     key={r.symbol}
                     onClick={() => setSelected(r)}
                     className={`cursor-pointer border-t border-zinc-900 transition-colors hover:bg-zinc-900/80 ${
-                      isEnterNow(r.urgency)
-                        ? "bg-orange-950/50 ring-1 ring-inset ring-orange-500/40"
-                        : active
-                          ? isShort
-                            ? "bg-rose-950/40"
-                            : "bg-emerald-950/40"
-                          : ""
+                      active
+                        ? isShort
+                          ? "bg-rose-950/40"
+                          : "bg-emerald-950/40"
+                        : ""
                     }`}
                   >
                     <td className="px-3 py-2 font-mono text-[11px] text-zinc-600">
@@ -552,11 +509,6 @@ export function Screener() {
                     <td className="px-3 py-2 font-semibold text-white">
                       <span className="inline-flex items-center gap-1.5">
                         {r.baseAsset}
-                        {isEnterNow(r.urgency) && (
-                          <span className="animate-pulse rounded bg-orange-500 px-1 py-0.5 text-[9px] font-black uppercase tracking-wide text-black">
-                            เข้า
-                          </span>
-                        )}
                         {r.mtfAlign != null && r.mtfAlign === "mtf_align" && (
                           <span className="rounded bg-emerald-950 px-1 py-0.5 text-[8px] text-emerald-400">
                             MTF✓
@@ -622,54 +574,6 @@ export function Screener() {
                       </span>
                     </td>
                     <td className="px-3 py-2">
-                      {entry ? (
-                        <div className="flex flex-col gap-0.5">
-                          {entry.mode === "early_entry" ||
-                          entry.mode === "early_short" ? (
-                            <span
-                              className={`inline-flex w-fit rounded-md px-1.5 py-0.5 text-[10px] font-medium ring-1 ${entryModeBadgeClass(entry.mode)}`}
-                            >
-                              {entry.labelTh}
-                            </span>
-                          ) : entry.mode === "too_late" ||
-                            entry.mode === "too_late_short" ? (
-                            <span
-                              className={`inline-flex w-fit rounded-md px-1.5 py-0.5 text-[10px] font-medium ring-1 ${entryModeBadgeClass(entry.mode)}`}
-                            >
-                              {entry.labelTh}
-                            </span>
-                          ) : (
-                            <span className="inline-flex w-fit rounded-md px-1.5 py-0.5 text-[10px] font-medium text-zinc-500 ring-1 ring-zinc-700">
-                              เฝ้าดู
-                            </span>
-                          )}
-                          {r.urgencyLabelTh && isEnterNow(r.urgency) && (
-                            <span className="max-w-[180px] text-[10px] font-semibold leading-tight text-orange-300">
-                              ต้นทาง · เข้าตอนนี้
-                            </span>
-                          )}
-                          {entry.entryLow != null &&
-                          entry.entryHigh != null &&
-                          (entry.mode === "early_entry" ||
-                            entry.mode === "early_short") ? (
-                            <span className="font-mono text-[10px] text-zinc-500">
-                              {fmtPrice(entry.entryLow)}–
-                              {fmtPrice(entry.entryHigh)}
-                            </span>
-                          ) : entry.mode === "too_late" ||
-                            entry.mode === "too_late_short" ? (
-                            <span className="text-[10px] text-rose-500/80">
-                              {isShort ? "ไม่ไล่ Short" : "ไม่แนะนำไล่"}
-                            </span>
-                          ) : (
-                            <span className="text-[10px] text-zinc-600">—</span>
-                          )}
-                        </div>
-                      ) : (
-                        <span className="text-[10px] text-zinc-600">—</span>
-                      )}
-                    </td>
-                    <td className="px-3 py-2">
                       <div className="flex max-w-[220px] flex-wrap gap-1">
                         {flags.slice(0, 4).map((f) => (
                           <span
@@ -692,7 +596,7 @@ export function Screener() {
               {!loading && filtered.length === 0 && (
                 <tr>
                   <td
-                    colSpan={isShort ? 10 : 11}
+                    colSpan={isShort ? 9 : 10}
                     className="px-3 py-8 text-center text-zinc-500"
                   >
                     ไม่มีแถวที่ตรงเงื่อนไข — ลองลด min volume / score
