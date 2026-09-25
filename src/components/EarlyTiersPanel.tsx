@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiUrl } from "@/lib/apiBase";
 
 type Factor = { key: string; labelTh?: string; detailTh: string };
@@ -48,6 +48,9 @@ type Resp = {
 
 const REFRESH_MS = 60_000;
 const LS_KEY = "cps-early-tiers-last-good";
+const FRESH_MS = 10 * 60_000;
+const STATUS_MS = 2600;
+const TICKER_MS = 1800;
 const LABELS: Record<string, string> = {
   oiBuild: "OI สะสมขณะราคานิ่ง",
   funding: "funding เอียงฝั่งตรงข้าม",
@@ -65,6 +68,15 @@ const TIER_NAMES: Record<string, string> = {
   ignition_short: "🔻 เริ่มทุบ (Short)",
 };
 const TG_KEY: Record<string, string> = { watch_long: "watchLong", watch_short: "watchShort", ignition_long: "ignitionLong", ignition_short: "ignitionShort" };
+
+const AI_STATUS_LINES = [
+  "AI กำลังสแกนหลักฐานซ่อน…",
+  "กำลังชั่ง OI / funding / L-S / taker…",
+  "โมเดลกำลังรีวิวสัญญาณ…",
+  "รอ confluence ≥3 ข้อ…",
+];
+
+const PLACEHOLDER_SYMS = ["BTC", "ETH", "SOL", "BNB", "XRP", "DOGE", "AVAX", "LINK", "NEAR", "SUI"];
 
 function ago(iso: string | null | undefined): string {
   if (!iso) return "?";
@@ -98,6 +110,14 @@ function tgText(t: string): string {
   if (t === "ai_veto") return "ไม่ส่ง: AI วีโต้";
   return t;
 }
+function isFresh(iso: string | null | undefined): boolean {
+  if (!iso) return false;
+  const ms = Date.now() - Date.parse(iso);
+  return Number.isFinite(ms) && ms >= 0 && ms < FRESH_MS;
+}
+function shortSym(s: string): string {
+  return s.replace(/USDT$/i, "");
+}
 
 function PlanBox({ p, side }: { p: Plan; side: "long" | "short" }) {
   const pct = (x: number) => fmtPct((x / p.entry - 1) * 100);
@@ -112,7 +132,6 @@ function PlanBox({ p, side }: { p: Plan; side: "long" | "short" }) {
   );
 }
 
-
 function AiBadge({ ai }: { ai: AiReview }) {
   if (!ai || ai.skipped) return null;
   const style =
@@ -123,46 +142,113 @@ function AiBadge({ ai }: { ai: AiReview }) {
         : "bg-zinc-700/70 text-zinc-300";
   const label = ai.action === "boost" ? "บูสต์" : ai.action === "veto" ? "วีโต้" : "ผ่าน";
   return (
-    <span className={`ml-1 rounded px-1.5 py-0.5 text-[10px] font-medium ${style}`} title={ai.reasonTh}>
+    <span className={`et-ai-shimmer ml-1 rounded px-1.5 py-0.5 text-[10px] font-medium ${style}`} title={ai.reasonTh}>
       AI {label}
     </span>
   );
 }
 
-function RowCard({ r }: { r: Row }) {
-  const long = r.side === "long";
+function ThinkingDots() {
   return (
-    <li className={`rounded-lg border px-3 py-2 ${long ? "border-emerald-800/60 bg-emerald-950/30" : "border-rose-800/60 bg-rose-950/30"}`}>
-      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+    <span className="ml-1.5 inline-flex items-center gap-0 align-middle text-[10px] text-zinc-400" aria-label="AI คิดอยู่">
+      <span>AI คิดอยู่</span>
+      <span className="ml-0.5 inline-flex items-end" aria-hidden>
+        <span className="et-thinking-dot" />
+        <span className="et-thinking-dot" />
+        <span className="et-thinking-dot" />
+      </span>
+    </span>
+  );
+}
+
+function LiveChip() {
+  return (
+    <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-emerald-800/50 bg-emerald-950/50 px-1.5 py-0.5 text-[9px] font-semibold tracking-wider text-emerald-300">
+      <span className="et-live-dot" aria-hidden />
+      LIVE
+    </span>
+  );
+}
+
+function AiLiveStrip({ symbols }: { symbols: string[] }) {
+  const [statusIdx, setStatusIdx] = useState(0);
+  const [tickIdx, setTickIdx] = useState(0);
+  const pool = symbols.length > 0 ? symbols : PLACEHOLDER_SYMS;
+
+  useEffect(() => {
+    const id = setInterval(() => setStatusIdx((i) => (i + 1) % AI_STATUS_LINES.length), STATUS_MS);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    const id = setInterval(() => setTickIdx((i) => (i + 1) % Math.max(pool.length, 1)), TICKER_MS);
+    return () => clearInterval(id);
+  }, [pool.length]);
+
+  const sym = pool[tickIdx % pool.length] ?? "—";
+  const metrics = ["OI Δ", "fund", "L/S", "taker", "spot", "conf"];
+  const metric = metrics[tickIdx % metrics.length];
+
+  return (
+    <div className="mb-3 flex flex-col gap-1.5 rounded-lg border border-cyan-900/40 bg-gradient-to-r from-zinc-950 via-zinc-900/90 to-zinc-950 px-3 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+      <div className="flex min-w-0 items-center gap-2">
+        <span className="et-orb" aria-hidden />
+        <span key={statusIdx} className="et-status-line truncate text-xs font-medium text-cyan-100/90">
+          {AI_STATUS_LINES[statusIdx]}
+        </span>
+      </div>
+      <div className="flex min-w-0 items-center gap-2 overflow-hidden">
+        <span className="shrink-0 text-[10px] uppercase tracking-wider text-zinc-500">scan</span>
+        <span key={`${sym}-${tickIdx}`} className="et-ticker truncate text-[11px] text-emerald-300/90">
+          {sym} · {metric} · conf≥3 · weighing…
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function RowCard({ r, animKey }: { r: Row; animKey: number }) {
+  const long = r.side === "long";
+  const fresh = isFresh(r.flaggedAt);
+  const hasAi = !!(r.ai && !r.ai.skipped);
+  return (
+    <li className={`et-card rounded-lg border px-3 py-2 ${long ? "et-card-long border-emerald-800/60 bg-emerald-950/30" : "et-card-short border-rose-800/60 bg-rose-950/30"}`}>
+      <span className="et-scan-line" aria-hidden />
+      <div className="relative z-[2] flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <div className="font-semibold">
           <span className="mr-1">{title(r)}</span>
-          <span className="text-zinc-100">{r.symbol.replace(/USDT$/, "")}</span>
+          <span className="text-zinc-100">{shortSym(r.symbol)}</span>
           <span className={`ml-2 rounded px-1.5 py-0.5 text-[10px] uppercase ${long ? "bg-emerald-800/60 text-emerald-100" : "bg-rose-800/60 text-rose-100"}`}>{long ? "Long" : "Short"}</span>
-          {r.ai && <AiBadge ai={r.ai} />}
+          {hasAi ? <AiBadge ai={r.ai!} /> : <ThinkingDots />}
         </div>
         <div className="text-xs text-zinc-300">
           ราคา {fmtPrice(r.price)} · 24h {fmtPct(r.pct24h)} · หลักฐาน <strong>{r.factorCount}</strong> ข้อ
         </div>
       </div>
-      {r.plan && <PlanBox p={r.plan} side={r.side} />}
-      <ol className="mt-1 list-decimal space-y-0.5 pl-5 text-xs text-zinc-200">
+      {r.plan && <div className="relative z-[2]"><PlanBox p={r.plan} side={r.side} /></div>}
+      <ol className="relative z-[2] mt-1 list-decimal space-y-0.5 pl-5 text-xs text-zinc-200">
         {r.factors.map((f, i) => (
-          <li key={i}>
+          <li
+            key={`${r.id}-${f.key}-${i}-${fresh ? animKey : "static"}`}
+            className={fresh ? "et-factor-fresh" : undefined}
+            style={fresh ? { animationDelay: `${i * 90}ms` } : undefined}
+          >
+            {fresh && <span className="et-factor-check mr-1 text-emerald-400" aria-hidden>✓</span>}
             <span className="text-zinc-400">{f.labelTh || LABELS[f.key] || f.key}:</span> {f.detailTh}
           </li>
         ))}
       </ol>
       {r.trigger && (
-        <div className="mt-1 text-[11px] text-zinc-400">
+        <div className="relative z-[2] mt-1 text-[11px] text-zinc-400">
           จังหวะราคา: {r.trigger.moveWindow}m {fmtPct(r.trigger.movePct)} · วอลุ่ม ×{r.trigger.volMult} · breakout {fmtPct(r.trigger.breakoutPct)}
         </div>
       )}
       {r.ai?.reasonTh && !r.ai.skipped && (
-        <div className="mt-1 truncate text-[11px] text-zinc-400" title={r.ai.reasonTh}>
+        <div className="relative z-[2] mt-1 truncate text-[11px] text-zinc-400" title={r.ai.reasonTh}>
           🤖 {r.ai.reasonTh}
         </div>
       )}
-      <div className="mt-1 text-[11px] text-zinc-500">
+      <div className="relative z-[2] mt-1 text-[11px] text-zinc-500">
         ติดครั้งแรก {ago(r.firstFlaggedAt)} · ล่าสุด {ago(r.flaggedAt)} · Telegram: {tgText(r.telegram)}
         {r.trade ? ` · ผล: ${r.trade.tp1 ? "ถึง TP1" : "ไม่ถึง TP1"} ${fmtR(r.trade.r)}` : ""}
       </div>
@@ -219,15 +305,19 @@ function TierStats({ data }: { data: Resp | null }) {
   );
 }
 
-function Group({ title, hint, rows, empty }: { title: string; hint: string; rows: Row[]; empty: string }) {
+function Group({ title, hint, rows, empty, animKey }: { title: string; hint: string; rows: Row[]; empty: string; animKey: number }) {
   return (
     <div className="min-w-0 flex-1">
-      <h3 className="text-sm font-semibold text-zinc-100">{title} <span className="text-xs font-normal text-zinc-400">({rows.length})</span></h3>
+      <h3 className="flex flex-wrap items-center text-sm font-semibold text-zinc-100">
+        {title}{" "}
+        <span className="text-xs font-normal text-zinc-400">({rows.length})</span>
+        <LiveChip />
+      </h3>
       <p className="mb-2 text-[11px] text-zinc-500">{hint}</p>
       {rows.length === 0 ? (
         <div className="rounded-lg border border-dashed border-zinc-700 px-3 py-4 text-center text-xs text-zinc-400">{empty}</div>
       ) : (
-        <ul className="space-y-2">{rows.map((r) => <RowCard key={r.id} r={r} />)}</ul>
+        <ul className="space-y-2">{rows.map((r) => <RowCard key={r.id} r={r} animKey={animKey} />)}</ul>
       )}
     </div>
   );
@@ -237,6 +327,7 @@ export function EarlyTiersPanel() {
   const [data, setData] = useState<Resp | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [stale, setStale] = useState(false);
+  const [animKey, setAnimKey] = useState(0);
 
   const load = useCallback(async () => {
     try {
@@ -246,6 +337,7 @@ export function EarlyTiersPanel() {
       setData(j);
       setStale(res.headers.get("X-Early-Tiers-Stale") === "1");
       setError(null);
+      setAnimKey((k) => k + 1);
       try { localStorage.setItem(LS_KEY, JSON.stringify(j)); } catch { /* ignore */ }
     } catch (e) {
       setError(String(e instanceof Error ? e.message : e));
@@ -263,6 +355,20 @@ export function EarlyTiersPanel() {
     return () => clearInterval(id);
   }, [load]);
 
+  const scanSymbols = useMemo(() => {
+    const rows = [...(data?.watch ?? []), ...(data?.ignition ?? [])];
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const r of rows) {
+      const s = shortSym(r.symbol);
+      if (!seen.has(s)) {
+        seen.add(s);
+        out.push(s);
+      }
+    }
+    return out;
+  }, [data]);
+
   const rules = data?.rules;
   const oldMs = data?.updatedAt ? Date.now() - Date.parse(data.updatedAt) : 0;
   return (
@@ -274,6 +380,7 @@ export function EarlyTiersPanel() {
           {rules ? ` · ต้องมีหลักฐานซ่อน ≥3 ข้อเสมอ` : ""}
         </span>
       </div>
+      <AiLiveStrip symbols={scanSymbols} />
       {(error || stale || oldMs > 10 * 60e3) && (
         <div className="mb-2 rounded border border-amber-800/60 bg-amber-950/40 px-2 py-1 text-xs text-amber-200">
           {data ? `แสดงข้อมูลล่าสุดที่มี (อัปเดต ${ago(data.updatedAt)})` : "ดึงข้อมูลไม่ได้"}{error ? ` · ${error}` : ""}
@@ -286,12 +393,14 @@ export function EarlyTiersPanel() {
           hint="OI สะสมขณะราคานิ่ง + หลักฐานอื่น (funding, L/S, taker, spot, top trader)"
           rows={data?.watch ?? []}
           empty="ตอนนี้ยังไม่มีเหรียญที่หลักฐานครบเกณฑ์"
+          animKey={animKey}
         />
         <Group
           title="ระยะต้น: เริ่มขยับ / เริ่มทุบ"
           hint="ราคาเพิ่งเบรก หลังมีหลักฐานครบก่อนหน้า — ราคาขยับอย่างเดียวไม่นับ"
           rows={data?.ignition ?? []}
           empty="ยังไม่มีสัญญาณระยะต้นที่ผ่านเกณฑ์ confluence"
+          animKey={animKey}
         />
       </div>
       <p className="mt-2 text-[11px] text-zinc-500">สัญญาณระยะต้น เสี่ยงหลอกสูง · ใช้ SL ทุกครั้ง · ไม่ใช่คำแนะนำการลงทุน</p>
