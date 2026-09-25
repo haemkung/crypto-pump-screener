@@ -317,13 +317,39 @@ find_early_pid() {
     p="$(cat "$EARLY_PID_FILE" 2>/dev/null || true)"
     if [[ -n "${p:-}" ]] && kill -0 "$p" 2>/dev/null; then
       if tr '\0' ' ' <"/proc/$p/cmdline" 2>/dev/null | grep -q 'early-ignition-daemon'; then
-        echo "$p"
-        return 0
+        if ! tr '\0' ' ' <"/proc/$p/cmdline" 2>/dev/null | grep -q -- '--dry-run'; then
+          echo "$p"
+          return 0
+        fi
       fi
     fi
   fi
   pgrep -af "node .*scripts/early-ignition-daemon.mjs" 2>/dev/null | grep -v -- '--dry-run' | awk '{print $1}' | head -1 || true
 }
+
+# Heartbeat age in seconds from status.json "at" (preferred) or mtime.
+early_heartbeat_age() {
+  local status_file="$EARLY_LOG_DIR/status.json"
+  local age=99999 best=0 at_epoch=0 mtime_epoch=0
+  if [[ -f "$status_file" ]]; then
+    mtime_epoch="$(stat -c %Y "$status_file" 2>/dev/null || echo 0)"
+    local at
+    at="$(jq -r '.at // empty' "$status_file" 2>/dev/null || true)"
+    if [[ -n "$at" ]]; then
+      at_epoch="$(date -d "$at" +%s 2>/dev/null || echo 0)"
+    fi
+    best=$mtime_epoch
+    if [[ "$at_epoch" =~ ^[0-9]+$ ]] && (( at_epoch > best )); then best=$at_epoch; fi
+    if (( best > 0 )); then
+      age=$(( $(date +%s) - best ))
+      (( age < 0 )) && age=0
+    fi
+  fi
+  echo "$age"
+}
+
+# Stale after 8 min (cycle ~60s; watch can take ~30s). Override with EARLY_STALE_SEC.
+EARLY_STALE_SEC="${EARLY_STALE_SEC:-480}"
 
 ensure_early() {
   [[ "$EARLY_ENABLED" == "1" ]] || return 0
@@ -333,20 +359,42 @@ ensure_early() {
   if [[ -f "$EARLY_LOG" ]] && [[ "$(stat -c %s "$EARLY_LOG" 2>/dev/null || echo 0)" -gt "$EARLY_LOG_MAX_BYTES" ]]; then
     tail -n 3000 "$EARLY_LOG" >"$EARLY_LOG.tmp" 2>/dev/null && cat "$EARLY_LOG.tmp" >"$EARLY_LOG" && rm -f "$EARLY_LOG.tmp"
   fi
-  local p
+  local p age
   p="$(find_early_pid)"
-  if [[ -n "${p:-}" ]]; then
+  age="$(early_heartbeat_age)"
+  if [[ -n "${p:-}" ]] && (( age <= EARLY_STALE_SEC )); then
     echo "$p" >"$EARLY_PID_FILE"
     return 0
   fi
-  log "early-ignition daemon not running — starting"
-  (
-    cd "$ROOT"
-    exec 9>&- # do not let the daemon inherit the supervisor flock
-    exec node "$EARLY_SCRIPT"
-  ) >>"$EARLY_LOG" 2>&1 &
-  echo "$!" >"$EARLY_PID_FILE"
-  sleep "$RESTART_BACKOFF_SEC"
+  if [[ -n "${p:-}" ]] && (( age > EARLY_STALE_SEC )); then
+    log "early-ignition daemon STALE heartbeat age=${age}s (limit ${EARLY_STALE_SEC}s) pid=$p — killing for restart"
+    kill "$p" 2>/dev/null || true
+    sleep 2
+    if kill -0 "$p" 2>/dev/null; then
+      log "early-ignition daemon pid=$p still alive after SIGTERM — SIGKILL"
+      kill -9 "$p" 2>/dev/null || true
+      sleep 1
+    fi
+    rm -f "$EARLY_PID_FILE"
+    p=""
+  fi
+  if [[ -z "${p:-}" ]]; then
+    # Re-check in case another healer (watchdog) already started it
+    p="$(find_early_pid)"
+    if [[ -n "${p:-}" ]]; then
+      echo "$p" >"$EARLY_PID_FILE"
+      log "early-ignition daemon adopted pid=$p after stale/dead check"
+      return 0
+    fi
+    log "early-ignition daemon not running (age=${age}s) — starting"
+    (
+      cd "$ROOT"
+      exec 9>&- # do not let the daemon inherit the supervisor flock
+      exec node "$EARLY_SCRIPT"
+    ) >>"$EARLY_LOG" 2>&1 &
+    echo "$!" >"$EARLY_PID_FILE"
+    sleep "$RESTART_BACKOFF_SEC"
+  fi
 }
 
 main_loop() {

@@ -13,6 +13,10 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 export const EDGE_SCREEN_CACHE_URL =
   "https://cps-last-good.internal/api/screen";
 export const EDGE_HOT_CACHE_URL = "https://cps-last-good.internal/api/hot";
+export const EDGE_EARLY_TIERS_CACHE_URL =
+  "https://cps-last-good.internal/api/early-tiers";
+export const EDGE_LEARNING_INSIGHTS_CACHE_URL =
+  "https://cps-last-good.internal/api/learning-insights";
 
 const CACHE_NAME = "cps-last-good";
 const DEFAULT_MAX_AGE_SEC = 21600;

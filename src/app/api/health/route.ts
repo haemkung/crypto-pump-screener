@@ -37,6 +37,30 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  let earlyDaemon: unknown = null;
+  const earlyStatusPath = path.join(process.cwd(), "logs/early-ignition/status.json");
+  if (existsSync(earlyStatusPath)) {
+    try {
+      const raw = JSON.parse(await readFile(earlyStatusPath, "utf8")) as {
+        at?: string;
+        pid?: number;
+        ok?: boolean;
+        phase?: string;
+      };
+      const atMs = raw.at ? Date.parse(raw.at) : NaN;
+      const ageSec = Number.isFinite(atMs)
+        ? Math.max(0, Math.round((Date.now() - atMs) / 1000))
+        : null;
+      earlyDaemon = {
+        ...raw,
+        ageSec,
+        healthy: ageSec != null && ageSec <= 480,
+      };
+    } catch {
+      earlyDaemon = { ok: false, error: "unreadable" };
+    }
+  }
+
   return withCors(
     req,
     NextResponse.json({
@@ -46,6 +70,7 @@ export async function GET(req: NextRequest) {
       upstreamMode: disableUpstream,
       ts: new Date().toISOString(),
       supervisor,
+      earlyDaemon,
     })
   );
 }

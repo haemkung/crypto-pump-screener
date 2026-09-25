@@ -19,8 +19,21 @@ QUIET=0; [[ "${1:-}" == "--quiet" ]] && QUIET=1
 say() { (( QUIET )) || echo "$*"; }
 [[ -z "${TELEGRAM_BOT_TOKEN:-}" ]] && say "warning: TELEGRAM_BOT_TOKEN not set in this environment (Telegram disabled for processes started now)"
 start_detached() { setsid nohup bash "$1" >>"$2" 2>&1 </dev/null & }
-if pgrep -f "scripts/supervise-bot-upstream.sh" >/dev/null; then say "supervise-bot-upstream: running"; else say "supervise-bot-upstream: starting"; start_detached scripts/supervise-bot-upstream.sh logs/bot-upstream/nohup.out; fi
-if pgrep -f "scripts/supervise-local-scheduler.sh" >/dev/null; then say "local-scheduler: running"; else say "local-scheduler: starting"; start_detached scripts/supervise-local-scheduler.sh logs/local-scheduler.nohup.out; fi
+script_running() {
+  local want="$1" base pid a0 a1
+  base=$(basename "$want")
+  for pid in $(pgrep -f "$base" 2>/dev/null); do
+    a0=$(tr '\0' '\n' <"/proc/$pid/cmdline" 2>/dev/null | sed -n '1p')
+    a1=$(tr '\0' '\n' <"/proc/$pid/cmdline" 2>/dev/null | sed -n '2p')
+    case "$a0" in *bash*) ;; *) continue ;; esac
+    if [[ "$a1" == "$want" || "$a1" == "$ROOT/$want" || "$a1" == */"$want" || "$a1" == */scripts/"$base" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+if script_running "scripts/supervise-bot-upstream.sh"; then say "supervise-bot-upstream: running"; else say "supervise-bot-upstream: starting"; start_detached scripts/supervise-bot-upstream.sh logs/bot-upstream/nohup.out; fi
+if script_running "scripts/supervise-local-scheduler.sh"; then say "local-scheduler: running"; else say "local-scheduler: starting"; start_detached scripts/supervise-local-scheduler.sh logs/local-scheduler.nohup.out; fi
 if flock -n /tmp/crypto-pump-watchdog.lock true 2>/dev/null; then say "watchdog: starting"; start_detached scripts/watchdog.sh logs/watchdog.nohup.out; else say "watchdog: running"; fi
 # best effort: survive a box reboot if cron exists
 if command -v crontab >/dev/null 2>&1 && ! crontab -l 2>/dev/null | grep -q "start-all.sh"; then

@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # Single watchdog for everything that must never stay down ("ห้ามล่ม").
-#   - supervise-bot-upstream.sh (it restarts Next :3000, cloudflared tunnel, early-ignition daemon)
+#   - supervise-bot-upstream.sh (Next :3000, cloudflared tunnel, early-ignition daemon)
 #   - supervise-local-scheduler.sh (check-now-alerts + evaluate-alert-outcomes every 5 min)
-#   - early daemon liveness (status.json heartbeat; a hung daemon is killed so the supervisor restarts it)
-#   - local Next /api/screen + /api/early-tiers, public Workers /api/early-tiers
-# Restarts use exponential backoff (60s → 10 min). Telegram warning only after sustained real failure
+#   - early daemon liveness: dead PID OR stale heartbeat (status.json age) → kill + start
+#   - local Next /api/early-tiers, public Workers /api/early-tiers
+# Restarts use exponential backoff (30s → 5 min). Telegram warning only after sustained real failure
 # (not flapping), at most once per 2h per problem, plus one "recovered" message.
 # Single instance via flock. Started by scripts/start-all.sh (which local-scheduler re-runs every 5 min).
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT" || exit 1
-mkdir -p logs
+mkdir -p logs logs/early-ignition logs/bot-upstream
 LOG="$ROOT/logs/watchdog.log"
 STATUS="$ROOT/logs/watchdog-status.json"
 LOCK="${WATCHDOG_LOCK:-/tmp/crypto-pump-watchdog.lock}"
@@ -19,15 +19,18 @@ flock -n 8 || exit 0
 PORT="${UPSTREAM_NEXT_PORT:-3000}"
 PUBLIC_URL="${WATCHDOG_PUBLIC_URL:-https://crypto-pump-screener.jakahome2.workers.dev/api/early-tiers}"
 POLL=30
+# Daemon cycles ~60s; watch scan can take ~20–30s. Stale after 8 min → restart.
+DAEMON_STALE_SEC="${WATCHDOG_DAEMON_STALE_SEC:-480}"
 DAEMON_STATUS="$ROOT/logs/early-ignition/status.json"
 DAEMON_PID_FILE="$ROOT/logs/early-ignition/daemon.pid"
+DAEMON_LOG="$ROOT/logs/early-ignition/daemon.log"
+DAEMON_SCRIPT="$ROOT/scripts/early-ignition-daemon.mjs"
 
 declare -A FAILS LAST_ALERT ALERTED NEXT_RESTART BACKOFF
 log() { echo "[$(date -Iseconds)] $*" >>"$LOG"; }
 now() { date +%s; }
 tg() { timeout 30 node scripts/send-telegram.mjs "$1" >>"$LOG" 2>&1 || log "telegram send failed"; }
 
-# problem KEY is failing; alert once FAILS >= threshold, re-alert at most every 2h
 fail() {
   local key="$1" thr="$2" msg="$3"
   FAILS[$key]=$(( ${FAILS[$key]:-0} + 1 ))
@@ -44,23 +47,153 @@ ok() {
   if [[ "${ALERTED[$key]:-0}" == 1 ]]; then tg "✅ crypto-pump-screener: ${name} กลับมาทำงานปกติแล้ว"; fi
   FAILS[$key]=0; ALERTED[$key]=0
 }
-# restart gate with exponential backoff per key
 may_restart() {
   local key="$1" t; t=$(now)
   if (( t < ${NEXT_RESTART[$key]:-0} )); then return 1; fi
-  local b=${BACKOFF[$key]:-60}
+  local b=${BACKOFF[$key]:-30}
   NEXT_RESTART[$key]=$(( t + b ))
-  BACKOFF[$key]=$(( b * 2 > 600 ? 600 : b * 2 ))
+  BACKOFF[$key]=$(( b * 2 > 300 ? 300 : b * 2 ))
   return 0
 }
-reset_backoff() { BACKOFF[$1]=60; }
-running() { pgrep -f "$1" >/dev/null 2>&1; }
+reset_backoff() { BACKOFF[$1]=30; NEXT_RESTART[$1]=0; }
+# True only when argv[1] is the script (avoids false hits from shells that merely mention the path).
+running() {
+  local want="$1" base pid a0 a1
+  base=$(basename "$want")
+  for pid in $(pgrep -f "$base" 2>/dev/null); do
+    a0=$(tr '\0' '\n' <"/proc/$pid/cmdline" 2>/dev/null | sed -n '1p')
+    a1=$(tr '\0' '\n' <"/proc/$pid/cmdline" 2>/dev/null | sed -n '2p')
+    case "$a0" in *bash*) ;; *) continue ;; esac
+    if [[ "$a1" == "$want" || "$a1" == "$ROOT/$want" || "$a1" == */"$want" || "$a1" == */scripts/"$base" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
 start_detached() { # $1 script, $2 logfile
   setsid nohup bash "$1" >>"$2" 2>&1 </dev/null 8>&- &
 }
 http_code() { curl -s -o /dev/null -w '%{http_code}' --max-time "${2:-15}" "$1" 2>/dev/null || echo 000; }
 
-log "watchdog start pid=$$"
+# Heartbeat age: prefer JSON "at" (ISO), fall back to mtime. Returns seconds or 99999 if missing.
+daemon_heartbeat_age() {
+  local age=99999 at_epoch=0 mtime_epoch=0
+  if [[ -f "$DAEMON_STATUS" ]]; then
+    mtime_epoch=$(stat -c %Y "$DAEMON_STATUS" 2>/dev/null || echo 0)
+    local at
+    at=$(jq -r '.at // empty' "$DAEMON_STATUS" 2>/dev/null || true)
+    if [[ -n "$at" ]]; then
+      at_epoch=$(date -d "$at" +%s 2>/dev/null || echo 0)
+    fi
+    local best=$mtime_epoch
+    if (( at_epoch > best )); then best=$at_epoch; fi
+    if (( best > 0 )); then
+      age=$(( $(now) - best ))
+      (( age < 0 )) && age=0
+    fi
+  fi
+  echo "$age"
+}
+
+# PIDs that look like the early-ignition daemon (pidfile + pgrep).
+find_daemon_pids() {
+  local -a pids=()
+  local p
+  if [[ -f "$DAEMON_PID_FILE" ]]; then
+    p=$(cat "$DAEMON_PID_FILE" 2>/dev/null || true)
+    if [[ -n "${p:-}" ]] && kill -0 "$p" 2>/dev/null; then
+      if tr '\0' ' ' <"/proc/$p/cmdline" 2>/dev/null | grep -q 'early-ignition-daemon'; then
+        pids+=("$p")
+      fi
+    fi
+  fi
+  while read -r p; do
+    [[ -z "$p" ]] && continue
+    local seen=0
+    for x in "${pids[@]:-}"; do [[ "$x" == "$p" ]] && seen=1 && break; done
+    (( seen )) || pids+=("$p")
+  done < <(pgrep -f "node .*early-ignition-daemon\.mjs" 2>/dev/null | head -5 || true)
+  # exclude dry-run
+  local -a out=()
+  for p in "${pids[@]:-}"; do
+    if tr '\0' ' ' <"/proc/$p/cmdline" 2>/dev/null | grep -q -- '--dry-run'; then continue; fi
+    out+=("$p")
+  done
+  echo "${out[*]:-}"
+}
+
+kill_daemon_pids() {
+  local reason="$1"
+  local pids
+  pids=$(find_daemon_pids)
+  if [[ -z "${pids// /}" ]]; then
+    log "daemon restart ($reason): no live PID to kill"
+    rm -f "$DAEMON_PID_FILE"
+    return 0
+  fi
+  for p in $pids; do
+    log "daemon restart ($reason): sending SIGTERM to pid=$p"
+    kill "$p" 2>/dev/null || true
+  done
+  sleep 2
+  for p in $pids; do
+    if kill -0 "$p" 2>/dev/null; then
+      log "daemon restart ($reason): SIGKILL pid=$p"
+      kill -9 "$p" 2>/dev/null || true
+    fi
+  done
+  rm -f "$DAEMON_PID_FILE"
+}
+
+start_daemon() {
+  mkdir -p "$(dirname "$DAEMON_LOG")"
+  if [[ ! -f "$DAEMON_SCRIPT" ]]; then
+    log "ERROR: missing $DAEMON_SCRIPT"
+    return 1
+  fi
+  # Load secrets so AI review keys are available (same as supervisor)
+  if [[ -f "$ROOT/.env.secrets" ]]; then
+    set -a
+    # shellcheck disable=SC1091
+    source "$ROOT/.env.secrets"
+    set +a
+  fi
+  (
+    cd "$ROOT"
+    exec 8>&- 9>&-
+    exec node "$DAEMON_SCRIPT"
+  ) >>"$DAEMON_LOG" 2>&1 &
+  local pid=$!
+  echo "$pid" >"$DAEMON_PID_FILE"
+  log "daemon started pid=$pid (watchdog direct start)"
+  sleep 2
+  if kill -0 "$pid" 2>/dev/null; then return 0; fi
+  log "ERROR: daemon pid=$pid exited immediately"
+  return 1
+}
+
+# Full heal: kill stale/dead, start if still absent.
+heal_daemon() {
+  local reason="$1" age="$2"
+  kill_daemon_pids "$reason age=${age}s"
+  sleep 1
+  local left
+  left=$(find_daemon_pids)
+  if [[ -n "${left// /}" ]]; then
+    log "daemon heal: still alive after kill ($left) — trying SIGKILL"
+    for p in $left; do kill -9 "$p" 2>/dev/null || true; done
+    sleep 1
+  fi
+  left=$(find_daemon_pids)
+  if [[ -z "${left// /}" ]]; then
+    start_daemon || true
+  else
+    log "daemon heal: process still present ($left); writing pidfile and relying on next tick"
+    echo "$left" | awk '{print $1}' >"$DAEMON_PID_FILE"
+  fi
+}
+
+log "watchdog start pid=$$ staleSec=$DAEMON_STALE_SEC"
 tick=0
 while true; do
   tick=$((tick + 1))
@@ -75,31 +208,44 @@ while true; do
     fail sup_sched 3 "ตัวตั้งเวลาแจ้งเตือน (เข้าตอนนี้/รอแท่งกลับ) หยุด"
     if may_restart sup_sched; then log "starting supervise-local-scheduler.sh"; start_detached scripts/supervise-local-scheduler.sh logs/local-scheduler.nohup.out; fi
   fi
-  # 2) early daemon heartbeat (cycle every ~60s; watch cycle can take ~30s)
-  age=9999
-  [[ -f "$DAEMON_STATUS" ]] && age=$(( $(now) - $(stat -c %Y "$DAEMON_STATUS") ))
-  if (( age <= 300 )); then
+
+  # 2) early daemon: dead PID OR stale heartbeat → kill + start (do NOT only kill and hope)
+  age=$(daemon_heartbeat_age)
+  live_pids=$(find_daemon_pids)
+  if (( age <= DAEMON_STALE_SEC )) && [[ -n "${live_pids// /}" ]]; then
     errs=$(jq -r '.consecutiveErrors // 0' "$DAEMON_STATUS" 2>/dev/null || echo 0)
-    if (( errs >= 15 )); then fail daemon_err 1 "early daemon เรียก Binance ไม่สำเร็จ ${errs} รอบติด"; else ok daemon_err "early daemon (Binance API)"; fi
+    if [[ "$errs" =~ ^[0-9]+$ ]] && (( errs >= 15 )); then
+      fail daemon_err 1 "early daemon เรียก Binance ไม่สำเร็จ ${errs} รอบติด"
+    else
+      ok daemon_err "early daemon (Binance API)"
+    fi
     ok daemon "early daemon"; reset_backoff daemon
   else
-    fail daemon 4 "early daemon ไม่มี heartbeat ${age}s"
+    local_reason="unknown"
+    if [[ -z "${live_pids// /}" ]] && (( age > DAEMON_STALE_SEC )); then local_reason="dead+stale"
+    elif [[ -z "${live_pids// /}" ]]; then local_reason="dead"
+    else local_reason="stale_heartbeat"; fi
+    # Log every few ticks while unhealthy so gaps are diagnosable (not only on kill)
+    if (( tick % 2 == 1 )); then
+      log "daemon unhealthy reason=$local_reason age=${age}s pids=[${live_pids}] fails=${FAILS[daemon]:-0}"
+    fi
+    fail daemon 2 "early daemon ${local_reason} (heartbeat ${age}s)"
     if may_restart daemon; then
-      p=$(cat "$DAEMON_PID_FILE" 2>/dev/null)
-      if [[ -n "$p" ]] && kill -0 "$p" 2>/dev/null; then log "daemon heartbeat stale (${age}s) — killing pid=$p for supervisor restart"; kill "$p" 2>/dev/null; fi
+      log "healing early daemon reason=$local_reason age=${age}s pids=[${live_pids}]"
+      heal_daemon "$local_reason" "$age"
     fi
   fi
-  # 3) local Next (supervisor restarts it after 3 failed polls; we only escalate if it stays down ~5 min)
+
+  # 3) local Next
   c1=$(http_code "http://127.0.0.1:${PORT}/api/early-tiers" 15)
   if [[ "$c1" == 200 ]]; then ok next "เว็บหลัก (Next :${PORT})"; else fail next 10 "เว็บหลัก Next :${PORT} ตอบ ${c1}"; fi
-  # 4) public Workers path every 5 min (tunnel + VPC); 3 fails in a row = 15 min
+  # 4) public Workers every ~5 min
   if (( tick % 10 == 1 )); then
     c2=$(http_code "$PUBLIC_URL" 25)
     if [[ "$c2" == 200 ]]; then ok public "เว็บสาธารณะ (Workers)"; else log "public $PUBLIC_URL -> $c2"; fail public 3 "เว็บสาธารณะ Workers /api/early-tiers ตอบ ${c2}"; fi
   fi
-  # status + log rotation
-  printf '{"at":"%s","pid":%s,"daemonHeartbeatAgeSec":%s,"nextHttp":"%s","publicHttp":"%s","fails":{"sup_up":%s,"sup_sched":%s,"daemon":%s,"next":%s,"public":%s}}\n' \
-    "$(date -Iseconds)" "$$" "$age" "$c1" "${c2:-}" "${FAILS[sup_up]:-0}" "${FAILS[sup_sched]:-0}" "${FAILS[daemon]:-0}" "${FAILS[next]:-0}" "${FAILS[public]:-0}" >"$STATUS.tmp" && mv "$STATUS.tmp" "$STATUS"
+  printf '{"at":"%s","pid":%s,"daemonHeartbeatAgeSec":%s,"daemonPids":"%s","nextHttp":"%s","publicHttp":"%s","fails":{"sup_up":%s,"sup_sched":%s,"daemon":%s,"next":%s,"public":%s}}\n' \
+    "$(date -Iseconds)" "$$" "$age" "${live_pids}" "$c1" "${c2:-}" "${FAILS[sup_up]:-0}" "${FAILS[sup_sched]:-0}" "${FAILS[daemon]:-0}" "${FAILS[next]:-0}" "${FAILS[public]:-0}" >"$STATUS.tmp" && mv "$STATUS.tmp" "$STATUS"
   if [[ $(stat -c %s "$LOG" 2>/dev/null || echo 0) -gt 2000000 ]]; then tail -c 500000 "$LOG" >"$LOG.tmp" && mv "$LOG.tmp" "$LOG"; fi
   sleep "$POLL"
 done

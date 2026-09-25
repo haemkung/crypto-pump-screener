@@ -383,7 +383,10 @@ export function EarlyTiersPanel() {
       <AiLiveStrip symbols={scanSymbols} />
       {(error || stale || oldMs > 10 * 60e3) && (
         <div className="mb-2 rounded border border-amber-800/60 bg-amber-950/40 px-2 py-1 text-xs text-amber-200">
-          {data ? `แสดงข้อมูลล่าสุดที่มี (อัปเดต ${ago(data.updatedAt)})` : "ดึงข้อมูลไม่ได้"}{error ? ` · ${error}` : ""}
+          {data
+            ? `ข้อมูลค้าง — แสดงค่าล่าสุดที่มี (อัปเดต ${ago(data.updatedAt)})`
+            : "ข้อมูลค้าง — ดึงข้อมูลไม่ได้ชั่วคราว"}
+          {error ? ` · ${error}` : ""}
         </div>
       )}
       <TierStats data={data} />

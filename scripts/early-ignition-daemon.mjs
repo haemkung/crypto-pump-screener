@@ -502,6 +502,8 @@ function writeTiersSnapshot(logObj, settings, now, tierCfg) {
   };
   writeJsonAtomic(TIERS_FILE, {
     updatedAt: new Date(now).toISOString(),
+    daemonAt: new Date(now).toISOString(),
+    daemonPid: process.pid,
     rules: RULES,
     risk: RISK,
     telegram: { ignitionLong: settings.sendIgnitionLong, ignitionShort: settings.sendIgnitionShort, watchLong: settings.sendWatchLong, watchShort: settings.sendWatchShort },
@@ -724,6 +726,18 @@ async function cycle() {
   const t0 = Date.now();
   const settings = loadSettings();
   const tierCfg = loadTierConfig();
+  // Mid-flight heartbeat so a long watch/AI cycle does not look "dead" to supervisors,
+  // while a true hang (>EARLY_STALE_SEC) still trips auto-restart.
+  try {
+    writeJsonAtomic(STATUS_FILE, {
+      at: ts(),
+      pid: process.pid,
+      ok: true,
+      phase: "cycle_start",
+      consecutiveErrors: 0,
+      dryRun: DRY,
+    });
+  } catch {}
   await refreshPerps();
   const tickers = await fapi("/fapi/v1/ticker/24hr", 15_000);
   const now = Date.now();

@@ -1,11 +1,16 @@
 import { proxyToUpstream, isCloudflareWorkersRuntime } from "@/lib/upstreamProxy";
 import { withCors, corsPreflight } from "@/lib/cors";
+import {
+  EDGE_EARLY_TIERS_CACHE_URL,
+  stashEdgeLastGood,
+  matchEdgeLastGood,
+} from "@/lib/edgeLastGood";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-/** Last good upstream body (isolate memory). Small JSON (<100KB) so holding the text is CPU/memory safe. */
+/** Isolate-memory last-good (complements Cache API for same-isolate hits). */
 let lastGood: { text: string; at: number } | null = null;
 const LAST_GOOD_MAX_AGE_MS = 24 * 3600e3;
 const MAX_BODY_BYTES = 400_000;
@@ -29,10 +34,10 @@ function jsonText(req: NextRequest, text: string, extra: Record<string, string> 
 }
 
 /**
- * GET /api/early-tiers — confluence-first early tiers (watch + ignition) from the local daemon.
- * Workers: pass-through to BOT_UPSTREAM (small JSON). Never computes anything. If upstream is down,
- * serves the last good snapshot (its own updatedAt tells the UI how old it is) with X-Early-Tiers-Stale: 1.
- * Soft-fail returns HTTP 200 (not 503).
+ * GET /api/early-tiers — confluence-first early tiers from the local daemon.
+ * Workers: proxy BOT_UPSTREAM, stash into Cache API last-good. On upstream miss,
+ * serve edge/in-memory last-good with X-Early-Tiers-Stale:1 (HTTP 200). Soft-fail
+ * empty only when no last-good exists — never hard-blank the SPA.
  */
 export async function GET(req: NextRequest) {
   try {
@@ -44,7 +49,25 @@ export async function GET(req: NextRequest) {
       const len = Number(proxied.headers.get("content-length") || 0);
       if (len > MAX_BODY_BYTES) return withCors(req, proxied);
       const text = await proxied.text();
-      if (text.length <= MAX_BODY_BYTES && text.startsWith("{")) lastGood = { text, at: Date.now() };
+      if (text.length <= MAX_BODY_BYTES && text.startsWith("{")) {
+        lastGood = { text, at: Date.now() };
+        // Small JSON: buffer+stash is safe (unlike multi-MB /api/screen).
+        const toStash = new Response(text, {
+          status: 200,
+          headers: { "Content-Type": "application/json; charset=utf-8" },
+        });
+        const teed = await stashEdgeLastGood(
+          EDGE_EARLY_TIERS_CACHE_URL,
+          toStash,
+          21600
+        );
+        // Drain client tee branch so the cache put can finish.
+        try {
+          await teed.arrayBuffer();
+        } catch {
+          /* ignore */
+        }
+      }
       return jsonText(req, text);
     }
     if (proxied) {
@@ -55,6 +78,12 @@ export async function GET(req: NextRequest) {
       }
     }
     if (await isCloudflareWorkersRuntime()) {
+      const edge = await matchEdgeLastGood(
+        EDGE_EARLY_TIERS_CACHE_URL,
+        "X-Early-Tiers-Stale"
+      );
+      if (edge) return withCors(req, edge);
+
       if (lastGood && Date.now() - lastGood.at < LAST_GOOD_MAX_AGE_MS) {
         return jsonText(req, lastGood.text, {
           "X-Early-Tiers-Stale": "1",
@@ -69,6 +98,7 @@ export async function GET(req: NextRequest) {
             watch: [],
             ignition: [],
             meta: { softFail: true, reason: "BOT_UPSTREAM unavailable" },
+            noteTh: "ข้อมูลค้าง — upstream ยังไม่พร้อม และยังไม่มี last-good",
           },
           {
             status: 200,
@@ -87,11 +117,26 @@ export async function GET(req: NextRequest) {
     );
   } catch (e) {
     if (lastGood) return jsonText(req, lastGood.text, { "X-Early-Tiers-Stale": "1" });
+    try {
+      const edge = await matchEdgeLastGood(
+        EDGE_EARLY_TIERS_CACHE_URL,
+        "X-Early-Tiers-Stale"
+      );
+      if (edge) return withCors(req, edge);
+    } catch {
+      /* ignore */
+    }
     return withCors(
       req,
       NextResponse.json(
-        { updatedAt: null, watch: [], ignition: [], error: String(e) },
-        { status: 500 }
+        {
+          updatedAt: null,
+          watch: [],
+          ignition: [],
+          error: String(e),
+          noteTh: "ข้อมูลค้าง",
+        },
+        { status: 200 }
       )
     );
   }
