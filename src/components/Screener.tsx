@@ -17,7 +17,6 @@ import { ExampleCases } from "./ExampleCases";
 import { FeedbackButtons } from "./FeedbackButtons";
 import { LearningStatsPanel } from "./LearningStatsPanel";
 import { CoachNotesPanel } from "./CoachNotesPanel";
-import { HotStrip } from "./HotStrip";
 import { EarlyTiersPanel } from "./EarlyTiersPanel";
 import { qualityBadgeClass, regimeChipClass } from "@/lib/format";
 import { apiUrl } from "@/lib/apiBase";
@@ -52,9 +51,6 @@ function writeScreenLastGood(json: ScreenResponse): void {
 
 function isEnterNow(u: ScreenRow["urgency"]): boolean {
   return u === "now_long" || u === "now_short";
-}
-function isWaitSweep(u: ScreenRow["urgency"]): boolean {
-  return u === "wait_sweep_long" || u === "wait_sweep_short";
 }
 
 export function Screener() {
@@ -208,17 +204,6 @@ export function Screener() {
     return { long, short };
   }, [data]);
 
-  const waitAlerts = useMemo(() => {
-    if (!data) return { long: [] as ScreenRow[], short: [] as ScreenRow[] };
-    const long = data.rows
-      .filter((r) => r.urgency === "wait_sweep_long")
-      .sort((a, b) => b.score - a.score);
-    const short = data.rows
-      .filter((r) => r.urgency === "wait_sweep_short")
-      .sort((a, b) => b.shortScore - a.shortScore);
-    return { long, short };
-  }, [data]);
-
   const filtered = useMemo(() => {
     if (!data) return [];
     const rows = data.rows.filter((r) => {
@@ -241,11 +226,9 @@ export function Screener() {
     const rank = (u: ScreenRow["urgency"], side: "long" | "short") => {
       if (side === "short") {
         if (u === "now_short") return 2;
-        if (u === "wait_sweep_short") return 1;
         return 0;
       }
       if (u === "now_long") return 2;
-      if (u === "wait_sweep_long") return 1;
       return 0;
     };
     if (mode === "short") {
@@ -337,17 +320,7 @@ export function Screener() {
           )}
         </div>
 
-        {/* Hot early accel — TOP so user cannot miss BR-type names while still early */}
-        <HotStrip
-          screenRows={data?.rows ?? null}
-          onSelect={(row) => {
-            setSelected(row);
-            setNowOnly(false);
-          }}
-          onSelectMode={setMode}
-        />
-
-        {/* Early tiers (confluence-first) from the local daemon */}
+        {/* Early tiers (confluence-first) — หลักฐานซ่อนก่อน → ราคาเป็นแค่จังหวะ */}
         <EarlyTiersPanel />
 
         {/* Optional panels — failures should not blank the page */}
@@ -390,7 +363,7 @@ export function Screener() {
                       {fmtPct(r.priceChangePercent)}
                     </span>
                     <span className="ml-2 text-[10px] text-orange-200">
-                      {r.urgencyLabelTh ?? "ลงมากิน SL อีกฝั่งแล้ว — เข้าตอนนี้"}
+                      {"ต้นทาง · เข้าตอนนี้"}
                     </span>
                     <span
                       className={`ml-1 rounded px-1 py-0.5 text-[9px] font-black ${qualityBadgeClass(
@@ -429,7 +402,7 @@ export function Screener() {
                       {fmtPct(r.priceChangePercent)}
                     </span>
                     <span className="ml-2 text-[10px] text-orange-200">
-                      {r.urgencyLabelTh ?? "ขึ้นมากิน SL อีกฝั่งแล้ว — เข้าตอนนี้"}
+                      {"ต้นทาง Short · เข้าตอนนี้"}
                     </span>
                     <span
                       className={`ml-1 rounded px-1 py-0.5 text-[9px] font-black ${qualityBadgeClass(
@@ -448,60 +421,6 @@ export function Screener() {
                     onDone={() => setFeedbackRefresh((n) => n + 1)}
                   />
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {(waitAlerts.long.length > 0 || waitAlerts.short.length > 0) && (
-          <div className="mt-3 rounded-xl border border-amber-700/60 bg-amber-950/40 px-4 py-3">
-            <div className="mb-2 flex flex-wrap items-center gap-2">
-              <span className="rounded bg-amber-400 px-2 py-0.5 text-xs font-black uppercase tracking-widest text-black">
-                รอ
-              </span>
-              <span className="text-sm font-bold text-amber-100">
-                รอแท่งกลับหลังทะลุ — ยังไม่เข้าตอนนี้
-              </span>
-              <span className="text-[10px] text-amber-200/70">
-                Long {waitAlerts.long.length} · Short {waitAlerts.short.length}
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {waitAlerts.long.slice(0, 10).map((r) => (
-                <button
-                  key={`wl-${r.symbol}`}
-                  type="button"
-                  onClick={() => {
-                    setMode("long");
-                    setSelected(r);
-                    setNowOnly(false);
-                  }}
-                  className="rounded-lg border border-amber-700/50 bg-zinc-950/70 px-2.5 py-1.5 text-left hover:border-amber-400"
-                >
-                  <span className="font-bold text-amber-200">{r.baseAsset}</span>
-                  <span className="ml-2 font-mono text-xs text-zinc-400">
-                    {fmtPct(r.priceChangePercent)}
-                  </span>
-                  <span className="ml-2 text-[10px] text-amber-300">รอแท่งกลับหลังทะลุ</span>
-                </button>
-              ))}
-              {waitAlerts.short.slice(0, 8).map((r) => (
-                <button
-                  key={`ws-${r.symbol}`}
-                  type="button"
-                  onClick={() => {
-                    setMode("short");
-                    setSelected(r);
-                    setNowOnly(false);
-                  }}
-                  className="rounded-lg border border-amber-800/50 bg-zinc-950/70 px-2.5 py-1.5 text-left hover:border-amber-400"
-                >
-                  <span className="font-bold text-rose-200">{r.baseAsset}</span>
-                  <span className="ml-2 font-mono text-xs text-zinc-400">
-                    {fmtPct(r.priceChangePercent)}
-                  </span>
-                  <span className="ml-2 text-[10px] text-amber-300">รอแท่งกลับหลังทะลุ</span>
-                </button>
               ))}
             </div>
           </div>
@@ -579,8 +498,8 @@ export function Screener() {
           </label>
           <p className="pl-6 text-[10px] leading-snug text-zinc-500">
             {isShort
-              ? "เหรียญที่ลงลึกแล้วจะถูกซ่อนโดยตั้งใจ — ดูสัญญาณต้นที่แผง «กำลังเร่งตัว» ด้านบน"
-              : "เช่น BR ที่ +192% จะหายจากตารางหลัง >50% โดยตั้งใจ (ไม่ไล่ราคา) — จับตอนต้นที่แผง «กำลังเร่งตัว» ด้านบน"}
+              ? "เหรียญที่ลงลึกแล้วจะถูกซ่อนโดยตั้งใจ — ดูสัญญาณต้นที่แผงระยะต้นด้านบน"
+              : "เช่น BR ที่ +192% จะหายจากตารางหลัง >50% โดยตั้งใจ (ไม่ไล่ราคา) — จับตอนต้นที่แผงระยะต้นด้านบน"}
           </p>
         </div>
         <label htmlFor="now-only" className="flex items-center gap-2 text-sm font-semibold text-orange-300">
@@ -741,13 +660,11 @@ export function Screener() {
                     className={`cursor-pointer border-t border-zinc-900 transition-colors hover:bg-zinc-900/80 ${
                       isEnterNow(r.urgency)
                         ? "bg-orange-950/50 ring-1 ring-inset ring-orange-500/40"
-                        : isWaitSweep(r.urgency)
-                          ? "bg-amber-950/30 ring-1 ring-inset ring-amber-700/40"
-                          : active
-                            ? isShort
-                              ? "bg-rose-950/40"
-                              : "bg-emerald-950/40"
-                            : ""
+                        : active
+                          ? isShort
+                            ? "bg-rose-950/40"
+                            : "bg-emerald-950/40"
+                          : ""
                     }`}
                   >
                     <td className="px-3 py-2 font-mono text-[11px] text-zinc-600">
@@ -759,11 +676,6 @@ export function Screener() {
                         {isEnterNow(r.urgency) && (
                           <span className="animate-pulse rounded bg-orange-500 px-1 py-0.5 text-[9px] font-black uppercase tracking-wide text-black">
                             เข้า
-                          </span>
-                        )}
-                        {isWaitSweep(r.urgency) && (
-                          <span className="rounded bg-amber-400 px-1 py-0.5 text-[9px] font-black uppercase tracking-wide text-black">
-                            รอ
                           </span>
                         )}
                         {r.mtfAlign != null && r.mtfAlign === "mtf_align" && (
@@ -833,24 +745,34 @@ export function Screener() {
                     <td className="px-3 py-2">
                       {entry ? (
                         <div className="flex flex-col gap-0.5">
-                          <span
-                            className={`inline-flex w-fit rounded-md px-1.5 py-0.5 text-[10px] font-medium ring-1 ${entryModeBadgeClass(entry.mode)}`}
-                          >
-                            {entry.labelTh}
-                          </span>
-                          {r.urgencyLabelTh &&
-                            (isEnterNow(r.urgency) || isWaitSweep(r.urgency)) && (
-                              <span
-                                className={`max-w-[180px] text-[10px] leading-tight ${
-                                  isEnterNow(r.urgency)
-                                    ? "font-semibold text-orange-300"
-                                    : "text-amber-300"
-                                }`}
-                              >
-                                {r.urgencyLabelTh}
-                              </span>
-                            )}
-                          {entry.entryLow != null && entry.entryHigh != null ? (
+                          {entry.mode === "early_entry" ||
+                          entry.mode === "early_short" ? (
+                            <span
+                              className={`inline-flex w-fit rounded-md px-1.5 py-0.5 text-[10px] font-medium ring-1 ${entryModeBadgeClass(entry.mode)}`}
+                            >
+                              {entry.labelTh}
+                            </span>
+                          ) : entry.mode === "too_late" ||
+                            entry.mode === "too_late_short" ? (
+                            <span
+                              className={`inline-flex w-fit rounded-md px-1.5 py-0.5 text-[10px] font-medium ring-1 ${entryModeBadgeClass(entry.mode)}`}
+                            >
+                              {entry.labelTh}
+                            </span>
+                          ) : (
+                            <span className="inline-flex w-fit rounded-md px-1.5 py-0.5 text-[10px] font-medium text-zinc-500 ring-1 ring-zinc-700">
+                              เฝ้าดู
+                            </span>
+                          )}
+                          {r.urgencyLabelTh && isEnterNow(r.urgency) && (
+                            <span className="max-w-[180px] text-[10px] font-semibold leading-tight text-orange-300">
+                              ต้นทาง · เข้าตอนนี้
+                            </span>
+                          )}
+                          {entry.entryLow != null &&
+                          entry.entryHigh != null &&
+                          (entry.mode === "early_entry" ||
+                            entry.mode === "early_short") ? (
                             <span className="font-mono text-[10px] text-zinc-500">
                               {fmtPrice(entry.entryLow)}–
                               {fmtPrice(entry.entryHigh)}

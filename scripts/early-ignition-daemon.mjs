@@ -322,34 +322,37 @@ function tradeLines(a) {
     `⚖️ R:R 1:${RISK.tp1R} / 1:${RISK.tp2R} · ปิดครึ่งที่ TP1 แล้วเลื่อน SL มาทุน`,
   ];
 }
+/** Compact Telegram signal: emoji + tierThai + BASE + Long|Short (no spaces). */
+function baseSym(symbol) {
+  const s = String(symbol || "").toUpperCase();
+  return s.replace(/USDT$/i, "") || s || "?";
+}
+function compactSignal(kind, side, symbol) {
+  const base = baseSym(symbol);
+  const sideWord = side === "long" ? "Long" : "Short";
+  if (kind === "watch") {
+    const tier = side === "long" ? "กำลังสะสม" : "กำลังแจกของ";
+    return `👀 ${tier}${base}${sideWord}`;
+  }
+  // ignition
+  if (side === "long") return `🚀 เริ่มขยับ${base}Long`;
+  return `🔻 เริ่มทุบ${base}Short`;
+}
+function briefTradeLine(a) {
+  if (a?.entry == null || a?.sl == null) return null;
+  return `เข้า ${fmtPrice(a.entry)} · SL ${fmtPrice(a.sl)} · TP1 ${fmtPrice(a.tp1)}`;
+}
 function formatIgnition(a, cfg) {
-  const head = a.side === "long" ? "🚀 เริ่มขยับ · LONG" : "🔻 เริ่มทุบ · SHORT";
-  const gr = gradeOf(cfg?.oos);
-  const lines = [
-    `${head} · ${a.symbol}`,
-    `ราคา ${fmtPrice(a.price)} · 24h ${fmtPct(a.pct24h)} · ${fmtIct(a.barCloseMs)} ICT`,
-    ...tradeLines(a),
-    `📊 เกรด ${gr.g} · ${gr.txt}`,
-    `🔎 หลักฐานก่อนราคาขยับ ${a.factors.length} ข้อ (ขั้นต่ำ ${cfg?.params?.minFactors ?? 3}):`,
-    ...evidenceLines(a.factors),
-    `⏱ จังหวะ (ราคาเป็นแค่ตัวจับเวลา): ${a.moveWindow}m ${fmtPct(a.movePct)} · วอลุ่ม 5m ×${a.volMult} · ${a.side === "long" ? "ทะลุกรอบ 4h" : "หลุดกรอบ 4h"} ${fmtPct(a.breakoutPct)}`,
-  ];
-  if (a.watchFlag) lines.push(`👀 เคยติด "${a.watchFlag.tier === "accumulation" ? "กำลังสะสม" : "กำลังแจกของ"}" เมื่อ ${(a.watchFlag.agoMin / 60).toFixed(1)} ชม.ก่อน`);
-  lines.push("⚠️ ไม่ใช่คำแนะนำการลงทุน · เสี่ยงสูง ใช้ SL ทุกครั้ง");
+  const lines = [compactSignal("ignition", a.side, a.symbol)];
+  const brief = briefTradeLine(a);
+  if (brief) lines.push(brief);
   return lines.join("\n");
 }
 function formatWatch(w, cfg) {
-  const head = w.tier === "accumulation" ? "👀 กำลังสะสม · LONG (เฝ้าดู)" : "👀 กำลังแจกของ · SHORT (เฝ้าดู)";
-  const gr = gradeOf(cfg?.oos);
-  return [
-    `${head} · ${w.symbol}`,
-    `ราคา ${fmtPrice(w.price)} · 24h ${fmtPct(w.pct24h)} · ${fmtIct(w.ts)} ICT`,
-    ...tradeLines(w),
-    `📊 เกรด ${gr.g} · ${gr.txt}`,
-    `🔎 หลักฐาน ${w.factors.length} ข้อ (ขั้นต่ำ ${cfg?.params?.minFactors ?? 3}):`,
-    ...evidenceLines(w.factors),
-    "⚠️ ไม่ใช่คำแนะนำการลงทุน · เสี่ยงสูง ใช้ SL ทุกครั้ง",
-  ].join("\n");
+  const lines = [compactSignal("watch", w.side === "long" || w.tier === "accumulation" ? "long" : "short", w.symbol)];
+  const brief = briefTradeLine(w);
+  if (brief) lines.push(brief);
+  return lines.join("\n");
 }
 /** stop/targets for an alert (same function the backtest graded) */
 function planTrade(side, entry, mode, bars, t, level) {

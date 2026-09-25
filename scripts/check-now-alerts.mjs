@@ -317,22 +317,20 @@ function fmtPrice(n) {
   return v.toPrecision(4);
 }
 
+function baseSym(symbol) {
+  const s = String(symbol || "").toUpperCase();
+  return s.replace(/USDT$/i, "") || s || "?";
+}
+/** Compact NOW signal: ⚡ ต้นทาง{BASE}Long|Short */
 function formatRow(row, side) {
   const symbol = row.symbol || row.baseAsset || "?";
-  const label = side === "long" ? "Long" : "Short";
-  const score = side === "long" ? row.score : row.shortScore;
-  const pct = fmtPct(row.priceChangePercent);
+  const base = baseSym(symbol);
+  const sideWord = side === "long" ? "Long" : "Short";
+  const tier = side === "long" ? "ต้นทาง" : "ต้นทาง";
+  const lines = [`⚡ ${tier}${base}${sideWord}`];
   const price = fmtPrice(row.price);
-  const grade = row.qualityGrade ? `เกรด ${row.qualityGrade}` : "";
-  const mtf = row.mtfAlign ? row.mtfAlign.replace("mtf_", "MTF ") : "";
-  const reason = (row.urgencyReasonTh || "").trim();
-  const sweptLabel = String(row.urgencyLabelTh || "").trim();
-  const head = sweptLabel || `เข้าตอนนี้ (${label})`;
-  const lines = [
-    `⚡ ${head} · ${symbol}` + (grade ? ` · ${grade}` : ""),
-    `ราคา ${price} | 24h ${pct}` + (score != null ? ` | score ${score}` : "") + (mtf ? ` | ${mtf}` : ""),
-  ];
-  if (reason) lines.push(reason);
+  const pct = fmtPct(row.priceChangePercent);
+  lines.push(`${price} · 24h ${pct}`);
   return lines.join("\n");
 }
 
@@ -400,46 +398,7 @@ for (const row of shortRows) {
 }
 
 if (fresh.length === 0) {
-  // Quieter heads-up so Telegram is not dead-silent. Not an enter-now.
-  const waits = []
-    .concat(Array.isArray(data.waitingLong) ? data.waitingLong.map((r) => ({ side: "long", row: r })) : [])
-    .concat(Array.isArray(data.waitingShort) ? data.waitingShort.map((r) => ({ side: "short", row: r })) : []);
-  const waitFresh = [];
-  for (const item of waits) {
-    const row = item.row;
-    const symbol = row && row.symbol;
-    if (!symbol) continue;
-    const k = "wait|" + keyFor(symbol, item.side);
-    if (state.sent[k] && now - state.sent[k] < DEDUPE_MS) continue;
-    const score = item.side === "long" ? row.score : row.shortScore;
-    waitFresh.push({
-      key: k,
-      text:
-        `⏳ รอแท่งกลับหลังทะลุ — ยังไม่เข้า (${item.side === "long" ? "Long" : "Short"}) · ${symbol}\n` +
-        `ราคา ${fmtPrice(row.price)} | 24h ${fmtPct(row.priceChangePercent)}` +
-        (score != null ? ` | score ${score}` : "") +
-        `\nยังไม่ใช่เข้าตอนนี้`,
-    });
-    if (waitFresh.length >= 2) break;
-  }
-  if (waitFresh.length && process.env.TELEGRAM_BOT_TOKEN?.trim() && existsSync(CHAT_ID_FILE)) {
-    const body =
-      `แจ้งเตือน crypto-pump-screener · รอแท่งกลับ (${waitFresh.length})\n` +
-      `ไม่ใช่คำแนะนำการลงทุน\n—\n\n` +
-      waitFresh.map((w) => w.text).join("\n\n");
-    const send = spawnSync(
-      process.execPath,
-      [resolve(__dirname, "send-telegram.mjs"), body],
-      { env: process.env, encoding: "utf8" },
-    );
-    if (send.status === 0) {
-      for (const w of waitFresh) state.sent[w.key] = now;
-      saveState(state);
-      console.log(`sent_wait=${waitFresh.length} mode=${settings.mode} skipped_filter=${skippedSharp}`);
-      quietExit(0);
-    }
-    if (send.stderr) process.stderr.write(send.stderr);
-  }
+  // No wait_sweep / รอแท่งกลับ Telegram — those labels are inaccurate; only ต้นทาง NOW + early tiers.
   if (skippedSharp > 0) {
     console.log(`sent_new=0 mode=${settings.mode} skipped_filter=${skippedSharp}`);
   }
@@ -464,12 +423,8 @@ if (!existsSync(CHAT_ID_FILE)) {
   quietExit(1);
 }
 
-const modeTag = settings.mode === "sharp" ? "สัญญาณคม" : "ทั้งหมด";
-const header =
-  `แจ้งเตือน crypto-pump-screener · เข้าตอนนี้ (${fresh.length} รายการใหม่ · ${modeTag})\n` +
-  `ไม่ใช่คำแนะนำการลงทุน\n` +
-  `—`;
-const body = [header, ...fresh.map((f) => f.text)].join("\n\n");
+// Compact signal lines only (no long prose header)
+const body = fresh.map((f) => f.text).join("\n\n");
 
 const send = spawnSync(
   process.execPath,

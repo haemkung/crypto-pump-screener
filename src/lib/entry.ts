@@ -119,37 +119,16 @@ export function computeEntryHint(input: EntryHintInput): EntryHint {
     };
   }
 
-  // --- wait_pullback ---
-  if (decent && inPullBand) {
-    const pullFrac = Math.min(0.08, Math.abs(pct) / 200);
-    const low = ROUND(price * (1 - pullFrac));
-    const high = ROUND(price * 0.97);
-    const entryLow = Math.min(low, high);
-    const entryHigh = Math.max(low, high);
+  // Mid / pull bands are NOT entry signals — only early ต้นทาง is shown as entry.
+  // Map former wait_pullback cases to neutral watch_only (หลักฐานซ่อนก่อน → ราคาเป็นแค่จังหวะ).
+  if (decent && (inPullBand || (pct > 40 && pct <= 50 && fuel))) {
     return {
-      mode: "wait_pullback",
-      labelTh: "รอพัก",
-      entryLow,
-      entryHigh,
-      invalidation: `ต่ำกว่าโซนพัก (~${entryLow}) หรือ funding พลิกบวกแรงขณะราคาดิ่ง`,
-      entryNote: `24h +${pct.toFixed(0)}% แล้ว — รอพักเข้าโซนประมาณ ${entryLow}–${entryHigh}`,
-    };
-  }
-
-  // Mid 40–50 with fuel → wait deeper pullback
-  if (decent && pct > 40 && pct <= 50 && fuel) {
-    const pullFrac = Math.min(0.12, Math.abs(pct) / 200);
-    const low = ROUND(price * (1 - pullFrac));
-    const high = ROUND(price * 0.95);
-    const entryLow = Math.min(low, high);
-    const entryHigh = Math.max(low, high);
-    return {
-      mode: "wait_pullback",
-      labelTh: "รอพัก",
-      entryLow,
-      entryHigh,
-      invalidation: `ต่ำกว่าโซนพัก (~${entryLow}) — ระวังไล่หลังวิ่งแรง`,
-      entryNote: `วิ่งแรง (+${pct.toFixed(0)}%) แต่ยังมี short fuel — รอพักลึกกว่านี้`,
+      mode: "watch_only",
+      labelTh: "เฝ้าดู",
+      entryLow: null,
+      entryHigh: null,
+      invalidation: "ยังไม่ใช่ต้นทาง — เฝ้าดูหลักฐานซ่อน / funding / วอลุ่ม ไม่ไล่หลังวิ่ง",
+      entryNote: `24h +${pct.toFixed(0)}% นอกโซนต้นทาง — เฝ้าดูอย่างเดียว (ไม่ใช้ป้ายรอพัก)`,
     };
   }
 
@@ -163,7 +142,7 @@ export function computeEntryHint(input: EntryHintInput): EntryHint {
     entryNote:
       score < 28
         ? "สัญญาณผสม/อ่อน — เฝ้าดูอย่างเดียว"
-        : "ยังไม่เข้าเงื่อนไขต้นทางหรือรอพักชัด — เฝ้าดูอย่างเดียว",
+        : "ยังไม่เข้าเงื่อนไขต้นทาง — เฝ้าดูอย่างเดียว",
   };
 }
 
@@ -286,35 +265,15 @@ export function computeShortEntryHint(
     };
   }
 
-  // --- wait_bounce ---
-  if (decent && inBounceBand) {
-    const bounceFrac = Math.min(0.08, Math.abs(pct) / 200);
-    const low = ROUND(price * 1.03);
-    const high = ROUND(price * (1 + bounceFrac));
-    // Prefer a band ABOVE current: e.g. +3% to +8%
-    const entryLow = Math.min(low, high);
-    const entryHigh = Math.max(low, ROUND(price * (1 + Math.max(bounceFrac, 0.05))));
+  // Bounce / mid-drop bands are NOT Short entry signals — only early ต้นทาง Short.
+  if (decent && (inBounceBand || (pct < -35 && pct >= -50 && fuel))) {
     return {
-      mode: "wait_bounce",
-      labelTh: "รอเด้งก่อน Short",
-      entryLow,
-      entryHigh,
-      invalidation: `สูงกว่าโซนเด้ง (~${entryHigh}) หรือ funding พลิกติดลบแรงขณะราคาเด้ง`,
-      entryNote: `24h ${pct.toFixed(0)}% แล้ว — รอเด้งเข้าโซนประมาณ ${entryLow}–${entryHigh} ก่อน Short`,
-    };
-  }
-
-  // Mid -35 to -50 with fuel → wait higher bounce, not chase
-  if (decent && pct < -35 && pct >= -50 && fuel) {
-    const low = ROUND(price * 1.05);
-    const high = ROUND(price * 1.12);
-    return {
-      mode: "wait_bounce",
-      labelTh: "รอเด้งก่อน Short",
-      entryLow: low,
-      entryHigh: high,
-      invalidation: `สูงกว่าโซนเด้ง (~${high}) — ระวังไล่ Short หลังลงแรง`,
-      entryNote: `ลงแรง (${pct.toFixed(0)}%) แต่ยังมี long-squeeze fuel — รอเด้งสูงกว่านี้`,
+      mode: "watch_only_short",
+      labelTh: "เฝ้าดู",
+      entryLow: null,
+      entryHigh: null,
+      invalidation: "ยังไม่ใช่ต้นทาง Short — เฝ้าดูหลักฐานซ่อน / funding+ ไม่ไล่ Short หลังลงแรง",
+      entryNote: `24h ${pct.toFixed(0)}% นอกโซนต้นทาง Short — เฝ้าดูอย่างเดียว`,
     };
   }
 
@@ -328,6 +287,6 @@ export function computeShortEntryHint(
     entryNote:
       score < 28
         ? "สัญญาณ Short ผสม/อ่อน — เฝ้าดูอย่างเดียว"
-        : "ยังไม่เข้าเงื่อนไขต้นทาง Short หรือรอเด้งชัด — เฝ้าดูอย่างเดียว",
+        : "ยังไม่เข้าเงื่อนไขต้นทาง Short — เฝ้าดูอย่างเดียว",
   };
 }
