@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     if (proxied) return withCors(req, proxied);
 
     const [
-      { readLearnedCases, computeLearningStatsFromCases },
+      { readLearnedCases, computeLearningStatsFromCases, computeSourceSplit },
       { getNowThresholds },
       { computePaperPnlSummary },
       {
@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
     const t = getNowThresholds(true);
     const rollingN = t.learned?.rollingN ?? 30;
     const side = computeLearningStatsFromCases(cases, rollingN);
+    const bySource = computeSourceSplit(cases);
     const paper = computePaperPnlSummary(cases, rollingN);
 
     return withCors(
@@ -46,6 +47,7 @@ export async function GET(req: NextRequest) {
         long: side.long,
         short: side.short,
         totalCases: side.totalCases,
+        bySource,
         paperPnl: {
           longSum: paper.longSum,
           shortSum: paper.shortSum,
@@ -78,7 +80,7 @@ export async function GET(req: NextRequest) {
         emptyMessageTh:
           "ยังไม่มีเคสเรียนรู้ — ระบบประเมินจากราคาอัตโนมัติ (ไม่ต้องกดเอง)",
         disclaimerTh:
-          "สถิติจากเกณฑ์ heuristic (5m/15m/60m อัตโนมัติ) — ไม่ใช่ผลตอบแทนจริง และไม่ใช่คำแนะนำการลงทุน",
+          "สถิติจากเกณฑ์ heuristic (5m/15m/60m อัตโนมัติ · รวมระยะต้น/Early + NOW) — ไม่ใช่ผลตอบแทนจริง และไม่ใช่คำแนะนำการลงทุน",
       })
     );
   } catch (e) {

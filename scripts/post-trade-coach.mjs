@@ -63,18 +63,24 @@ function buildNoteTh(c, flags) {
   const sideTh = c.side === "long" ? "Long" : "Short";
   const dir = c.movePct >= 0 ? "+" : "";
   const hz = c.horizon ? ` (${c.horizon})` : "";
+  const src =
+    c.source === "early"
+      ? ` · ระยะต้น${c.labelTh ? "/" + c.labelTh : c.tier ? "/" + c.tier : ""}`
+      : "";
   const flagHint = flags?.length ? ` · flags: ${flags.slice(0, 3).join(",")}` : "";
   if (c.outcome === "win") {
-    return `✅ ${c.symbol} ${sideTh}${hz}: ทำงานได้ — ราคา ${dir}${Number(c.movePct).toFixed(2)}% ตรงทิศ${flagHint}. เก็บแพทเทิร์นที่คล้ายไว้`;
+    return `✅ ${c.symbol} ${sideTh}${hz}${src}: ทำงานได้ — ราคา ${dir}${Number(c.movePct).toFixed(2)}% ตรงทิศ${flagHint}. เก็บแพทเทิร์นที่คล้ายไว้`;
   }
   if (c.outcome === "loss") {
     const tip =
       flags?.includes("thin_liquidity") || flags?.includes("late_chase")
         ? " ระวัง thin/late ในครั้งหน้า"
-        : " ทบทวน MTF + regime ก่อนเข้า";
-    return `❌ ${c.symbol} ${sideTh}${hz}: พลาด — ราคา ${dir}${Number(c.movePct).toFixed(2)}%${flagHint}.${tip}`;
+        : c.source === "early"
+          ? " ทบทวน confluence / หลักฐานซ่อนก่อนเข้า"
+          : " ทบทวน MTF + regime ก่อนเข้า";
+    return `❌ ${c.symbol} ${sideTh}${hz}${src}: พลาด — ราคา ${dir}${Number(c.movePct).toFixed(2)}%${flagHint}.${tip}`;
   }
-  return `➖ ${c.symbol} ${sideTh}${hz}: ยังไม่ชัด — ราคา ${dir}${Number(c.movePct).toFixed(2)}% รอข้อมูลเพิ่ม`;
+  return `➖ ${c.symbol} ${sideTh}${hz}${src}: ยังไม่ชัด — ราคา ${dir}${Number(c.movePct).toFixed(2)}% รอข้อมูลเพิ่ม`;
 }
 
 function rebuildFalsePatterns(log) {
@@ -132,9 +138,20 @@ function main() {
   ensureDataDir();
   const cases = loadLearnedCases();
   const log = loadAlertLog();
+  const earlyRaw = readJson(resolve(DATA_DIR, "early-alerts.json"), { alerts: [] });
+  const earlyAlerts = Array.isArray(earlyRaw?.alerts) ? earlyRaw.alerts : [];
   const flagByAlert = new Map();
   for (const a of log.alerts || []) {
     if (a?.id) flagByAlert.set(a.id, Array.isArray(a.flags) ? a.flags : []);
+  }
+  for (const a of earlyAlerts) {
+    if (!a?.id || flagByAlert.has(a.id)) continue;
+    const keys = Array.isArray(a.factors)
+      ? a.factors.map((f) => f?.key).filter(Boolean)
+      : [];
+    if (a.type) keys.unshift(`early:${a.type}`);
+    if (a.tier) keys.push(`tier:${a.tier}`);
+    flagByAlert.set(a.id, keys);
   }
 
   const coach = loadCoach();
@@ -163,6 +180,9 @@ function main() {
       alertId: c.alertId,
       horizon: c.horizon,
       movePct: c.movePct,
+      source: c.source || "auto",
+      tier: c.tier || null,
+      labelTh: c.labelTh || null,
     });
     seen.add(key);
     added++;

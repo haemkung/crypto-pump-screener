@@ -21,12 +21,25 @@ export function readLearnedCases(): LearnedCase[] {
   }
 }
 
+export interface SourceBucketStats {
+  total: number;
+  wins: number;
+  losses: number;
+  neutrals: number;
+  graded: number;
+  winRate: number | null;
+}
+
 export interface LearningStats {
   updatedAt: string;
   rollingN: number;
   long: { wins: number; losses: number; neutrals: number; graded: number; winRate: number | null };
   short: { wins: number; losses: number; neutrals: number; graded: number; winRate: number | null };
   totalCases: number;
+  bySource?: {
+    early: SourceBucketStats;
+    now: SourceBucketStats;
+  };
   thresholds: {
     source: string;
     nowLongMinScore: number;
@@ -34,6 +47,32 @@ export interface LearningStats {
     nowLongPctMax: number;
     nowShortPctMin: number;
   };
+}
+
+
+function bucketStats(list: LearnedCase[]): SourceBucketStats {
+  const wins = list.filter((c) => c.outcome === "win").length;
+  const losses = list.filter((c) => c.outcome === "loss").length;
+  const neutrals = list.filter((c) => c.outcome === "neutral").length;
+  const graded = wins + losses;
+  return {
+    total: list.length,
+    wins,
+    losses,
+    neutrals,
+    graded,
+    winRate: graded > 0 ? wins / graded : null,
+  };
+}
+
+/** Split Early (ระยะต้น) vs NOW (auto/manual/legacy) case counts. */
+export function computeSourceSplit(cases: LearnedCase[]): {
+  early: SourceBucketStats;
+  now: SourceBucketStats;
+} {
+  const early = cases.filter((c) => c.source === "early");
+  const now = cases.filter((c) => c.source !== "early");
+  return { early: bucketStats(early), now: bucketStats(now) };
 }
 
 export function computeLearningStatsFromCases(

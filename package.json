@@ -9,6 +9,7 @@
     "lint": "eslint",
     "check-now-alerts": "node scripts/check-now-alerts.mjs",
     "evaluate-outcomes": "node scripts/evaluate-alert-outcomes.mjs",
+    "evaluate-early-outcomes": "node scripts/evaluate-early-alert-outcomes.mjs",
     "post-trade-coach": "node scripts/post-trade-coach.mjs",
     "early:daemon": "node scripts/early-ignition-daemon.mjs",
     "early:dry": "node scripts/early-ignition-daemon.mjs --once --dry-run",

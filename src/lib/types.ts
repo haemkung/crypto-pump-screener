@@ -231,7 +231,7 @@ export interface OIHistPoint {
 
 export type LearnedOutcome = "win" | "loss" | "neutral";
 
-/** Graded NOW alert outcome — shown in UI learned-cases section. */
+/** Graded alert outcome (NOW or early-tier) — shown in UI learning stats. */
 export interface LearnedCase {
   id: string;
   alertId: string;
@@ -247,8 +247,13 @@ export interface LearnedCase {
   priceAtSend: number;
   priceAtGrade: number;
   score: number | null;
-  /** auto = evaluate script; manual = user ถูก/ผิด */
-  source?: "auto" | "manual";
+  /** auto = NOW evaluate; manual = user ถูก/ผิด; early = early-tier / ระยะต้น */
+  source?: "auto" | "manual" | "early";
+  /** Early tier tag: watch | ignition | accumulation | distribution | … */
+  tier?: string;
+  /** Thai label e.g. กำลังแจกของ / กำลังสะสม / เริ่มขยับ */
+  labelTh?: string;
+  earlyType?: string | null;
 }
 
 /** Early accelerator row for Hot strip (/api/hot) */

@@ -17,6 +17,10 @@ interface StatsPayload {
   long: SideStat;
   short: SideStat;
   totalCases: number;
+  bySource?: {
+    early: { total: number; wins: number; losses: number; graded: number; winRate: number | null };
+    now: { total: number; wins: number; losses: number; graded: number; winRate: number | null };
+  };
   paperPnl?: {
     longSum: number;
     shortSum: number;
@@ -157,7 +161,7 @@ export function LearningStatsPanel({ refreshKey = 0 }: { refreshKey?: number }) 
       </div>
 
       <p className="mb-3 text-[10px] leading-relaxed text-sky-200/80">
-        ไม่ต้องกดเอง — ระบบประเมินจากราคาอัตโนมัติทุก几นาที ปุ่มถูก/ผิดเป็นตัวเลือกเร่งเท่านั้น
+        ไม่ต้องกดเอง — ระบบเรียนรู้จากระยะต้น (Early) + NOW อัตโนมัติทุก几นาที ปุ่มถูก/ผิดเป็นตัวเลือกเร่งเท่านั้น
       </p>
 
       {error && (
@@ -204,6 +208,22 @@ export function LearningStatsPanel({ refreshKey = 0 }: { refreshKey?: number }) 
               sub={`Long ${fmtPnl(stats.paperPnl?.longSum)} · Short ${fmtPnl(stats.paperPnl?.shortSum)} · avg ${fmtPnl(stats.paperPnl?.totalAvg)}`}
               tone="sky"
             />
+            {stats.bySource && (
+              <div className="sm:col-span-2 lg:col-span-4 rounded-lg border border-violet-900/40 bg-violet-950/20 px-3 py-2 text-[11px] text-violet-100/90">
+                <span className="font-semibold text-violet-300">แหล่งเรียนรู้ · </span>
+                ระยะต้น/Early {stats.bySource.early.total} เคส
+                {stats.bySource.early.graded > 0
+                  ? ` (${stats.bySource.early.wins}W/${stats.bySource.early.losses}L · WR ${fmtWr(stats.bySource.early.winRate)})`
+                  : ""}
+                {" · "}
+                NOW {stats.bySource.now.total} เคส
+                {stats.bySource.now.graded > 0
+                  ? ` (${stats.bySource.now.wins}W/${stats.bySource.now.losses}L · WR ${fmtWr(stats.bySource.now.winRate)})`
+                  : ""}
+                {" · "}
+                รวม {stats.totalCases}
+              </div>
+            )}
           </div>
         )
       )}

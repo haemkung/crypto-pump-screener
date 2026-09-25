@@ -13,7 +13,6 @@ import {
   entryModeBadgeClass,
 } from "@/lib/format";
 import { DetailPanel } from "./DetailPanel";
-import { ExampleCases } from "./ExampleCases";
 import { FeedbackButtons } from "./FeedbackButtons";
 import { LearningStatsPanel } from "./LearningStatsPanel";
 import { CoachNotesPanel } from "./CoachNotesPanel";
@@ -183,27 +182,6 @@ export function Screener() {
     setPageSize(DEFAULT_PAGE_SIZE);
   }, [mode]);
 
-  const nowAlerts = useMemo(() => {
-    if (!data) return { long: [] as ScreenRow[], short: [] as ScreenRow[] };
-    const long = data.rows
-      .filter((r) => r.urgency === "now_long")
-      .sort((a, b) => {
-        const av = a.flags.includes("high_volume") ? 1 : 0;
-        const bv = b.flags.includes("high_volume") ? 1 : 0;
-        if (bv !== av) return bv - av;
-        return b.score - a.score;
-      });
-    const short = data.rows
-      .filter((r) => r.urgency === "now_short")
-      .sort((a, b) => {
-        const av = a.shortFlags.includes("high_volume") ? 1 : 0;
-        const bv = b.shortFlags.includes("high_volume") ? 1 : 0;
-        if (bv !== av) return bv - av;
-        return b.shortScore - a.shortScore;
-      });
-    return { long, short };
-  }, [data]);
-
   const filtered = useMemo(() => {
     if (!data) return [];
     const rows = data.rows.filter((r) => {
@@ -329,103 +307,6 @@ export function Screener() {
           <CoachNotesPanel refreshKey={feedbackRefresh} />
         </div>
 
-        {/* NOW urgency banner */}
-        {(nowAlerts.long.length > 0 || nowAlerts.short.length > 0) && (
-          <div className="sticky top-0 z-30 mt-4 animate-pulse rounded-xl border-2 border-orange-500/80 bg-gradient-to-r from-orange-950 via-rose-950 to-orange-950 px-4 py-3 shadow-lg shadow-orange-900/50">
-            <div className="mb-2 flex flex-wrap items-center gap-2">
-              <span className="rounded bg-orange-500 px-2 py-0.5 text-xs font-black uppercase tracking-widest text-black">
-                ตอนนี้ / NOW
-              </span>
-              <span className="text-sm font-bold text-orange-100">
-                สัญญาณเข้าตอนนี้ (heuristic — ไม่ใช่คำสั่งซื้อ)
-              </span>
-              <span className="text-[10px] text-orange-200/70">
-                Long {nowAlerts.long.length} · Short {nowAlerts.short.length}
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {nowAlerts.long.slice(0, 8).map((r) => (
-                <div
-                  key={`nl-${r.symbol}`}
-                  className="rounded-lg border border-emerald-500/50 bg-emerald-950/80 px-2.5 py-1.5 text-left"
-                >
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMode("long");
-                      setSelected(r);
-                      setNowOnly(false);
-                    }}
-                    className="w-full text-left hover:opacity-90"
-                  >
-                    <span className="font-bold text-emerald-300">{r.baseAsset}</span>
-                    <span className="ml-2 font-mono text-xs text-emerald-400">
-                      {fmtPct(r.priceChangePercent)}
-                    </span>
-                    <span className="ml-2 text-[10px] text-orange-200">
-                      {"ต้นทาง · เข้าตอนนี้"}
-                    </span>
-                    <span
-                      className={`ml-1 rounded px-1 py-0.5 text-[9px] font-black ${qualityBadgeClass(
-                        r.qualityGrade
-                      )}`}
-                    >
-                      {r.qualityGrade ?? "C"}
-                    </span>
-                  </button>
-                  <FeedbackButtons
-                    compact
-                    symbol={r.symbol}
-                    side="long"
-                    score={r.score}
-                    price={r.price}
-                    onDone={() => setFeedbackRefresh((n) => n + 1)}
-                  />
-                </div>
-              ))}
-              {nowAlerts.short.slice(0, 8).map((r) => (
-                <div
-                  key={`ns-${r.symbol}`}
-                  className="rounded-lg border border-rose-500/50 bg-rose-950/80 px-2.5 py-1.5 text-left"
-                >
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMode("short");
-                      setSelected(r);
-                      setNowOnly(false);
-                    }}
-                    className="w-full text-left hover:opacity-90"
-                  >
-                    <span className="font-bold text-rose-300">{r.baseAsset}</span>
-                    <span className="ml-2 font-mono text-xs text-rose-400">
-                      {fmtPct(r.priceChangePercent)}
-                    </span>
-                    <span className="ml-2 text-[10px] text-orange-200">
-                      {"ต้นทาง Short · เข้าตอนนี้"}
-                    </span>
-                    <span
-                      className={`ml-1 rounded px-1 py-0.5 text-[9px] font-black ${qualityBadgeClass(
-                        r.shortQualityGrade
-                      )}`}
-                    >
-                      {r.shortQualityGrade ?? "C"}
-                    </span>
-                  </button>
-                  <FeedbackButtons
-                    compact
-                    symbol={r.symbol}
-                    side="short"
-                    score={r.shortScore}
-                    price={r.price}
-                    onDone={() => setFeedbackRefresh((n) => n + 1)}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Mode tabs */}
         <div className="mt-4 flex gap-2">
           <button
@@ -452,8 +333,6 @@ export function Screener() {
           </button>
         </div>
       </header>
-
-      {!isShort && <ExampleCases />}
 
       <section className="mb-4 flex flex-wrap items-end gap-4 rounded-xl border border-zinc-800 bg-zinc-900/60 p-4">
         <label htmlFor="min-vol" className="flex flex-col gap-1 text-xs text-zinc-400">

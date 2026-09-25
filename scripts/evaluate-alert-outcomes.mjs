@@ -196,7 +196,7 @@ async function main() {
     );
   }
 
-  const trimmedCases = cases.length > 400 ? cases.slice(-400) : cases;
+  const trimmedCases = cases.length > 800 ? cases.slice(-800) : cases;
   writeJson(LEARNED_CASES_FILE, trimmedCases);
   writeJson(ALERT_LOG_FILE, log);
 
@@ -235,13 +235,17 @@ const __evalDir = dirname(fileURLToPath(import.meta.url));
 
 main()
   .then(() => {
-    const r = spawnSync(
-      process.execPath,
-      [resolve(__evalDir, "post-trade-coach.mjs")],
-      { encoding: "utf8" }
-    );
-    if (r.stdout) process.stdout.write(r.stdout);
-    if (r.stderr) process.stderr.write(r.stderr);
+    // Early-tier learning (ระยะต้น) → learned-cases, then coach on combined set
+    for (const script of ["evaluate-early-alert-outcomes.mjs", "post-trade-coach.mjs"]) {
+      const r = spawnSync(process.execPath, [resolve(__evalDir, script)], {
+        encoding: "utf8",
+      });
+      if (r.stdout) process.stdout.write(r.stdout);
+      if (r.stderr) process.stderr.write(r.stderr);
+      if (r.status && r.status !== 0) {
+        console.error(`${script} exited ${r.status}`);
+      }
+    }
   })
   .catch((e) => {
     console.error(e);
