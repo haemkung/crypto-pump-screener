@@ -23,7 +23,7 @@
  * Everything (incl. price-only triggers that FAILED confluence) is logged + self-graded in
  * data/early-alerts.json so live precision can be compared with the price-only baseline.
  *
- * Flags: --once, --dry-run (no Telegram, no state/log writes), --probe SYMBOL (print evidence now, exit). Heuristic only — not financial advice.
+ * Flags: --once, --dry-run (no Telegram, no state/log writes), --ai-dry (run AI review even in dry-run), --probe SYMBOL (print evidence now, exit). Heuristic only — not financial advice.
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync, renameSync } from "node:fs";
 import { resolve, dirname } from "node:path";
@@ -48,6 +48,7 @@ import {
   simulateTrade,
   RISK,
 } from "./lib/early-ignition-core.mjs";
+import { reviewEarlySignal } from "./lib/ai-realtime-review.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
@@ -84,6 +85,8 @@ function loadTierConfig() {
 
 const ONCE = process.argv.includes("--once");
 const DRY = process.argv.includes("--dry-run") || process.env.EARLY_DRY_RUN === "1";
+/** Call AI during --dry-run only when explicitly requested (saves tokens by default). */
+const AI_IN_DRY = process.argv.includes("--ai-dry") || process.env.AI_REVIEW_IN_DRY === "1";
 const INTERVAL_MS = Number(process.env.EARLY_INTERVAL_MS || 60_000);
 
 /** Telegram switches: all OFF unless a tier beat the price-only baseline in backtest (see DEPLOY.md). */
@@ -98,6 +101,10 @@ const DEFAULT_SETTINGS = {
    *  (every confluent alert, graded with its exact SL) reaches n>=20, TP1 rate>=55%, avg>=+0.25R; an auto-enabled
    *  tier is switched back off if its last 20 graded alerts average < -0.1R. */
   autoPromote: true,
+  /** Realtime AI review on Telegram candidates only (code filters first). Off when no API key. */
+  aiReview: true,
+  /** If AI returns veto, block Telegram (alert still logged + shown on web). */
+  aiVetoBlocks: true,
 };
 const PROMOTE = { minN: 20, minTp1: 0.55, minAvgR: 0.25, demoteLastN: 20, demoteMinN: 10, demoteAvgR: -0.1 };
 const TIER_SWITCH = [["ignition", "long", "sendIgnitionLong", "🚀 เริ่มขยับ (Long)"], ["ignition", "short", "sendIgnitionShort", "🔻 เริ่มทุบ (Short)"], ["watch", "long", "sendWatchLong", "👀 กำลังสะสม (Long)"], ["watch", "short", "sendWatchShort", "👀 กำลังแจกของ (Short)"]];
@@ -461,10 +468,11 @@ function writeTiersSnapshot(logObj, settings, now, tierCfg) {
         factors: (a.factors || []).map((f) => ({ key: f.key, labelTh: FACTOR_LABELS[f.key] || f.key, detailTh: f.detailTh })),
         factorCount: a.factorCount ?? (a.factors || []).length, directional: a.directional ?? null,
         flaggedAt: a.sentAt, firstFlaggedAt: new Date(first.get(`${a.symbol}|${a.side}`) ?? Date.parse(a.sentAt)).toISOString(),
-        telegram: a.delivered ? "sent" : a.suppressed === "sl_too_wide" ? "sl_wide" : /disabled/.test(a.suppressed || "") ? "off" : a.suppressed === "cap" ? "capped" : a.suppressed ? "off" : "failed",
+        telegram: a.delivered ? "sent" : a.suppressed === "sl_too_wide" ? "sl_wide" : a.suppressed === "ai_veto" ? "ai_veto" : /disabled/.test(a.suppressed || "") ? "off" : a.suppressed === "cap" ? "capped" : a.suppressed ? "off" : "failed",
         trigger: a.type === "ignition" ? { moveWindow: a.moveWindow, movePct: a.movePct, volMult: a.volMult, breakoutPct: a.breakoutPct } : null,
         plan: Number.isFinite(a.slPct) ? { entry: a.entry, sl: a.sl, slPct: a.slPct, tp1: a.tp1, tp2: a.tp2, slSkip: !!a.slSkip, slNoteTh: a.slNoteTh } : null,
         trade: a.trade || null,
+        ai: a.ai || null,
       }));
   };
   writeJsonAtomic(TIERS_FILE, {
@@ -478,6 +486,80 @@ function writeTiersSnapshot(logObj, settings, now, tierCfg) {
     watch: latest("watch"),
     ignition: latest("ignition"),
   });
+}
+
+
+// ---------- AI realtime review (candidates about to Telegram only) ----------
+function buildAiPayload(a) {
+  const factors = (a.factors || []).map((f) => ({
+    key: f.key,
+    labelTh: FACTOR_LABELS[f.key] || f.labelTh || f.key,
+    detailTh: f.detailTh,
+  }));
+  const oi = factors.find((f) => f.key === "oiBuild");
+  return {
+    symbol: a.symbol,
+    side: a.side,
+    tier: a.type === "watch" ? "watch" : "ignition",
+    factors,
+    price: a.price ?? a.entry ?? null,
+    fundingPct: a.fundingPct ?? null,
+    oiNoteTh: oi?.detailTh || null,
+    entry: a.entry ?? null,
+    slPct: a.slPct ?? null,
+    tp1: a.tp1 ?? null,
+    tp2: a.tp2 ?? null,
+    pct24h: a.pct24h ?? null,
+    regime: a.regime || null,
+    trigger: a.type === "ignition"
+      ? { moveWindow: a.moveWindow, movePct: a.movePct, volMult: a.volMult, breakoutPct: a.breakoutPct }
+      : null,
+  };
+}
+function decorateTelegramBody(body, ai) {
+  if (!ai || ai.skipped) return body;
+  const reason = (ai.reasonTh || "").trim();
+  let out = body;
+  if (ai.action === "boost") out = `⚡AIบูสต์ ${out}`;
+  if (reason) out = `${out}\n🤖 ${reason}`;
+  return out;
+}
+async function reviewMessage(m, settings) {
+  const a = m.alerts[0];
+  if (!a) return { body: m.body, veto: false };
+  const wantAi = settings.aiReview !== false;
+  const allowInDry = !DRY || AI_IN_DRY;
+  if (!wantAi || !allowInDry) {
+    const skipped = {
+      ok: false,
+      action: "send",
+      score: 0,
+      reasonTh: !wantAi ? "AI ปิด (ตั้งค่า)" : "AI ข้าม (dry-run)",
+      latencyMs: 0,
+      skipped: true,
+    };
+    for (const x of m.alerts) x.ai = { action: skipped.action, score: skipped.score, reasonTh: skipped.reasonTh, skipped: true };
+    return { body: m.body, veto: false, ai: skipped };
+  }
+  const ai = await reviewEarlySignal(buildAiPayload(a));
+  const slim = {
+    action: ai.action,
+    score: ai.score,
+    reasonTh: ai.reasonTh,
+    model: ai.model || null,
+    latencyMs: ai.latencyMs,
+    ok: ai.ok,
+    skipped: !!ai.skipped,
+    cached: !!ai.cached,
+  };
+  for (const x of m.alerts) x.ai = slim;
+  log(`ai-review ${a.symbol} ${a.side} action=${ai.action} score=${ai.score} ms=${ai.latencyMs}${ai.cached ? " cached" : ""}${ai.skipped ? " skipped" : ""}`);
+  const veto = ai.action === "veto" && settings.aiVetoBlocks !== false;
+  if (veto) {
+    for (const x of m.alerts) x.suppressed = "ai_veto";
+    return { body: m.body, veto: true, ai: slim };
+  }
+  return { body: decorateTelegramBody(m.body, slim), veto: false, ai: slim };
 }
 
 // ---------- ignition ----------
@@ -708,18 +790,36 @@ async function cycle() {
   }
 
   const allAlerts = [...ignAlerts, ...watchAlerts];
+  // AI review ONLY for messages about to Telegram (code filters already passed).
+  const reviewedMessages = [];
+  for (const m of messages) {
+    const rev = await reviewMessage(m, settings);
+    if (rev.veto) continue;
+    reviewedMessages.push({ ...m, body: rev.body });
+  }
+
   if (DRY) {
-    for (const m of messages) log("DRY-RUN would send:\n" + m.body);
+    for (const m of reviewedMessages) log("DRY-RUN would send:\n" + m.body);
     for (const a of allAlerts.filter((x) => x.suppressed)) log(`DRY-RUN not sent (${a.suppressed}): ${a.type} ${a.symbol} ${a.side} factors=${a.factorCount} [${a.factors.map((f) => f.key).join(",")}]`);
   } else {
     for (const a of allAlerts) { const { _h, ...rest } = a; logObj.alerts.push(rest); }
-    for (const m of messages) {
+    for (const m of reviewedMessages) {
       const r = sendTelegram(m.body);
       for (const a of m.alerts) {
         const rec = logObj.alerts.find((x) => x.id === a.id);
-        if (rec) rec.delivered = r.ok;
+        if (rec) {
+          rec.delivered = r.ok;
+          if (a.ai) rec.ai = a.ai;
+        }
       }
       if (!r.ok) log("telegram send failed:", r.err);
+    }
+    // Persist AI fields + ai_veto suppressions onto log rows (even when not delivered).
+    for (const a of allAlerts) {
+      const rec = logObj.alerts.find((x) => x.id === a.id);
+      if (!rec) continue;
+      if (a.ai) rec.ai = a.ai;
+      if (a.suppressed) rec.suppressed = a.suppressed;
     }
     for (const a of ignAlerts) {
       if (a.type !== "ignition") continue;

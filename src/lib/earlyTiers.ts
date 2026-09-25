@@ -5,6 +5,18 @@
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 
+
+export interface EarlyAiReview {
+  action: "send" | "boost" | "veto";
+  score: number;
+  reasonTh: string;
+  model?: string | null;
+  latencyMs?: number;
+  ok?: boolean;
+  skipped?: boolean;
+  cached?: boolean;
+}
+
 export interface EarlyFactor {
   key: string;
   labelTh?: string;
@@ -24,7 +36,8 @@ export interface EarlyTierRow {
   directional?: number;
   flaggedAt: string;
   firstFlaggedAt: string;
-  telegram: "sent" | "off" | "capped" | "failed";
+  telegram: "sent" | "off" | "capped" | "failed" | "sl_wide" | "ai_veto";
+  ai?: EarlyAiReview | null;
   trigger?: { moveWindow: number; movePct: number; volMult: number; breakoutPct: number } | null;
   plan?: { entry: number; sl: number; slPct: number; tp1: number; tp2: number; slSkip: boolean; slNoteTh?: string } | null;
   trade?: { tp1: boolean; tp2: boolean; r: number } | null;

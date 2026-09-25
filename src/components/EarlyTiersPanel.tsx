@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { apiUrl } from "@/lib/apiBase";
 
 type Factor = { key: string; labelTh?: string; detailTh: string };
+type AiReview = { action: "send" | "boost" | "veto"; score: number; reasonTh: string; skipped?: boolean };
 type Plan = { entry: number; sl: number; slPct: number; tp1: number; tp2: number; slSkip: boolean; slNoteTh?: string };
 type Row = {
   id: string;
@@ -21,6 +22,7 @@ type Row = {
   trigger?: { moveWindow: number; movePct: number; volMult: number; breakoutPct: number } | null;
   plan?: Plan | null;
   trade?: { tp1: boolean; tp2: boolean; r: number } | null;
+  ai?: AiReview | null;
 };
 type Stat = { n: number; days?: number; perDay?: number | null; tp1Rate: number | null; tp1Wilson?: number[]; expR: number; maxConsecLoss?: number; avgSlPct?: number | null };
 type TierInfo = {
@@ -93,6 +95,7 @@ function tgText(t: string): string {
   if (t === "sl_wide") return "ไม่ส่ง: SL กว้างเกิน";
   if (t === "off") return "ปิด (เว็บอย่างเดียว)";
   if (t === "capped") return "ไม่ส่ง: เกินโควตา";
+  if (t === "ai_veto") return "ไม่ส่ง: AI วีโต้";
   return t;
 }
 
@@ -109,6 +112,23 @@ function PlanBox({ p, side }: { p: Plan; side: "long" | "short" }) {
   );
 }
 
+
+function AiBadge({ ai }: { ai: AiReview }) {
+  if (!ai || ai.skipped) return null;
+  const style =
+    ai.action === "boost"
+      ? "bg-emerald-700/80 text-emerald-50"
+      : ai.action === "veto"
+        ? "bg-rose-700/80 text-rose-50"
+        : "bg-zinc-700/70 text-zinc-300";
+  const label = ai.action === "boost" ? "บูสต์" : ai.action === "veto" ? "วีโต้" : "ผ่าน";
+  return (
+    <span className={`ml-1 rounded px-1.5 py-0.5 text-[10px] font-medium ${style}`} title={ai.reasonTh}>
+      AI {label}
+    </span>
+  );
+}
+
 function RowCard({ r }: { r: Row }) {
   const long = r.side === "long";
   return (
@@ -118,6 +138,7 @@ function RowCard({ r }: { r: Row }) {
           <span className="mr-1">{title(r)}</span>
           <span className="text-zinc-100">{r.symbol.replace(/USDT$/, "")}</span>
           <span className={`ml-2 rounded px-1.5 py-0.5 text-[10px] uppercase ${long ? "bg-emerald-800/60 text-emerald-100" : "bg-rose-800/60 text-rose-100"}`}>{long ? "Long" : "Short"}</span>
+          {r.ai && <AiBadge ai={r.ai} />}
         </div>
         <div className="text-xs text-zinc-300">
           ราคา {fmtPrice(r.price)} · 24h {fmtPct(r.pct24h)} · หลักฐาน <strong>{r.factorCount}</strong> ข้อ
@@ -134,6 +155,11 @@ function RowCard({ r }: { r: Row }) {
       {r.trigger && (
         <div className="mt-1 text-[11px] text-zinc-400">
           จังหวะราคา: {r.trigger.moveWindow}m {fmtPct(r.trigger.movePct)} · วอลุ่ม ×{r.trigger.volMult} · breakout {fmtPct(r.trigger.breakoutPct)}
+        </div>
+      )}
+      {r.ai?.reasonTh && !r.ai.skipped && (
+        <div className="mt-1 truncate text-[11px] text-zinc-400" title={r.ai.reasonTh}>
+          🤖 {r.ai.reasonTh}
         </div>
       )}
       <div className="mt-1 text-[11px] text-zinc-500">
