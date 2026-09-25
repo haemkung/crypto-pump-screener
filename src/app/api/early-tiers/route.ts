@@ -17,7 +17,14 @@ export async function OPTIONS(req: NextRequest) {
 function jsonText(req: NextRequest, text: string, extra: Record<string, string> = {}) {
   return withCors(
     req,
-    new NextResponse(text, { status: 200, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", ...extra } })
+    new NextResponse(text, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store",
+        ...extra,
+      },
+    })
   );
 }
 
@@ -25,10 +32,14 @@ function jsonText(req: NextRequest, text: string, extra: Record<string, string> 
  * GET /api/early-tiers — confluence-first early tiers (watch + ignition) from the local daemon.
  * Workers: pass-through to BOT_UPSTREAM (small JSON). Never computes anything. If upstream is down,
  * serves the last good snapshot (its own updatedAt tells the UI how old it is) with X-Early-Tiers-Stale: 1.
+ * Soft-fail returns HTTP 200 (not 503).
  */
 export async function GET(req: NextRequest) {
   try {
-    const proxied = await proxyToUpstream(`/api/early-tiers`);
+    const proxied = await proxyToUpstream(`/api/early-tiers`, {
+      timeoutMs: 15_000,
+      retries: 2,
+    });
     if (proxied && proxied.ok) {
       const len = Number(proxied.headers.get("content-length") || 0);
       if (len > MAX_BODY_BYTES) return withCors(req, proxied);
@@ -37,24 +48,51 @@ export async function GET(req: NextRequest) {
       return jsonText(req, text);
     }
     if (proxied) {
-      try { await proxied.body?.cancel(); } catch { /* ignore */ }
+      try {
+        await proxied.body?.cancel();
+      } catch {
+        /* ignore */
+      }
     }
     if (await isCloudflareWorkersRuntime()) {
       if (lastGood && Date.now() - lastGood.at < LAST_GOOD_MAX_AGE_MS) {
-        return jsonText(req, lastGood.text, { "X-Early-Tiers-Stale": "1", "X-Early-Tiers-Cached-At": new Date(lastGood.at).toISOString() });
+        return jsonText(req, lastGood.text, {
+          "X-Early-Tiers-Stale": "1",
+          "X-Early-Tiers-Cached-At": new Date(lastGood.at).toISOString(),
+        });
       }
       return withCors(
         req,
         NextResponse.json(
-          { updatedAt: null, watch: [], ignition: [], meta: { softFail: true, reason: "BOT_UPSTREAM unavailable" } },
-          { status: 503, headers: { "Cache-Control": "no-store" } }
+          {
+            updatedAt: null,
+            watch: [],
+            ignition: [],
+            meta: { softFail: true, reason: "BOT_UPSTREAM unavailable" },
+          },
+          {
+            status: 200,
+            headers: {
+              "X-Early-Tiers-Soft-Fail": "1",
+              "Cache-Control": "no-store",
+            },
+          }
         )
       );
     }
     const { readEarlyTiers } = await import("@/lib/earlyTiers");
-    return withCors(req, NextResponse.json(readEarlyTiers(), { headers: { "Cache-Control": "no-store" } }));
+    return withCors(
+      req,
+      NextResponse.json(readEarlyTiers(), { headers: { "Cache-Control": "no-store" } })
+    );
   } catch (e) {
     if (lastGood) return jsonText(req, lastGood.text, { "X-Early-Tiers-Stale": "1" });
-    return withCors(req, NextResponse.json({ updatedAt: null, watch: [], ignition: [], error: String(e) }, { status: 500 }));
+    return withCors(
+      req,
+      NextResponse.json(
+        { updatedAt: null, watch: [], ignition: [], error: String(e) },
+        { status: 500 }
+      )
+    );
   }
 }

@@ -27,6 +27,28 @@ const DEFAULT_PAGE_SIZE = 80;
 const PAGE_SIZE_OPTIONS = [50, 80, 100, 200] as const;
 const LOAD_MORE_STEP = 50;
 const OI_TOP_DEFAULT = 40;
+const LS_SCREEN_KEY = "cps-screen-last-good-v1";
+
+function readScreenLastGood(): ScreenResponse | null {
+  try {
+    const s = localStorage.getItem(LS_SCREEN_KEY);
+    if (!s) return null;
+    const j = JSON.parse(s) as ScreenResponse;
+    if (!j || !Array.isArray(j.rows) || j.rows.length < 1) return null;
+    return j;
+  } catch {
+    return null;
+  }
+}
+
+function writeScreenLastGood(json: ScreenResponse): void {
+  try {
+    if (!json?.rows || json.rows.length < 1) return;
+    localStorage.setItem(LS_SCREEN_KEY, JSON.stringify(json));
+  } catch {
+    // quota / private mode
+  }
+}
 
 function isEnterNow(u: ScreenRow["urgency"]): boolean {
   return u === "now_long" || u === "now_short";
@@ -38,6 +60,7 @@ function isWaitSweep(u: ScreenRow["urgency"]): boolean {
 export function Screener() {
   const [data, setData] = useState<ScreenResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [stale, setStale] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [oiLoading, setOiLoading] = useState(false);
@@ -77,6 +100,7 @@ export function Screener() {
         const json = (await res.json()) as ScreenResponse;
         if (gen !== oiEnrichGen.current) return;
         applyResponse(json);
+        writeScreenLastGood(json);
       } catch {
         // keep fast-path data
       } finally {
@@ -92,7 +116,6 @@ export function Screener() {
       const background = opts?.background ?? false;
       const isInitial = !hasDataRef.current;
       try {
-        setError(null);
         if (isInitial && !background) {
           setLoading(true);
         } else {
@@ -104,21 +127,45 @@ export function Screener() {
         params.set("oiTop", useFastPath ? "0" : String(OI_TOP_DEFAULT));
         if (force) params.set("refresh", "1");
 
-        const res = await fetch(apiUrl(`/api/screen?${params}`));
-        if (!res.ok) {
-          const j = await res.json().catch(() => ({}));
+        const res = await fetch(apiUrl(`/api/screen?${params}`), {
+          cache: "no-store",
+        });
+        const json = (await res.json().catch(() => null)) as
+          | (ScreenResponse & {
+              meta?: { softFail?: boolean; reason?: string };
+              error?: string;
+            })
+          | null;
+        const softEmpty =
+          !!json?.meta?.softFail &&
+          (!Array.isArray(json.rows) || json.rows.length === 0);
+        if (!res.ok || !json || softEmpty) {
           throw new Error(
-            (j as { error?: string }).error || `HTTP ${res.status}`
+            json?.error ||
+              json?.meta?.reason ||
+              `HTTP ${res.status}`
           );
         }
-        const json = (await res.json()) as ScreenResponse;
+        if (!Array.isArray(json.rows) || json.rows.length === 0) {
+          throw new Error("empty screen rows");
+        }
+
         applyResponse(json);
+        writeScreenLastGood(json);
+        setStale(res.headers.get("X-Screen-Stale") === "1");
+        setError(null);
 
         if (useFastPath) {
           void enrichOi(force);
         }
       } catch (e) {
-        setError(String(e));
+        const msg = String(e instanceof Error ? e.message : e);
+        setError(msg);
+        setStale(true);
+        if (!hasDataRef.current) {
+          const cached = readScreenLastGood();
+          if (cached) applyResponse(cached);
+        }
       } finally {
         setLoading(false);
         setRefreshing(false);
@@ -596,6 +643,23 @@ export function Screener() {
           <p className="mt-2 text-sm text-zinc-400">
             กำลังดึงข้อมูลจาก Binance — กรุณารอสักครู่
           </p>
+        </div>
+      )}
+
+
+      {stale && data && (
+        <div className="mb-4 rounded-lg border border-amber-800/60 bg-amber-950/40 px-3 py-2 text-sm text-amber-200">
+          ข้อมูลค้าง — แสดงผลล่าสุดที่มีในเครื่อง/แคช
+          {error ? <span className="ml-2 font-mono text-xs text-amber-300/80">({error})</span> : null}
+          <button
+            type="button"
+            onClick={() => {
+              void load({ force: true, background: true });
+            }}
+            className="ml-3 rounded bg-amber-800/80 px-2 py-0.5 text-xs font-semibold text-amber-50 hover:bg-amber-700"
+          >
+            ลองใหม่
+          </button>
         </div>
       )}
 

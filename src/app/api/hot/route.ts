@@ -1,5 +1,10 @@
 import { proxyToUpstream, isCloudflareWorkersRuntime } from "@/lib/upstreamProxy";
 import { getLastGood, rememberLastGood } from "@/lib/lastGoodCache";
+import {
+  EDGE_HOT_CACHE_URL,
+  stashEdgeLastGood,
+  matchEdgeLastGood,
+} from "@/lib/edgeLastGood";
 import { withCors, corsPreflight } from "@/lib/cors";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -9,8 +14,8 @@ export const runtime = "nodejs";
 const LAST_GOOD_KEY = "hot:last-good-v1";
 
 /**
- * GET /api/hot — top early accelerators (pct1h + early-band 24h).
- * On Workers, prefer BOT_UPSTREAM; do not re-parse proxied body for cache.
+ * GET /api/hot — top early accelerators.
+ * Workers: tee successful VPC bodies into Cache API; on miss serve stale or 503.
  */
 export async function OPTIONS(req: NextRequest) {
   return corsPreflight(req) || new NextResponse(null, { status: 204 });
@@ -18,12 +23,19 @@ export async function OPTIONS(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
-    const proxied = await proxyToUpstream(`/api/hot${req.nextUrl.search}`);
+    const proxied = await proxyToUpstream(`/api/hot${req.nextUrl.search}`, {
+      timeoutMs: 20_000,
+      retries: 2,
+    });
     if (proxied) {
-      return withCors(req, proxied);
+      const out = await stashEdgeLastGood(EDGE_HOT_CACHE_URL, proxied, 3600);
+      return withCors(req, out);
     }
 
     if (await isCloudflareWorkersRuntime()) {
+      const edge = await matchEdgeLastGood(EDGE_HOT_CACHE_URL, "X-Hot-Stale");
+      if (edge) return withCors(req, edge);
+
       const stale = getLastGood<Record<string, unknown>>(LAST_GOOD_KEY);
       if (stale && Array.isArray((stale as { hot?: unknown }).hot)) {
         return withCors(
@@ -49,6 +61,7 @@ export async function GET(req: NextRequest) {
           )
         );
       }
+
       return withCors(
         req,
         NextResponse.json(
@@ -69,6 +82,9 @@ export async function GET(req: NextRequest) {
     rememberLastGood(LAST_GOOD_KEY, data);
     return withCors(req, NextResponse.json(data));
   } catch (e) {
+    const edge = await matchEdgeLastGood(EDGE_HOT_CACHE_URL, "X-Hot-Stale");
+    if (edge) return withCors(req, edge);
+
     const stale = getLastGood<Record<string, unknown>>(LAST_GOOD_KEY);
     if (stale && Array.isArray((stale as { hot?: unknown }).hot)) {
       return withCors(

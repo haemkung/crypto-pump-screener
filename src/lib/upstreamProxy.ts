@@ -17,7 +17,10 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 const CF_CONTEXT_TIMEOUT_MS = 600;
-const VPC_FETCH_TIMEOUT_MS = 8_000;
+/** Screen builds often take 1–8s; under load can exceed 10s. Old 8s timeout caused false 503s. */
+const VPC_FETCH_TIMEOUT_MS = 25_000;
+const VPC_FETCH_RETRIES = 2;
+const VPC_RETRY_GAP_MS = 400;
 
 export function upstreamOrigin(): string | null {
   const v =
@@ -34,6 +37,10 @@ export type ProxyToUpstreamOptions = {
   contentType?: string | null;
   /** When true, 5xx from VPC is returned as-is (rare). Default: fall through. */
   requireUpstream?: boolean;
+  /** Override fetch timeout (ms). */
+  timeoutMs?: number;
+  /** Override retry count (attempts). Default 2. */
+  retries?: number;
 };
 
 type FetcherLike = {
@@ -60,6 +67,10 @@ async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T | null> {
   } finally {
     if (timer) clearTimeout(timer);
   }
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function botUpstreamFetcher(): Promise<FetcherLike | null> {
@@ -162,39 +173,64 @@ export async function proxyToUpstream(
     init.body = opts.body;
   }
 
+  const timeoutMs = opts?.timeoutMs ?? VPC_FETCH_TIMEOUT_MS;
+  const attempts = Math.max(1, opts?.retries ?? VPC_FETCH_RETRIES);
+
   // 1) Workers VPC → named tunnel → localhost:3000
   const vpc = await botUpstreamFetcher();
   if (vpc) {
-    try {
-      const res = await withTimeout(
-        vpc.fetch(`http://127.0.0.1:3000${path}`, init),
-        VPC_FETCH_TIMEOUT_MS
-      );
-      if (!res) {
-        console.error("BOT_UPSTREAM timed out; falling through to local handler");
-      } else if (res.status >= 500 && !opts?.requireUpstream) {
-        // Broken tunnel / Cloudflare 1101 — do not poison the public UI with 500.
-        console.error(
-          "BOT_UPSTREAM returned",
-          res.status,
-          "; falling through to local handler"
+    for (let attempt = 1; attempt <= attempts; attempt++) {
+      try {
+        const res = await withTimeout(
+          vpc.fetch(`http://127.0.0.1:3000${path}`, init),
+          timeoutMs
         );
-        await cancelBody(res);
-      } else {
+        if (!res) {
+          console.error(
+            `BOT_UPSTREAM timed out (attempt ${attempt}/${attempts});`,
+            attempt < attempts ? "retrying" : "falling through"
+          );
+          if (attempt < attempts) {
+            await sleep(VPC_RETRY_GAP_MS * attempt);
+            continue;
+          }
+          break;
+        }
+        if (res.status >= 500 && !opts?.requireUpstream) {
+          console.error(
+            "BOT_UPSTREAM returned",
+            res.status,
+            `(attempt ${attempt}/${attempts});`,
+            attempt < attempts ? "retrying" : "falling through to local handler"
+          );
+          await cancelBody(res);
+          if (attempt < attempts) {
+            await sleep(VPC_RETRY_GAP_MS * attempt);
+            continue;
+          }
+          break;
+        }
         return passThrough(res, `vpc:${res.status}`);
-      }
-    } catch (e) {
-      console.error("BOT_UPSTREAM fetch failed; falling through", String(e));
-      if (opts?.requireUpstream) {
-        return wrap(
-          JSON.stringify({
-            error: "BOT_UPSTREAM unreachable (named tunnel / local :3000?)",
-            detail: String(e),
-          }),
-          502,
-          "application/json",
-          "vpc-fail"
+      } catch (e) {
+        console.error(
+          `BOT_UPSTREAM fetch failed (attempt ${attempt}/${attempts});`,
+          String(e)
         );
+        if (attempt < attempts) {
+          await sleep(VPC_RETRY_GAP_MS * attempt);
+          continue;
+        }
+        if (opts?.requireUpstream) {
+          return wrap(
+            JSON.stringify({
+              error: "BOT_UPSTREAM unreachable (named tunnel / local :3000?)",
+              detail: String(e),
+            }),
+            502,
+            "application/json",
+            "vpc-fail"
+          );
+        }
       }
     }
   }
@@ -204,7 +240,7 @@ export async function proxyToUpstream(
   if (!origin) return null;
   const url = `${origin}${path}`;
   try {
-    const res = await withTimeout(fetch(url, init), VPC_FETCH_TIMEOUT_MS);
+    const res = await withTimeout(fetch(url, init), timeoutMs);
     if (!res) return null;
     if (res.status >= 500 && !opts?.requireUpstream) {
       await cancelBody(res);
