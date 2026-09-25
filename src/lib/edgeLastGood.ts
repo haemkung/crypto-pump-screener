@@ -32,8 +32,10 @@ async function openCache(): Promise<Cache | null> {
   try {
     return await cs.open(CACHE_NAME);
   } catch {
+    // Some runtimes expose caches.default; typed CacheStorage may not.
     try {
-      return cs.default;
+      const def = (cs as CacheStorage & { default?: Cache }).default;
+      return def ?? null;
     } catch {
       return null;
     }
