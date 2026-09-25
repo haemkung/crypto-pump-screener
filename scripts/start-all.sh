@@ -5,6 +5,14 @@
 # (Next :3000 + cloudflared tunnel + early-ignition daemon) and supervise-local-scheduler.sh.
 # local-scheduler re-runs this every 5 min, so the watchdog and the scheduler supervise each other.
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Load local secrets (gitignored) into env for child processes — never echo values
+if [[ -f "$ROOT/.env.secrets" ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "$ROOT/.env.secrets"
+  set +a
+fi
 cd "$ROOT" || exit 1
 mkdir -p logs logs/bot-upstream logs/early-ignition
 QUIET=0; [[ "${1:-}" == "--quiet" ]] && QUIET=1

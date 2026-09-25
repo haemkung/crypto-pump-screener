@@ -52,6 +52,31 @@ import { reviewEarlySignal } from "./lib/ai-realtime-review.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
+/** Load gitignored .env.secrets into process.env (does not override existing). Never logs values. */
+(function loadEnvSecrets() {
+  try {
+    const p = resolve(ROOT, ".env.secrets");
+    if (!existsSync(p)) return;
+    for (const line of readFileSync(p, "utf8").split(/\r?\n/)) {
+      const s = line.trim();
+      if (!s || s.startsWith("#")) continue;
+      const eq = s.indexOf("=");
+      if (eq < 1) continue;
+      const k = s.slice(0, eq).trim();
+      let v = s.slice(eq + 1).trim();
+      if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) v = v.slice(1, -1);
+      if (k && process.env[k] == null) process.env[k] = v;
+    }
+  } catch { /* ignore */ }
+})();
+(() => {
+  const hasOpenAI = !!(process.env.OPENAI_API_KEY || "").trim();
+  const hasXai = !!(process.env.XAI_API_KEY || "").trim();
+  const provider = hasOpenAI ? "openai" : hasXai ? "xai" : "off";
+  // never log key material — name + presence only
+  console.log(`[early-ignition] ai-review provider=${provider}`);
+})();
+
 const DATA_DIR = resolve(ROOT, "data");
 const STATE_FILE = resolve(ROOT, ".early-alert-state.json");
 const LOG_FILE = resolve(DATA_DIR, "early-alerts.json");

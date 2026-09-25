@@ -5,6 +5,14 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Load local secrets (gitignored) into env for child processes — never echo values
+if [[ -f "$ROOT/.env.secrets" ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "$ROOT/.env.secrets"
+  set +a
+fi
 LOG_DIR="${BOT_UPSTREAM_LOG_DIR:-$ROOT/logs/bot-upstream}"
 mkdir -p "$LOG_DIR"
 TMP_MIRROR="${BOT_UPSTREAM_TMP_MIRROR:-/tmp/crypto-pump-bot-upstream}"

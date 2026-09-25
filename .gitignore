@@ -68,3 +68,4 @@ next-env.d.ts
 /data/early-alert-settings.json
 /data/early-tiers.json
 /.cache/
+.env.secrets
