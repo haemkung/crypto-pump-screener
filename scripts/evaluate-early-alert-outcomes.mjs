@@ -131,6 +131,53 @@ function noteTh(alert, outcome, movePct, horizon) {
   return `Early ${label} ${sideTh} เป็นกลาง (${horizon}): ราคา ${dir}${movePct.toFixed(2)}% — ยังไม่ถึงเกณฑ์`;
 }
 
+
+function factorKeysOf(alert) {
+  return Array.isArray(alert.factors)
+    ? alert.factors.map((f) => f?.key).filter(Boolean)
+    : [];
+}
+
+function aiSlimOf(alert) {
+  const ai = alert.ai;
+  if (!ai || typeof ai !== "object") return null;
+  return {
+    action: ai.action || null,
+    score: Number.isFinite(ai.score) ? ai.score : null,
+    reasonTh: ai.reasonTh || null,
+    model: ai.model || null,
+    skipped: !!ai.skipped,
+  };
+}
+
+function tradeGradeOf(alert) {
+  if (alert.trade && typeof alert.trade === "object") {
+    if (alert.trade.tp1 === true) return "tp1";
+    if (alert.trade.r != null && Number(alert.trade.r) < 0) return "sl";
+    if (alert.trade.complete === false) return "open";
+    if (alert.trade.complete === true && !alert.trade.tp1) return "timeout";
+  }
+  if (alert.big?.result === "win" || alert.big?.result === "loss") return `big_${alert.big.result}`;
+  if (alert.small?.result === "win" || alert.small?.result === "loss") return `small_${alert.small.result}`;
+  return null;
+}
+
+function enrichCaseFields(alert) {
+  const keys = factorKeysOf(alert);
+  const ai = aiSlimOf(alert);
+  return {
+    factorKeys: keys,
+    factorCount: alert.factorCount ?? keys.length,
+    aiAction: ai?.action || null,
+    aiScore: ai?.score ?? null,
+    aiReasonTh: ai?.reasonTh || null,
+    aiSkipped: ai ? !!ai.skipped : null,
+    tradeGrade: tradeGradeOf(alert),
+    delivered: !!alert.delivered,
+    suppressed: alert.suppressed || null,
+  };
+}
+
 function ensureOutcomes(alert) {
   if (!alert.outcomes || typeof alert.outcomes !== "object") {
     alert.outcomes = { "5m": null, "15m": null, "60m": null };
@@ -211,6 +258,7 @@ async function main() {
           tier: tierOf(alert),
           labelTh: labelThOf(alert),
           earlyType: alert.type || null,
+          ...enrichCaseFields(alert),
         });
         existingCaseKeys.add(key);
         syncedExisting++;
@@ -278,6 +326,7 @@ async function main() {
       tier: tierOf(alert),
       labelTh: labelThOf(alert),
       earlyType: alert.type || null,
+      ...enrichCaseFields(alert),
     });
     existingCaseKeys.add(key);
     gradedNew++;
@@ -287,6 +336,26 @@ async function main() {
   }
 
   const trimmedCases = cases.length > MAX_CASES ? cases.slice(-MAX_CASES) : cases;
+
+  // Backfill factors/AI onto existing early cases (join by alertId) so learner + AI see them
+  const alertById = new Map(early.alerts.filter((a) => a?.id).map((a) => [a.id, a]));
+  let backfilled = 0;
+  for (const c of trimmedCases) {
+    if (c.source !== "early" || !c.alertId) continue;
+    if (Array.isArray(c.factorKeys) && c.factorKeys.length && c.aiAction != null) continue;
+    const alert = alertById.get(c.alertId);
+    if (!alert) continue;
+    const extra = enrichCaseFields(alert);
+    let changed = false;
+    for (const [k, v] of Object.entries(extra)) {
+      if (c[k] == null || (k === "factorKeys" && (!Array.isArray(c.factorKeys) || !c.factorKeys.length))) {
+        c[k] = v;
+        changed = true;
+      }
+    }
+    if (changed) backfilled++;
+  }
+
   writeJson(LEARNED_CASES_FILE, trimmedCases);
   if (earlyLogDirty) writeJson(EARLY_ALERTS_FILE, early);
 
@@ -304,7 +373,7 @@ async function main() {
     `early_alerts=${early.alerts.length} synced_existing=${syncedExisting} graded_new=${gradedNew} awaiting_horizon=${awaitingHorizon} skipped_missed=${skippedMissed} skipped_no_price=${skippedNoPrice}`
   );
   console.log(
-    `cases_total=${trimmedCases.length} early_cases=${earlyCases.length} early_winloss=${earlyGraded.length}`
+    `cases_total=${trimmedCases.length} early_cases=${earlyCases.length} early_winloss=${earlyGraded.length} backfilled_enrich=${backfilled}`
   );
   if (gradedLines.length) {
     console.log("graded:");

@@ -236,7 +236,7 @@ const __evalDir = dirname(fileURLToPath(import.meta.url));
 main()
   .then(() => {
     // Early-tier learning (ระยะต้น) → learned-cases, then coach on combined set
-    for (const script of ["evaluate-early-alert-outcomes.mjs", "post-trade-coach.mjs"]) {
+    for (const script of ["evaluate-early-alert-outcomes.mjs", "post-trade-coach.mjs", "learn-from-mistakes.mjs"]) {
       const r = spawnSync(process.execPath, [resolve(__evalDir, script)], {
         encoding: "utf8",
       });

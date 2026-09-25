@@ -576,6 +576,7 @@ async function reviewMessage(m, settings) {
     ok: ai.ok,
     skipped: !!ai.skipped,
     cached: !!ai.cached,
+    learnedAdjust: ai.learnedAdjust || null,
   };
   for (const x of m.alerts) x.ai = slim;
   log(`ai-review ${a.symbol} ${a.side} action=${ai.action} score=${ai.score} ms=${ai.latencyMs}${ai.cached ? " cached" : ""}${ai.skipped ? " skipped" : ""}`);

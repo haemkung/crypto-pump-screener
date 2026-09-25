@@ -2,10 +2,24 @@
  * Realtime AI review for early-tier Telegram candidates.
  * Called ONLY after code filters (hidden evidence ≥3) pick a sendable alert.
  * Soft-fail always: timeout/error/no-key → action 'send' so the pipeline never blocks forever.
+ *
+ * Learns from past mistakes via data/learning-insights.json + data/early-learned-bias.json
+ * (few-shot lessons + soft vetoBias / caution patterns). Files optional — missing = one-shot.
  */
+import { readFileSync, existsSync } from "node:fs";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const DATA_DIR = resolve(__dirname, "../../data");
+const INSIGHTS_FILE = resolve(DATA_DIR, "learning-insights.json");
+const BIAS_FILE = resolve(DATA_DIR, "early-learned-bias.json");
+
 const CACHE_TTL_MS = 20 * 60e3;
 const SOFT_TIMEOUT_MS = 8_000;
+const LEARN_CACHE_TTL_MS = 60e3;
 const cache = new Map(); // key → { at, result }
+let learnCache = { at: 0, insights: null, bias: null };
 
 function resolveProvider() {
   const groqKey = (process.env.GROQ_API_KEY || "").trim();
@@ -41,6 +55,24 @@ function resolveProvider() {
     };
   }
   return null;
+}
+
+function readJsonSafe(path, fallback) {
+  if (!existsSync(path)) return fallback;
+  try {
+    return JSON.parse(readFileSync(path, "utf8"));
+  } catch {
+    return fallback;
+  }
+}
+
+function loadLearning() {
+  const now = Date.now();
+  if (learnCache.at && now - learnCache.at < LEARN_CACHE_TTL_MS) return learnCache;
+  const insights = readJsonSafe(INSIGHTS_FILE, null);
+  const bias = readJsonSafe(BIAS_FILE, null);
+  learnCache = { at: now, insights, bias };
+  return learnCache;
 }
 
 function cacheKey(payload) {
@@ -98,19 +130,110 @@ function buildUserPayload(payload) {
   };
 }
 
-const SYSTEM_PROMPT = `You are a concise crypto early-signal reviewer for Binance USDT-M.
+function factorKeyList(payload) {
+  return Array.isArray(payload?.factors)
+    ? [...new Set(payload.factors.map((f) => f?.key).filter(Boolean))].sort()
+    : [];
+}
+
+function keysMatch(patternKeys, liveKeys) {
+  if (!Array.isArray(patternKeys) || !patternKeys.length) return false;
+  const set = new Set(liveKeys);
+  return patternKeys.every((k) => set.has(k));
+}
+
+function buildLessonsBlock(insights, bias, payload) {
+  const lines = [];
+  const wr = bias?.earlyWinRate;
+  const graded = bias?.earlyGraded ?? 0;
+  if (graded > 0 && wr != null) {
+    lines.push(
+      `Live early WR≈${(wr * 100).toFixed(0)}% over ${graded} graded (vetoBias=${Number(bias?.vetoBias || 0).toFixed(2)}).`
+    );
+  }
+  const few = Array.isArray(insights?.aiFewShot) ? insights.aiFewShot.slice(0, 6) : [];
+  for (const f of few) {
+    if (f?.lessonTh) lines.push(`- ${f.lessonTh}`);
+  }
+  const liveKeys = factorKeyList(payload);
+  const cautions = Array.isArray(bias?.cautionFactorKeys) ? bias.cautionFactorKeys : [];
+  const matched = cautions.filter((p) => keysMatch(p, liveKeys));
+  if (matched.length) {
+    lines.push(
+      `CAUTION: current factors overlap losing pattern(s): ${matched
+        .map((p) => p.join("+"))
+        .join(" | ")} — prefer veto unless evidence is unusually strong.`
+    );
+  }
+  const prefers = Array.isArray(bias?.preferBoostKeys) ? bias.preferBoostKeys : [];
+  const boostHit = prefers.filter((p) => keysMatch(p, liveKeys));
+  if (boostHit.length) {
+    lines.push(
+      `STRONG past win pattern overlap: ${boostHit.map((p) => p.join("+")).join(" | ")} — boost only if coherent.`
+    );
+  }
+  if (!lines.length) return "";
+  return `\n\nLessons from recent graded early alerts (avoid repeating fail modes):\n${lines.join("\n")}`;
+}
+
+const SYSTEM_PROMPT_BASE = `You are a concise crypto early-signal reviewer for Binance USDT-M.
 Code filters already required ≥3 independent "hidden" evidence factors. You only review candidates about to Telegram.
 Reply with JSON ONLY (no markdown): {"action":"send"|"boost"|"veto","score":0-100,"reasonTh":"..."}
 Rules:
-- veto ONLY if clear trap / chase / contradiction (e.g. crowded same-side, funding already extreme with move, factors conflict).
-- boost ONLY if confluence is unusually strong and coherent.
+- veto ONLY if clear trap / chase / contradiction (e.g. crowded same-side, funding already extreme with move, factors conflict) OR if lessons show the same factor combo lost recently.
+- boost ONLY if confluence is unusually strong and coherent AND not a known losing pattern.
 - otherwise action "send".
 - reasonTh: Thai preferred (English OK), ≤80 Thai characters, concise.
-- score: confidence 0-100 that this alert is worth acting on.`;
+- score: confidence 0-100 that this alert is worth acting on.
+- Never loosen the ≥3 hidden-factor rule. Respect tight SL (≈2–3%); wider stops are already skipped by code.`;
 
-async function callChat(provider, payload, signal) {
+function softPostProcess(result, payload, bias) {
+  const out = { ...result };
+  const liveKeys = factorKeyList(payload);
+  const vetoBias = Number(bias?.vetoBias || 0);
+  const cautions = Array.isArray(bias?.cautionFactorKeys) ? bias.cautionFactorKeys : [];
+  const matchedCaution = cautions.some((p) => keysMatch(p, liveKeys));
+
+  // Soft: never upgrade to boost on caution patterns; downgrade boost→send
+  if (matchedCaution && out.action === "boost") {
+    out.action = "send";
+    out.reasonTh = truncateTh(
+      (out.reasonTh ? out.reasonTh + " · " : "") + "ลดบูสต์ (แพทเทิร์นเคยพลาด)"
+    );
+    out.score = Math.min(out.score, 55);
+    out.learnedAdjust = "boost_to_send_caution";
+  }
+
+  // Soft: with elevated vetoBias + caution match + mediocre score → veto
+  if (
+    matchedCaution &&
+    vetoBias >= 0.15 &&
+    out.action === "send" &&
+    out.score < 55 + vetoBias * 40
+  ) {
+    out.action = "veto";
+    out.reasonTh = truncateTh(
+      (out.reasonTh ? out.reasonTh + " · " : "") + "วีโต้จากแพทเทิร์นเสียซ้ำ"
+    );
+    out.learnedAdjust = "send_to_veto_caution";
+  }
+
+  // Soft: high vetoBias alone — cap boost
+  if (vetoBias >= 0.2 && out.action === "boost" && out.score < 80) {
+    out.action = "send";
+    out.reasonTh = truncateTh(
+      (out.reasonTh ? out.reasonTh + " · " : "") + "ชะลอบูสต์ (WR ต่ำ)"
+    );
+    out.learnedAdjust = "boost_to_send_low_wr";
+  }
+
+  return out;
+}
+
+async function callChat(provider, payload, signal, lessonsBlock) {
+  const system = SYSTEM_PROMPT_BASE + (lessonsBlock || "");
   const messages = [
-    { role: "system", content: SYSTEM_PROMPT },
+    { role: "system", content: system },
     { role: "user", content: JSON.stringify(buildUserPayload(payload)) },
   ];
   async function once(useJsonMode) {
@@ -162,7 +285,7 @@ async function callChat(provider, payload, signal) {
 
 /**
  * @param {object} payload
- * @returns {Promise<{ok:boolean, action:'send'|'boost'|'veto', score:number, reasonTh:string, model?:string, latencyMs:number, skipped?:boolean, cached?:boolean}>}
+ * @returns {Promise<{ok:boolean, action:'send'|'boost'|'veto', score:number, reasonTh:string, model?:string, latencyMs:number, skipped?:boolean, cached?:boolean, learnedAdjust?:string}>}
  */
 export async function reviewEarlySignal(payload) {
   const t0 = Date.now();
@@ -185,18 +308,29 @@ export async function reviewEarlySignal(payload) {
     return { ...hit.result, latencyMs: Date.now() - t0, cached: true };
   }
 
+  const { insights, bias } = loadLearning();
+  const lessonsBlock = buildLessonsBlock(insights, bias, payload);
+
   const ac = new AbortController();
   const timer = setTimeout(() => ac.abort(), SOFT_TIMEOUT_MS);
   try {
-    const reviewed = await callChat(provider, payload, ac.signal);
-    const result = {
+    const reviewed = await callChat(provider, payload, ac.signal, lessonsBlock);
+    let result = {
       ok: true,
       action: reviewed.action,
       score: reviewed.score,
-      reasonTh: reviewed.reasonTh || (reviewed.action === "veto" ? "AI วีโต้" : reviewed.action === "boost" ? "AI บูสต์" : "AI ผ่าน"),
+      reasonTh:
+        reviewed.reasonTh ||
+        (reviewed.action === "veto"
+          ? "AI วีโต้"
+          : reviewed.action === "boost"
+            ? "AI บูสต์"
+            : "AI ผ่าน"),
       model: reviewed.model,
       latencyMs: Date.now() - t0,
     };
+    result = softPostProcess(result, payload, bias);
+    result.latencyMs = Date.now() - t0;
     cache.set(key, { at: Date.now(), result: { ...result } });
     return result;
   } catch (e) {
@@ -218,4 +352,5 @@ export async function reviewEarlySignal(payload) {
 /** test helper — clear in-memory cache */
 export function _clearAiReviewCache() {
   cache.clear();
+  learnCache = { at: 0, insights: null, bias: null };
 }

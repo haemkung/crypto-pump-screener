@@ -48,6 +48,32 @@ interface StatsPayload {
   disclaimerTh?: string;
 }
 
+interface InsightsPayload {
+  empty?: boolean;
+  updatedAt?: string;
+  stats?: {
+    earlyGraded?: number;
+    earlyWins?: number;
+    earlyLosses?: number;
+    earlyWinRate?: number | null;
+  };
+  mistakes?: Array<{ noteTh: string; losses?: number; winRate?: number | null }>;
+  adjustments?: Array<{ noteTh: string; key?: string }>;
+  biasSummary?: {
+    vetoBias?: number;
+    cautionCount?: number;
+    preferBoostCount?: number;
+    minFactorsFloor?: number;
+    maxSlPct?: number;
+  };
+  bias?: {
+    vetoBias?: number;
+    earlyWinRate?: number | null;
+    earlyGraded?: number;
+  };
+  emptyMessageTh?: string;
+}
+
 interface AlertSettingsPayload {
   mode: "all" | "sharp";
   minLongScore: number;
@@ -55,7 +81,7 @@ interface AlertSettingsPayload {
   labelsTh?: { all: string; sharp: string };
 }
 
-function fmtWr(wr: number | null) {
+function fmtWr(wr: number | null | undefined) {
   if (wr == null) return "—";
   return `${(wr * 100).toFixed(0)}%`;
 }
@@ -68,6 +94,7 @@ function fmtPnl(n: number | null | undefined) {
 
 export function LearningStatsPanel({ refreshKey = 0 }: { refreshKey?: number }) {
   const [stats, setStats] = useState<StatsPayload | null>(null);
+  const [insights, setInsights] = useState<InsightsPayload | null>(null);
   const [settings, setSettings] = useState<AlertSettingsPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -76,15 +103,19 @@ export function LearningStatsPanel({ refreshKey = 0 }: { refreshKey?: number }) 
   const load = useCallback(async () => {
     try {
       setError(null);
-      const [sRes, aRes] = await Promise.all([
+      const [sRes, aRes, iRes] = await Promise.all([
         fetch(apiUrl("/api/learning-stats"), { cache: "no-store" }),
         fetch(apiUrl("/api/alert-settings"), { cache: "no-store" }),
+        fetch(apiUrl("/api/learning-insights"), { cache: "no-store" }),
       ]);
       if (!sRes.ok) throw new Error(`stats HTTP ${sRes.status}`);
       const sJson = (await sRes.json()) as StatsPayload;
       setStats(sJson);
       if (aRes.ok) {
         setSettings((await aRes.json()) as AlertSettingsPayload);
+      }
+      if (iRes.ok) {
+        setInsights((await iRes.json()) as InsightsPayload);
       }
     } catch (e) {
       setError(String(e));
@@ -122,13 +153,26 @@ export function LearningStatsPanel({ refreshKey = 0 }: { refreshKey?: number }) 
         (stats.short?.graded ?? 0) === 0 &&
         (stats.totalCases ?? 0) === 0));
 
+  const earlyWr =
+    insights?.stats?.earlyWinRate ??
+    insights?.bias?.earlyWinRate ??
+    stats?.bySource?.early?.winRate ??
+    null;
+  const earlyGraded =
+    insights?.stats?.earlyGraded ??
+    insights?.bias?.earlyGraded ??
+    stats?.bySource?.early?.graded ??
+    0;
+  const vetoBias =
+    insights?.biasSummary?.vetoBias ?? insights?.bias?.vetoBias ?? null;
+
   return (
     <section className="mt-4 rounded-xl border border-sky-900/50 bg-sky-950/20 p-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-semibold text-sky-300">
           สถิติการเรียนรู้{" "}
           <span className="text-xs font-normal text-zinc-500">
-            (Learning stats · rolling)
+            (Learning stats · real-time)
           </span>
         </h2>
         <div className="flex items-center gap-2 text-[10px]">
@@ -161,7 +205,7 @@ export function LearningStatsPanel({ refreshKey = 0 }: { refreshKey?: number }) 
       </div>
 
       <p className="mb-3 text-[10px] leading-relaxed text-sky-200/80">
-        ไม่ต้องกดเอง — ระบบเรียนรู้จากระยะต้น (Early) + NOW อัตโนมัติทุก几นาที ปุ่มถูก/ผิดเป็นตัวเลือกเร่งเท่านั้น
+        ไม่ใช่ไว้โชว์ — ระบบเก็บสถิติ Early → เรียนรู้ความผิดพลาด → ส่งกลับเข้า AI/กฎแบบ real time
       </p>
 
       {error && (
@@ -181,6 +225,16 @@ export function LearningStatsPanel({ refreshKey = 0 }: { refreshKey?: number }) 
         stats && (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
+              title="Early WR (live)"
+              value={fmtWr(earlyWr)}
+              sub={
+                earlyGraded > 0
+                  ? `${insights?.stats?.earlyWins ?? stats.bySource?.early?.wins ?? "?"}W / ${insights?.stats?.earlyLosses ?? stats.bySource?.early?.losses ?? "?"}L · graded ${earlyGraded}`
+                  : "รอเกรด Early"
+              }
+              tone="violet"
+            />
+            <StatCard
               title="Long WR"
               value={fmtWr(stats.long.winRate)}
               sub={`${stats.long.wins}W / ${stats.long.losses}L · graded ${stats.long.graded}`}
@@ -193,12 +247,16 @@ export function LearningStatsPanel({ refreshKey = 0 }: { refreshKey?: number }) 
               tone="rose"
             />
             <StatCard
-              title="NOW thresholds"
-              value={`L≥${stats.thresholds.nowLongMinScore} · S≥${stats.thresholds.nowShortMinScore}`}
+              title="AI ปรับแล้ว"
+              value={
+                vetoBias != null
+                  ? `vetoBias ${Number(vetoBias).toFixed(2)}`
+                  : "—"
+              }
               sub={
-                stats.thresholds.source === "learned"
-                  ? `learned · pct L≤${stats.thresholds.nowLongPctMax}% · S≥${stats.thresholds.nowShortPctMin}%`
-                  : `defaults · pct L≤${stats.thresholds.defaults?.nowLongPctMax ?? 18}% · S≥${stats.thresholds.defaults?.nowShortPctMin ?? -18}%`
+                insights?.biasSummary
+                  ? `ระวัง ${insights.biasSummary.cautionCount ?? 0} แพทเทิร์น · ≥${insights.biasSummary.minFactorsFloor ?? 3} ปัจจัย · SL≤${insights.biasSummary.maxSlPct ?? 3}%`
+                  : "รอ learn-from-mistakes"
               }
               tone="amber"
             />
@@ -222,6 +280,30 @@ export function LearningStatsPanel({ refreshKey = 0 }: { refreshKey?: number }) 
                   : ""}
                 {" · "}
                 รวม {stats.totalCases}
+                <span className="text-zinc-500"> · NOW เข้าออเดอร์ปิดอยู่</span>
+              </div>
+            )}
+            {insights && !insights.empty && (
+              <div className="sm:col-span-2 lg:col-span-4 space-y-2 rounded-lg border border-amber-900/40 bg-amber-950/15 px-3 py-2 text-[11px]">
+                <div className="font-semibold text-amber-300">
+                  ความผิดพลาดที่เรียนรู้แล้ว / สิ่งที่ปรับ
+                </div>
+                {(insights.mistakes || []).slice(0, 4).map((m, i) => (
+                  <div key={`m-${i}`} className="text-rose-200/90 leading-relaxed">
+                    {m.noteTh}
+                  </div>
+                ))}
+                {(insights.adjustments || []).slice(0, 3).map((a, i) => (
+                  <div key={`a-${i}`} className="text-amber-100/80 leading-relaxed">
+                    🔧 {a.noteTh}
+                  </div>
+                ))}
+                {!(insights.mistakes || []).length &&
+                  !(insights.adjustments || []).length && (
+                    <div className="text-zinc-500">
+                      {insights.emptyMessageTh || "ยังไม่มีแพทเทิร์นเสียซ้ำพอจะปรับ"}
+                    </div>
+                  )}
               </div>
             )}
           </div>
@@ -253,7 +335,7 @@ function StatCard({
   title: string;
   value: string;
   sub: string;
-  tone: "emerald" | "rose" | "amber" | "sky";
+  tone: "emerald" | "rose" | "amber" | "sky" | "violet";
 }) {
   const valueColor =
     tone === "emerald"
@@ -262,7 +344,9 @@ function StatCard({
         ? "text-rose-300"
         : tone === "amber"
           ? "text-amber-300"
-          : "text-sky-300";
+          : tone === "violet"
+            ? "text-violet-300"
+            : "text-sky-300";
   return (
     <div className="rounded-lg border border-zinc-800 bg-zinc-950/60 px-3 py-2">
       <div className="text-[10px] uppercase tracking-wide text-zinc-500">

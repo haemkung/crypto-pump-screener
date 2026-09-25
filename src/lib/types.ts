@@ -254,6 +254,16 @@ export interface LearnedCase {
   /** Thai label e.g. กำลังแจกของ / กำลังสะสม / เริ่มขยับ */
   labelTh?: string;
   earlyType?: string | null;
+  /** Evidence factor keys at send (early) */
+  factorKeys?: string[];
+  factorCount?: number | null;
+  aiAction?: "send" | "boost" | "veto" | string | null;
+  aiScore?: number | null;
+  aiReasonTh?: string | null;
+  aiSkipped?: boolean | null;
+  tradeGrade?: string | null;
+  delivered?: boolean | null;
+  suppressed?: string | null;
 }
 
 /** Early accelerator row for Hot strip (/api/hot) */

@@ -672,7 +672,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "big_loss",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "36ff21d5-591c-4c4d-a2cb-1338b9fa5774",
@@ -691,7 +702,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "big_loss",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "7e3b11ce-afc8-444a-8df0-f99f695995be",
@@ -710,7 +732,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "big_loss",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "78569bb1-0f5e-445a-9b93-9a3aa56abd27",
@@ -729,7 +762,21 @@
     "source": "early",
     "tier": "distribution",
     "labelTh": "กำลังแจกของ",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "taker",
+      "smart"
+    ],
+    "factorCount": 4,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "sl",
+    "delivered": false,
+    "suppressed": "short_disabled"
   },
   {
     "id": "3e9a1cfc-f13f-4668-a514-2972d33f8762",
@@ -748,7 +795,21 @@
     "source": "early",
     "tier": "distribution",
     "labelTh": "กำลังแจกของ",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "taker",
+      "smart"
+    ],
+    "factorCount": 4,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "sl",
+    "delivered": false,
+    "suppressed": "short_disabled"
   },
   {
     "id": "69def1e0-8f91-4dda-b1d2-f11be796b65e",
@@ -767,7 +828,21 @@
     "source": "early",
     "tier": "distribution",
     "labelTh": "กำลังแจกของ",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "taker",
+      "smart"
+    ],
+    "factorCount": 4,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "sl",
+    "delivered": false,
+    "suppressed": "short_disabled"
   },
   {
     "id": "e1494b2b-74a3-4738-a9c4-d11cce0328be",
@@ -786,7 +861,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "sl",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "67054bbe-a64e-4c0e-a07c-4fcdde41c75b",
@@ -805,7 +889,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "sl",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "ce457383-ffe0-4790-9bae-e42870a3f869",
@@ -824,7 +917,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "sl",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "fa0d3c7d-93b9-4323-bb8d-0297821826ac",
@@ -843,7 +945,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "tp1",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "e211b70f-2f02-43e4-adea-8ff758521469",
@@ -862,7 +973,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "tp1",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "6fb22283-e6af-468d-9192-a503955ba463",
@@ -881,7 +1001,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "tp1",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "962d87d0-6ad6-4f87-9e24-e06d6505e3a6",
@@ -900,7 +1029,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "fade"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "sl",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "9c419df9-8a64-4cf1-9bc1-886960e48601",
@@ -919,7 +1059,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "fade"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "sl",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "f0fddae0-2e19-4256-824d-e99a7afe937d",
@@ -938,7 +1089,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "fade"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "sl",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "8ba18ca0-0251-4329-9bc5-2fdb8c0a65ed",
@@ -957,7 +1119,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "sl",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "e1d83d74-240e-4b8f-b71e-9e734de5b4e1",
@@ -976,7 +1147,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "sl",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "39318bd4-c48f-4b77-8ee0-9ff17e426e8a",
@@ -995,7 +1175,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "sl",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "9b972ee1-7165-4554-84bf-d134d8b12724",
@@ -1014,7 +1203,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "sl",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "24a49293-705c-447b-8893-75dd5071cdd3",
@@ -1033,7 +1233,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "sl",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "3e8b7315-4911-49a5-9d97-aa75b9cfafeb",
@@ -1052,7 +1263,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "sl",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "67cc41d4-72df-4341-ad9b-d874b2300478",
@@ -1071,7 +1293,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "sl",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "0de6a008-e6d5-4793-b7ff-589267546791",
@@ -1090,7 +1321,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "sl",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "93c0e11b-3291-4d69-8d3d-dd8e3db527e2",
@@ -1109,7 +1349,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": "sl",
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "af834894-3c86-4a16-a310-fc18a8ef4197",
@@ -1128,7 +1377,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded",
+      "taker"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "983a0a48-d402-44a7-926e-889ec73e08ca",
@@ -1147,7 +1408,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded",
+      "taker"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "e264dbcc-6357-4431-9c22-66b505e364b0",
@@ -1166,7 +1439,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded",
+      "taker"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "74b887bf-bf88-4e85-9423-5c2e07887374",
@@ -1185,7 +1470,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "bb8aba90-1a58-4c6f-9068-a8a6fca7943c",
@@ -1204,7 +1498,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "75be51f3-a9f5-4497-add0-7d63aee689bb",
@@ -1223,7 +1526,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "1e367b04-e2f0-4b96-a1c7-e9afce1398a4",
@@ -1242,7 +1554,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "59ed0b80-6d01-4d78-a02b-bb018981a1e0",
@@ -1261,7 +1582,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "2c09cafe-a296-4c77-bfdc-114e35240461",
@@ -1280,7 +1610,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "864a18e9-1cd9-43fb-99d8-5449ceb288fc",
@@ -1299,7 +1638,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "fade"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "d56fce74-ddd6-469e-9569-5ba753830278",
@@ -1318,7 +1668,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "fade"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "14b988bd-ade4-4c36-a4eb-47a9765b71d8",
@@ -1337,7 +1698,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "fade"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "b7b656b8-378b-46cd-bdba-045b508823c9",
@@ -1356,7 +1728,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "ce18ff08-f4f7-4f9a-88ee-ae041e94a842",
@@ -1375,7 +1756,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "0e9330ba-9128-4384-b36d-553c05011282",
@@ -1394,7 +1784,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "52bee5d0-6886-4ae0-926f-7d906694bfc9",
@@ -1413,7 +1812,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "3222adb7-5de5-46c3-bd35-db646c4342d2",
@@ -1432,7 +1842,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "d62bb814-8ea9-48b1-a1a7-2a2b54b57029",
@@ -1451,7 +1872,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "e3bdaf08-603f-4f6d-a0d0-f7806e78b188",
@@ -1470,7 +1902,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "e5ab21cc-4d50-4e49-b030-3f0813af313c",
@@ -1489,7 +1932,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "5a54c691-da86-46f9-81c2-8f4e54206f0a",
@@ -1508,7 +1962,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "ae827bb4-4cfb-4f22-a3ff-3d26d52f77e4",
@@ -1527,7 +1992,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "30aea467-4ee6-40f5-859c-0fc0922a944d",
@@ -1546,7 +2020,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "de92e5b5-858f-4e74-bc55-6366546a001e",
@@ -1565,7 +2048,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "e69e470a-f3ae-4bf2-84b3-aa53b8924d21",
@@ -1584,7 +2076,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "0ef5e8c0-50e4-4dd9-864c-8542108b49bd",
@@ -1603,7 +2104,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "77a4e4af-4188-4aa6-b7e1-02413268b774",
@@ -1622,7 +2132,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "7c2cf7d3-8404-44f4-bce8-04777d733b0b",
@@ -1641,7 +2160,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "11d57f4b-ef66-4255-b98e-6901d35a63ee",
@@ -1660,7 +2188,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "d10ab605-18b2-410b-8a9a-e88e14c2fd8d",
@@ -1679,7 +2216,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "ff5178c9-6121-4567-bb91-77435e66ebb9",
@@ -1698,7 +2244,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "8519b00e-6da4-4382-849d-b50e82a0a6d9",
@@ -1717,7 +2274,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "6b19a310-a00d-43e5-af19-e58e05716320",
@@ -1736,7 +2304,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "3bd1dbcb-c39b-4bf7-9b9c-fcfe67885141",
@@ -1755,7 +2334,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "4715c92e-bf74-46c2-a158-312689a378d1",
@@ -1774,7 +2364,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "45db5beb-7ff3-4e3d-8ea4-924c4bacf5e6",
@@ -1793,7 +2394,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "ffda9805-2289-48bb-a9ad-01c1123dfb54",
@@ -1812,7 +2424,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "bd4dd7fa-bd86-4655-947d-ca0b1b90c009",
@@ -1831,7 +2454,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "e6cce428-630c-4c23-8964-11b893189b47",
@@ -1850,7 +2484,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "b13a6ade-0464-455b-bb25-46777864a94a",
@@ -1869,7 +2514,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "cc39ad40-dffc-42d9-8f7f-1a047be760bf",
@@ -1888,7 +2542,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "4c157c74-e4de-486c-91ea-a2b23eea9037",
@@ -1907,7 +2570,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "da7712d2-e902-40b8-b787-ae12066c098b",
@@ -1926,7 +2598,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "68e731b3-f9a6-4ebf-b555-9ed14176d714",
@@ -1945,7 +2629,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "5653eba2-d5ca-4a9d-b0f8-1cae93a7896b",
@@ -1964,7 +2660,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "6c943016-6adc-4772-ab3d-f3e801b27593",
@@ -1983,7 +2691,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "96b51386-21d4-4b2b-99bd-5a4006bffb55",
@@ -2002,7 +2719,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "4433a6d8-b0a1-4989-a582-c72b70ac5f4b",
@@ -2021,7 +2747,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "3a7996e6-82f8-47b9-ab55-6e2c1dad03d4",
@@ -2040,7 +2775,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "64aef670-b99a-4cac-b5c8-125ebf86de8d",
@@ -2059,7 +2806,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "6b34bce9-3c58-4d0e-a0f3-e42d8455d7ca",
@@ -2078,7 +2837,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "2ed471db-c816-4202-be76-2345b5d15b4f",
@@ -2097,7 +2868,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "3d190ea4-3e8e-4734-a2fa-a859d348917b",
@@ -2116,7 +2896,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "7c35f7a4-d0d1-4c9f-8718-4d39cba5c2ac",
@@ -2135,7 +2924,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "2eeacf32-bb55-4390-88b0-4fc1e69716a9",
@@ -2154,7 +2952,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "491a1847-49eb-49a7-bc68-955ff71d3277",
@@ -2173,7 +2980,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "89881d70-73f2-4991-b16d-6b2e0e246694",
@@ -2192,7 +3008,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "28dc1797-9662-4d20-a7b7-7cebe20c6b0b",
@@ -2211,7 +3036,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "7cdbeab8-88b9-4460-9b0e-7b58f3885e27",
@@ -2230,7 +3064,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "1e7c8841-8bc0-41c5-9795-d43b5c0e4a7b",
@@ -2249,7 +3092,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "3a45c6cd-df57-4420-9678-d5ac4b053fee",
@@ -2268,7 +3120,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "9ef601e6-c743-4d70-91e1-960e6c589202",
@@ -2287,7 +3148,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "f0452ab6-9ae9-4586-a026-620d03b00e06",
@@ -2306,7 +3176,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "ce8982a2-cdaa-4547-9739-4ac88fd39fe0",
@@ -2325,7 +3204,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "0b3470c8-be07-457c-8c78-efa699d6b857",
@@ -2344,7 +3234,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "56bb5a28-6558-445f-98fa-166a54d7333a",
@@ -2363,7 +3264,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "a2a54fe6-0866-444f-8a9b-2b3f06caeb36",
@@ -2382,7 +3294,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "63e9602c-fd9f-4a20-bbe4-5a11447af3ca",
@@ -2401,7 +3322,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "1cfa56d4-0035-4677-939c-557282d5b6c2",
@@ -2420,7 +3350,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "854cff95-9f24-481d-afa5-86470aa298b7",
@@ -2439,7 +3378,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "6fae77ed-2840-4905-90ef-e6333f89aa71",
@@ -2458,7 +3408,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "44d0f4c1-2ac3-4f58-830c-662b7cafa7b1",
@@ -2477,7 +3438,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "349f2b3c-1c44-4d96-a3da-bf847dbfe7a3",
@@ -2496,7 +3468,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "c90b75c9-878b-4706-836f-a0d6bf0eded2",
@@ -2515,7 +3496,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "642380ee-c067-41ca-9c01-53c71f0d1d46",
@@ -2534,7 +3524,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "553a5d8f-6590-4562-88ed-0bffc04291b9",
@@ -2553,7 +3552,20 @@
     "source": "early",
     "tier": "accumulation",
     "labelTh": "กำลังสะสม",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "long_disabled"
   },
   {
     "id": "589cd5df-3227-4343-86d3-3c6e9048af09",
@@ -2572,7 +3584,20 @@
     "source": "early",
     "tier": "accumulation",
     "labelTh": "กำลังสะสม",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "long_disabled"
   },
   {
     "id": "e327c679-06a7-4134-b4b3-99f0349579ef",
@@ -2591,7 +3616,20 @@
     "source": "early",
     "tier": "accumulation",
     "labelTh": "กำลังสะสม",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "long_disabled"
   },
   {
     "id": "161b7de1-fd1b-4905-8481-70618053a404",
@@ -2610,7 +3648,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "24315d8b-228d-493e-828b-5e3bfafa3185",
@@ -2629,7 +3676,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "340e1d49-dc9b-4e77-b21b-2ab218782d3a",
@@ -2648,7 +3704,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "b91e1939-9a61-4435-be37-c43879bc1601",
@@ -2667,7 +3732,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "4c08788f-eb6a-4fe3-8907-2c2b97136284",
@@ -2686,7 +3760,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "1d73da5f-802e-4be0-86a2-e679259da1f6",
@@ -2705,7 +3788,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "7d08c1dc-40c1-43a7-875e-e335f908ab35",
@@ -2724,7 +3816,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "88eef958-412b-4441-882e-904ca33d1901",
@@ -2743,7 +3844,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "5cb88a5a-7100-4bb5-9f77-5c43a8e0ce80",
@@ -2762,7 +3872,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "159163b6-81b6-41ae-a35d-b1c468f69f0a",
@@ -2781,7 +3900,20 @@
     "source": "early",
     "tier": "accumulation",
     "labelTh": "กำลังสะสม",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "taker"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "long_disabled"
   },
   {
     "id": "596adb82-beac-418e-9bab-d5b60aaeecc1",
@@ -2800,7 +3932,20 @@
     "source": "early",
     "tier": "accumulation",
     "labelTh": "กำลังสะสม",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "taker"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "long_disabled"
   },
   {
     "id": "789297ec-b8eb-4531-b55d-b444e8dc5cee",
@@ -2819,7 +3964,20 @@
     "source": "early",
     "tier": "accumulation",
     "labelTh": "กำลังสะสม",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "taker"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "long_disabled"
   },
   {
     "id": "8fdca153-257f-41ff-ba68-1eedf4dcfe43",
@@ -2838,7 +3996,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "127ad853-d3dc-4ce4-8971-3b582918f119",
@@ -2857,7 +4024,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "5d02bf2c-48b2-4a63-a00b-5762210450b0",
@@ -2876,7 +4052,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "09a0450e-d70a-4471-baef-e29178fa5cee",
@@ -2895,7 +4080,20 @@
     "source": "early",
     "tier": "accumulation",
     "labelTh": "กำลังสะสม",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "long_disabled"
   },
   {
     "id": "f923f934-e314-4635-a6f4-dad98531efe0",
@@ -2914,7 +4112,20 @@
     "source": "early",
     "tier": "accumulation",
     "labelTh": "กำลังสะสม",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "long_disabled"
   },
   {
     "id": "08960e9d-8312-4c06-a8d8-62440b3ba6f6",
@@ -2933,7 +4144,20 @@
     "source": "early",
     "tier": "accumulation",
     "labelTh": "กำลังสะสม",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "long_disabled"
   },
   {
     "id": "6b163895-a987-4234-bd24-2022f75728b8",
@@ -2952,7 +4176,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "96ce8301-2116-4f62-abae-5340f8c1945f",
@@ -2971,7 +4207,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "9c8cb74d-04f7-44f6-8ada-240f9722a46e",
@@ -2990,7 +4238,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "db8730c2-b041-4951-846f-59654d7092a8",
@@ -3009,7 +4269,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "funding",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "7f8c7b46-60ef-4059-89a5-4f0e1500af2e",
@@ -3028,7 +4300,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "funding",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "1b91be7e-7d3c-4c3e-9681-29079f39a7fd",
@@ -3047,7 +4331,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "funding",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "11c430c6-333f-4cd6-9b4c-0fa7b309325d",
@@ -3066,7 +4362,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "49618677-35cc-4982-af12-2145a845fa2c",
@@ -3085,7 +4393,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "5b5a404e-6d7b-4723-92a3-30b1630905d5",
@@ -3104,7 +4424,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "50775a99-b513-4d51-8c82-13dfeb8579dd",
@@ -3123,7 +4455,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "spot"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "296c9510-5e93-4b30-8720-aae175696814",
@@ -3142,7 +4485,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "spot"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "211b1838-f6a3-41e0-b3a8-c1f2b7804150",
@@ -3161,7 +4515,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "spot"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "caa353d4-934a-43ff-9e06-18aef2e1f872",
@@ -3180,7 +4545,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "f17a95d4-2efb-4dcd-88f6-c1d6c2cffc0d",
@@ -3199,7 +4573,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "7ccfe009-68ff-42f3-b3e0-c63b1b026c17",
@@ -3218,7 +4601,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "b187ce8d-20a5-420f-aff2-573f6f87ff6e",
@@ -3237,7 +4629,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "45e62895-d7da-4c38-81eb-12a817490c15",
@@ -3256,7 +4659,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "706915d7-f3ac-41f1-a733-da93603d2c6b",
@@ -3275,7 +4689,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "0929fcf7-c0c4-47d8-9aca-797cc0357032",
@@ -3294,7 +4719,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "7ec795aa-53cd-4d81-98da-fab463ac8ce1",
@@ -3313,7 +4747,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "059880ab-32ee-4353-9117-8cf98b15d943",
@@ -3332,7 +4775,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "fade"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "5f1a934e-910f-4370-9b09-af7722cf3eae",
@@ -3351,7 +4805,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "fade"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "4016097f-dde7-4b6b-a8f5-c96c5342b6f8",
@@ -3370,7 +4835,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "fade"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "5f579d6a-27b6-437b-9f39-6f3fe5ea953c",
@@ -3389,7 +4865,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "fade"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "be6c568e-bef4-4300-b47a-3ef9621e238d",
@@ -3408,7 +4895,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "e14ecf57-80ac-43d6-bc59-1036ce710fcf",
@@ -3427,7 +4923,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "a52acd8d-aed9-4440-a606-25cc952f5e33",
@@ -3446,7 +4951,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "3f3849af-5369-41a7-9862-88b2354eb8c8",
@@ -3465,7 +4981,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "06f83a92-e67c-415e-9b17-ac617246f238",
@@ -3484,7 +5011,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "5aec30bf-6126-412f-8060-5ca22cf64642",
@@ -3503,7 +5041,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "0b2e379d-cef5-445a-91cc-e9d302724709",
@@ -3522,7 +5071,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "4fc66645-93cb-476e-853d-95689a164b37",
@@ -3541,7 +5101,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "2162d49f-e033-4c86-8d46-bcc080c0e92a",
@@ -3560,7 +5131,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "fade"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "977cfbb1-dff3-4a3f-8127-8dceff0a7a16",
@@ -3579,7 +5161,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "fade"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "f5cdc697-ba03-48b8-a81f-1729af76e35c",
@@ -3598,7 +5191,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "a9f24b1f-0969-43ca-858a-5bea1b449a41",
@@ -3617,7 +5219,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "1334da65-eafc-4c35-99cc-2d88858ad732",
@@ -3636,7 +5247,20 @@
     "source": "early",
     "tier": "accumulation",
     "labelTh": "กำลังสะสม",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "spot"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "long_disabled"
   },
   {
     "id": "858f3423-5c59-468c-82f4-4bd3b110c57a",
@@ -3655,7 +5279,20 @@
     "source": "early",
     "tier": "accumulation",
     "labelTh": "กำลังสะสม",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "spot"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "long_disabled"
   },
   {
     "id": "dcda1be2-8430-478d-9a3e-fbf1ccafb43b",
@@ -3674,7 +5311,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "fade"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "ae4e96a6-ca85-4df1-a5d3-0f7708616f6f",
@@ -3693,7 +5341,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "fade"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "62cf6a5e-eba0-40fe-a5f0-3dfbd9b0dc03",
@@ -3712,7 +5371,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "16aa4738-2ebe-406c-a523-6dca1d1a3af3",
@@ -3731,7 +5401,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "915ec58c-51f6-4c57-8cf3-07a81456d57a",
@@ -3750,7 +5431,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "funding"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "6c7427e0-856f-466d-acfa-b608bd2e3946",
@@ -3769,7 +5461,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "funding"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "122d88ff-f7aa-4f4f-8195-877d4df4b0b6",
@@ -3788,7 +5491,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "c99edcb6-923b-41e3-bd9f-ed21f8a77875",
@@ -3807,7 +5521,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "a3439120-e7db-47d7-8bad-dbf775bf89dc",
@@ -3826,7 +5551,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "ea7d741e-8b83-4ae1-a557-5cdc22512e39",
@@ -3845,7 +5582,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "cdd10790-f65a-405f-ba17-161d967a140a",
@@ -3864,7 +5613,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "0aa2ebdf-e6b0-4ad8-9f86-7ee2a281fbb0",
@@ -3883,7 +5644,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "3c7e8b26-955b-4f08-a8d2-1f36893a9e35",
@@ -3902,7 +5675,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "d0d1a9c2-57d4-4336-8a93-8fddc6d04f53",
@@ -3921,7 +5705,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "a806d46e-abf1-4c11-9bc8-a05c18568286",
@@ -3940,7 +5736,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "178f1e11-71c5-4b74-ac23-09fa7df3e5c9",
@@ -3959,7 +5767,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "d8af5a23-1cf7-4770-933c-993ecb4b527e",
@@ -3978,7 +5798,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "327e7049-df15-40f6-a3dd-52bfbbb7a42d",
@@ -3997,7 +5829,21 @@
     "source": "early",
     "tier": "distribution",
     "labelTh": "กำลังแจกของ",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "fade",
+      "smart"
+    ],
+    "factorCount": 4,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "sl_too_wide"
   },
   {
     "id": "e5936d57-3616-4a38-99b5-0c0898b92e5c",
@@ -4016,7 +5862,21 @@
     "source": "early",
     "tier": "distribution",
     "labelTh": "กำลังแจกของ",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "fade",
+      "smart"
+    ],
+    "factorCount": 4,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "sl_too_wide"
   },
   {
     "id": "dd2f367d-e784-48da-adee-dbc107661c31",
@@ -4035,7 +5895,21 @@
     "source": "early",
     "tier": "distribution",
     "labelTh": "กำลังแจกของ",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "fade",
+      "smart"
+    ],
+    "factorCount": 4,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "sl_too_wide"
   },
   {
     "id": "ab0be312-935c-497f-b40b-ae376020bdff",
@@ -4054,7 +5928,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "b5f397ed-35eb-4129-87f3-88326fd7fc0f",
@@ -4073,7 +5956,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "2d7fb15e-d4c8-4aaf-9982-23fd2c94ee83",
@@ -4092,7 +5984,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "dd8c9605-1c9f-4acf-adb9-fc9aa6e7319e",
@@ -4111,7 +6012,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "2d80ba42-d0a9-4bc0-abc1-c6d07fc3d185",
@@ -4130,7 +6042,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "3b66d88d-e161-4084-a569-61ee5f6a2cab",
@@ -4149,7 +6072,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "fcee910c-810f-465f-b234-3f1f5acafd5d",
@@ -4168,7 +6102,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded",
+      "taker"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "69ed794d-41ad-4986-932f-4010d944bae6",
@@ -4187,7 +6133,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded",
+      "taker"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "ed638a31-af25-49ea-a29d-b172343fa2e4",
@@ -4206,7 +6164,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded",
+      "taker"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "e758d3b9-feea-4abc-8dd0-e59642dc109a",
@@ -4225,7 +6195,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "95b1c648-9eea-4d80-a7b5-a4abdbbe850a",
@@ -4244,7 +6225,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "922c3a63-bc5d-4c6b-a716-e0a225f106dc",
@@ -4263,7 +6255,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "c3f71800-9298-40d6-8970-c30c78cc92fb",
@@ -4282,7 +6285,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "ba99b69e-2a04-440b-a051-31a26449ce78",
@@ -4301,7 +6313,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "a0638922-3703-4f48-aadd-45bc90f2c931",
@@ -4320,7 +6341,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "aa859acd-5f51-4bfe-9b08-e31dc990a42d",
@@ -4339,7 +6369,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "2f524efa-a24d-4137-a7e6-38ad38a02627",
@@ -4358,7 +6397,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "b912b1c7-48b2-4b95-957b-184fed46cc2b",
@@ -4377,7 +6425,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "d8658138-d58b-41b7-9cea-64624dac982f",
@@ -4396,7 +6453,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded",
+      "taker"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "e3860fea-296a-4bd3-8c46-c903045f8dc0",
@@ -4415,7 +6484,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded",
+      "taker"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "c035bc45-fb25-4d88-8c96-e1150c91f637",
@@ -4434,7 +6515,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded",
+      "taker"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "9aad6b5a-653f-48bb-ac79-469732b38f59",
@@ -4453,7 +6546,20 @@
     "source": "early",
     "tier": "accumulation",
     "labelTh": "กำลังสะสม",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "taker"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "long_disabled"
   },
   {
     "id": "b3a226d4-3d70-411a-90bd-f00409b7bf40",
@@ -4472,7 +6578,20 @@
     "source": "early",
     "tier": "accumulation",
     "labelTh": "กำลังสะสม",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "taker"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "long_disabled"
   },
   {
     "id": "6fbffc84-44fb-49ad-853d-31153b16f0db",
@@ -4491,7 +6610,20 @@
     "source": "early",
     "tier": "accumulation",
     "labelTh": "กำลังสะสม",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "taker"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "long_disabled"
   },
   {
     "id": "f2887134-e553-46d4-90f2-eec129d1b506",
@@ -4510,7 +6642,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "62861e8a-6eec-42fa-8c8a-9f5ce58a8469",
@@ -4529,7 +6673,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "1a521f43-5a45-4330-ad8d-440a63fe0680",
@@ -4548,7 +6704,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "826c89cf-96d8-4d4c-a1eb-46adf8182ff0",
@@ -4567,7 +6735,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "49d4b4c7-abd3-4414-b07a-925010074a7e",
@@ -4586,7 +6766,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "135f055d-659c-4c94-b750-5b1991b18994",
@@ -4605,7 +6797,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "6c700e6d-4260-423e-ba46-71aff1b03de8",
@@ -4624,7 +6828,20 @@
     "source": "early",
     "tier": "accumulation",
     "labelTh": "กำลังสะสม",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "long_disabled"
   },
   {
     "id": "752e6203-5f6c-4b84-83a5-312e42ff1f62",
@@ -4643,7 +6860,20 @@
     "source": "early",
     "tier": "accumulation",
     "labelTh": "กำลังสะสม",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "long_disabled"
   },
   {
     "id": "166878dd-883d-4a5d-842b-60c84d96a3c8",
@@ -4662,7 +6892,20 @@
     "source": "early",
     "tier": "accumulation",
     "labelTh": "กำลังสะสม",
-    "earlyType": "watch"
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "long_disabled"
   },
   {
     "id": "141704cf-385f-4b74-a18a-2815ff23a672",
@@ -4681,7 +6924,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "b4f073b7-19fd-40e7-bf68-17fd8f0be981",
@@ -4700,7 +6952,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "20d1e537-7f89-40b7-b8a6-5a78eee1f1bf",
@@ -4719,7 +6980,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "d673c710-ef95-437d-8e56-7234f5a258bb",
@@ -4738,7 +7008,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "0cb7a719-85e2-4ad9-a793-75bd1b05bbe3",
@@ -4757,7 +7036,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "1fbba5f2-2b35-4766-bdb1-9e67d7e215ec",
@@ -4776,7 +7064,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "c8d52e1e-a198-41e0-a5d0-f28f7f7f23e9",
@@ -4795,7 +7092,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "00d99cdf-052b-4c80-bd1d-44aad7814cca",
@@ -4814,7 +7123,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "3d895499-bbec-4e7e-8dc8-55dd217ef6b8",
@@ -4833,7 +7154,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "funding",
+      "crowded"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "bfcddba8-d83f-427f-82a3-be16b649758e",
@@ -4852,7 +7185,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "665ad9c1-3f1e-4c71-848b-03fb06a36e7a",
@@ -4871,7 +7216,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "6586cd4c-4481-4573-8b00-077a37bc4b62",
@@ -4890,7 +7247,19 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "fade"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "15f34249-14c9-4a4f-8420-9459aa9d037e",
@@ -4909,7 +7278,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "8dce46aa-1a5d-4d1d-80df-5b9c3b8990d1",
@@ -4928,7 +7306,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "dba0454d-5dcc-42ad-8054-d0a1b87d1374",
@@ -4947,7 +7334,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "5abd283f-9fad-483c-a1b8-e5c2b0da48d5",
@@ -4966,7 +7362,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "1b154a1e-e4df-4e5a-89a7-2c13eaf26c02",
@@ -4985,7 +7392,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "ce85fe5b-7700-465c-9cf4-90c509449f72",
@@ -5004,7 +7422,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "fdf179a7-4a91-43df-87f5-c79d57f2e4b9",
@@ -5023,7 +7452,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "be9c13b5-2b4b-4d23-9953-c68d0fc79d48",
@@ -5042,7 +7480,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "db18fa28-e059-42a3-9308-5667d8d5919b",
@@ -5061,7 +7508,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "7b1f088b-bd4c-4a06-8af5-d7e519b4edda",
@@ -5080,7 +7536,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "smart"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "eb4e8fca-9582-47ab-84b8-b0c8ad42c646",
@@ -5099,7 +7566,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "smart"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "edfc86f4-b9d9-4a7c-ad68-fcac8c3da061",
@@ -5118,7 +7596,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "smart"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "89c6e4f6-0ebe-4f4e-8b2e-20fca159a16c",
@@ -5137,7 +7626,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "9f15d880-e863-45b0-8586-8170970885c0",
@@ -5156,7 +7656,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "2e0cac99-9401-4399-86ac-6d37f1995d6a",
@@ -5175,7 +7686,18 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "88a1f652-94ca-4e37-baec-30419dba1828",
@@ -5194,7 +7716,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "62597bf4-bb62-42b6-bb65-2224532d13e3",
@@ -5213,7 +7744,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "bcc653f5-ef24-4c82-90ec-d119458b59c5",
@@ -5232,7 +7772,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "abb2a298-91d6-4c45-8ad8-1c633686f836",
@@ -5251,7 +7800,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "6235c713-7027-41fa-ab5f-26b91fabe8ff",
@@ -5270,7 +7828,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "11a14fc0-0f24-4dfb-8b9e-37267936e12e",
@@ -5289,7 +7856,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "2f5ded05-d851-4340-97f8-ea2e24f8b8f2",
@@ -5308,7 +7884,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "3fcbbde1-9bcf-4f07-adcb-ab67d9f6b434",
@@ -5327,7 +7912,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "b55f4b86-4be4-4738-a8d9-f72a48740447",
@@ -5346,7 +7940,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "6f2152bc-f807-4d9f-a088-226fe8a7c39d",
@@ -5365,7 +7968,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "0dc68f14-662d-4169-a1ac-f53703174fec",
@@ -5384,7 +7996,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "0ed81c96-0ad6-49f3-b809-0bd8de3164e3",
@@ -5403,7 +8024,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "d8d53db7-b861-4f7c-8a5a-e6b2dd15527b",
@@ -5422,7 +8052,20 @@
     "source": "early",
     "tier": "ignition",
     "labelTh": "เริ่มทุบ",
-    "earlyType": "ignition"
+    "earlyType": "ignition",
+    "factorKeys": [
+      "crowded",
+      "taker",
+      "fade"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "short_disabled"
   },
   {
     "id": "cd8c246e-7f0e-47d5-b5a2-a87ea9075782",
@@ -5441,7 +8084,20 @@
     "source": "early",
     "tier": "ignition",
     "labelTh": "เริ่มทุบ",
-    "earlyType": "ignition"
+    "earlyType": "ignition",
+    "factorKeys": [
+      "crowded",
+      "taker",
+      "fade"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "short_disabled"
   },
   {
     "id": "491d46db-9a6d-48b3-bb47-da32256af026",
@@ -5460,7 +8116,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "f8a5bc82-4a22-4c78-a2df-ab98d03c515d",
@@ -5479,7 +8144,16 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Long)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
   },
   {
     "id": "2522a172-3a04-472f-8aa2-696243d04aec",
@@ -5498,6 +8172,2254 @@
     "source": "early",
     "tier": "ignition_price_only",
     "labelTh": "price-only (Short)",
-    "earlyType": "ignition_price_only"
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "d41a8c0a-bc2a-424b-8ad0-1d205399b500",
+    "alertId": "bef3289c-3d31-4936-bfea-74b6c56cedd2",
+    "symbol": "MINAUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": 1.04,
+    "paperPnlPct": -1.04,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Short) Short เป็นกลาง (60m): ราคา +1.04% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T07:49:24.912Z",
+    "priceAtSend": 0.13822,
+    "priceAtGrade": 0.139657488,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Short)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "6b5fa295-7373-4330-ae2c-26d5fc1f4b4f",
+    "alertId": "48c11ffe-5771-46bf-a548-ad9b5407e579",
+    "symbol": "SEIUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": -0.61,
+    "paperPnlPct": -0.61,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา -0.61% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T07:54:10.741Z",
+    "priceAtSend": 0.06396,
+    "priceAtGrade": 0.063569844,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "31ebff81-3215-4006-9770-4d8ef60b92a8",
+    "alertId": "443eaa18-9b84-4c7e-be34-9fa221db6740",
+    "symbol": "MANTRAUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.4,
+    "paperPnlPct": 0.4,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา +0.40% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T07:54:10.742Z",
+    "priceAtSend": 0.004706,
+    "priceAtGrade": 0.004724824,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "44e642c7-3284-4fb8-be74-88ae20964f88",
+    "alertId": "8df0bca2-a91c-4498-9154-9fd5da98a0f3",
+    "symbol": "EDGEUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": 0.13,
+    "paperPnlPct": -0.13,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Short) Short เป็นกลาง (15m): ราคา +0.13% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T07:54:10.742Z",
+    "priceAtSend": 0.5438,
+    "priceAtGrade": 0.54450694,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Short)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "5d9b7346-3988-4a6c-9402-c6c90edd1fda",
+    "alertId": "09b06b6a-c70e-43a1-8a48-b6714e3ae598",
+    "symbol": "MORPHOUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.11,
+    "paperPnlPct": 0.11,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (5m): ราคา +0.11% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:04:11.289Z",
+    "priceAtSend": 2.8469,
+    "priceAtGrade": 2.8500315900000004,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "06fef81b-f16c-49b4-9e25-139b1307b33f",
+    "alertId": "b8c15246-30c1-4074-9fcd-05d04c37a35a",
+    "symbol": "SPXUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": -0.11,
+    "paperPnlPct": -0.11,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (5m): ราคา -0.11% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:04:11.289Z",
+    "priceAtSend": 0.4433,
+    "priceAtGrade": 0.44281237,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "3fbd3b79-71ad-43b8-af78-6aa3d9244fa4",
+    "alertId": "278c2f42-44f6-4516-b7ec-f23f3a68199a",
+    "symbol": "PTBUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": -1.12,
+    "paperPnlPct": 1.12,
+    "horizon": "60m",
+    "noteTh": "Early เริ่มทุบ Short เป็นกลาง (60m): ราคา -1.12% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:09:11.562Z",
+    "priceAtSend": 0.0009506,
+    "priceAtGrade": 0.0009399532800000001,
+    "score": 3,
+    "source": "early",
+    "tier": "ignition",
+    "labelTh": "เริ่มทุบ",
+    "earlyType": "ignition",
+    "factorKeys": [
+      "crowded",
+      "taker",
+      "fade"
+    ],
+    "factorCount": 3,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "short_disabled"
+  },
+  {
+    "id": "e7a06273-66b8-4e16-aea9-11c88eec172d",
+    "alertId": "b683ce8e-8614-40a6-9eb5-3044133b3b8f",
+    "symbol": "PROMUSDT",
+    "side": "long",
+    "outcome": "loss",
+    "movePct": -1.33,
+    "paperPnlPct": -1.33,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long ผิด (5m): ราคา -1.33% — ตรงข้ามทิศ",
+    "timestamp": "2026-09-25T08:09:11.562Z",
+    "priceAtSend": 5.579,
+    "priceAtGrade": 5.5047993,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "d0aed083-7cd8-4b20-adda-0f420765242f",
+    "alertId": "de53760e-bb10-42d9-9e24-44c913e79293",
+    "symbol": "USUSDT",
+    "side": "long",
+    "outcome": "loss",
+    "movePct": -0.87,
+    "paperPnlPct": -0.87,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long ผิด (5m): ราคา -0.87% — ตรงข้ามทิศ",
+    "timestamp": "2026-09-25T08:09:11.562Z",
+    "priceAtSend": 0.020218,
+    "priceAtGrade": 0.0200421034,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "9a280113-69bd-4c48-84d6-101bfdbda86d",
+    "alertId": "09b06b6a-c70e-43a1-8a48-b6714e3ae598",
+    "symbol": "MORPHOUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.3,
+    "paperPnlPct": 0.3,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา +0.30% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:14:11.831Z",
+    "priceAtSend": 2.8469,
+    "priceAtGrade": 2.8554407,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "c7d60032-806d-4e10-b6fe-49b9c6e8ddc4",
+    "alertId": "b8c15246-30c1-4074-9fcd-05d04c37a35a",
+    "symbol": "SPXUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.07,
+    "paperPnlPct": 0.07,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา +0.07% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:14:11.831Z",
+    "priceAtSend": 0.4433,
+    "priceAtGrade": 0.44361031,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "318d927c-3dd2-4c1d-bf90-46ae8f5d12d7",
+    "alertId": "14008c78-c1d7-4e36-b318-32fb42f6e88a",
+    "symbol": "ARUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.35,
+    "paperPnlPct": 0.35,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (5m): ราคา +0.35% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:14:11.831Z",
+    "priceAtSend": 4.593,
+    "priceAtGrade": 4.6090755,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "722a67a5-7eb6-4dc6-8ec4-3705e44f6c2b",
+    "alertId": "8d66fa31-497d-4c66-b95e-df446378410c",
+    "symbol": "FFUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.1,
+    "paperPnlPct": 0.1,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (5m): ราคา +0.10% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:14:11.831Z",
+    "priceAtSend": 0.13807,
+    "priceAtGrade": 0.13820807,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "44ab8cc9-26a5-44c3-a67a-21090cca8d91",
+    "alertId": "b683ce8e-8614-40a6-9eb5-3044133b3b8f",
+    "symbol": "PROMUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": -1.36,
+    "paperPnlPct": -1.36,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา -1.36% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:19:12.100Z",
+    "priceAtSend": 5.579,
+    "priceAtGrade": 5.5031256,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "eb3c47f9-1540-4108-8053-56e239c67f76",
+    "alertId": "de53760e-bb10-42d9-9e24-44c913e79293",
+    "symbol": "USUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": -1.01,
+    "paperPnlPct": -1.01,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา -1.01% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:19:12.101Z",
+    "priceAtSend": 0.020218,
+    "priceAtGrade": 0.0200137982,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "f2436eb7-1ca9-452e-bf39-b1ef674d5d0b",
+    "alertId": "f302306f-d63a-4de7-a34c-6ef0f559f989",
+    "symbol": "GALAUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 1.07,
+    "paperPnlPct": 1.07,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา +1.07% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:24:12.363Z",
+    "priceAtSend": 0.002051,
+    "priceAtGrade": 0.0020729457,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "166c49e4-652f-4c0e-b877-eb13eb616c6c",
+    "alertId": "14008c78-c1d7-4e36-b318-32fb42f6e88a",
+    "symbol": "ARUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.37,
+    "paperPnlPct": 0.37,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา +0.37% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:24:12.364Z",
+    "priceAtSend": 4.593,
+    "priceAtGrade": 4.6099941,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "8c8a19f0-b39b-45ef-b40a-9548f3082193",
+    "alertId": "8d66fa31-497d-4c66-b95e-df446378410c",
+    "symbol": "FFUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": -0.3,
+    "paperPnlPct": -0.3,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา -0.30% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:24:12.364Z",
+    "priceAtSend": 0.13807,
+    "priceAtGrade": 0.13765579,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "ac5bd2e8-2ae9-48a3-be65-f2ff85374849",
+    "alertId": "5c91849f-522d-49c5-8827-d9cdc0876804",
+    "symbol": "PONSUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.33,
+    "paperPnlPct": 0.33,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (5m): ราคา +0.33% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:24:12.364Z",
+    "priceAtSend": 0.6337,
+    "priceAtGrade": 0.63579121,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "55d945e2-1e80-4090-8661-baab56bda0d1",
+    "alertId": "f5599dfd-241c-4e3b-89ce-f396dc30667f",
+    "symbol": "MYXUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.72,
+    "paperPnlPct": 0.72,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (5m): ราคา +0.72% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:24:12.364Z",
+    "priceAtSend": 0.08487,
+    "priceAtGrade": 0.08548106400000001,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "f39a588a-a708-4259-8a8b-a856752613b3",
+    "alertId": "1b835e97-e050-4d25-b304-98140c2804bd",
+    "symbol": "VETUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.03,
+    "paperPnlPct": 0.03,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (5m): ราคา +0.03% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:24:12.364Z",
+    "priceAtSend": 0.009304,
+    "priceAtGrade": 0.0093067912,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "0753bc84-beef-44f7-91e2-397b77b7c5f5",
+    "alertId": "9e82afa7-6f19-44b6-b059-605b70e2490b",
+    "symbol": "WLDUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.52,
+    "paperPnlPct": 0.52,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (5m): ราคา +0.52% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:24:12.364Z",
+    "priceAtSend": 0.4456,
+    "priceAtGrade": 0.44791712000000006,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "a6bbe0c2-90cc-436e-bf46-6cdccaa00ed0",
+    "alertId": "5b9d4eff-4dd7-41ef-8736-a57f7b335e78",
+    "symbol": "GRTUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.76,
+    "paperPnlPct": 0.76,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (5m): ราคา +0.76% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:29:12.629Z",
+    "priceAtSend": 0.02624,
+    "priceAtGrade": 0.026439424,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "a796310a-77a6-4e88-bf17-56b22adda7fe",
+    "alertId": "9a0d143f-8447-4624-9696-04af63c17f4b",
+    "symbol": "NEARUSDT",
+    "side": "long",
+    "outcome": "win",
+    "movePct": 1.13,
+    "paperPnlPct": 1.13,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long ถูก (5m): ราคา +1.13% — heuristic ตรงทิศ",
+    "timestamp": "2026-09-25T08:29:12.630Z",
+    "priceAtSend": 4.607,
+    "priceAtGrade": 4.6590591,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "d23be940-a041-42ad-92b9-ea949ef480b2",
+    "alertId": "e06c425d-fd50-4611-b31f-a7bd7a321940",
+    "symbol": "TAOUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.03,
+    "paperPnlPct": 0.03,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (5m): ราคา +0.03% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:29:12.630Z",
+    "priceAtSend": 302.38,
+    "priceAtGrade": 302.470714,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "9d33a7e5-7ec0-4579-ae98-8b6564330765",
+    "alertId": "4bc4524a-9b87-4768-8fb7-a0591d3a641e",
+    "symbol": "ARBUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.15,
+    "paperPnlPct": 0.15,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (5m): ราคา +0.15% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:29:12.630Z",
+    "priceAtSend": 0.22015,
+    "priceAtGrade": 0.22048022500000003,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "f81d2809-1d9c-4d70-a614-7cc093f822ad",
+    "alertId": "5c91849f-522d-49c5-8827-d9cdc0876804",
+    "symbol": "PONSUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.66,
+    "paperPnlPct": 0.66,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา +0.66% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:34:12.900Z",
+    "priceAtSend": 0.6337,
+    "priceAtGrade": 0.63788242,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "18e37706-49dc-4d25-8c02-e0a77575ecce",
+    "alertId": "f5599dfd-241c-4e3b-89ce-f396dc30667f",
+    "symbol": "MYXUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.55,
+    "paperPnlPct": 0.55,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา +0.55% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:34:12.900Z",
+    "priceAtSend": 0.08487,
+    "priceAtGrade": 0.08533678500000001,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "c45baef2-c7f5-4a96-937d-bcdde772d704",
+    "alertId": "1b835e97-e050-4d25-b304-98140c2804bd",
+    "symbol": "VETUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": -0.11,
+    "paperPnlPct": -0.11,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา -0.11% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:34:12.900Z",
+    "priceAtSend": 0.009304,
+    "priceAtGrade": 0.0092937656,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "f9ce9cae-a499-4862-80fe-2a5addaf5324",
+    "alertId": "9e82afa7-6f19-44b6-b059-605b70e2490b",
+    "symbol": "WLDUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.96,
+    "paperPnlPct": 0.96,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา +0.96% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:34:12.900Z",
+    "priceAtSend": 0.4456,
+    "priceAtGrade": 0.44987776,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "d248cba0-0b4b-4db0-a4a9-feb5dd77aadd",
+    "alertId": "c820d6f0-1cf8-448b-b50d-0bcf54406ea7",
+    "symbol": "FARTCOINUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.16,
+    "paperPnlPct": 0.16,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (5m): ราคา +0.16% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:34:12.900Z",
+    "priceAtSend": 0.1868,
+    "priceAtGrade": 0.18709888,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "d50d368d-1482-4872-8d08-b47be9dcbc37",
+    "alertId": "d42b2e1c-f655-4df8-ba37-93893d6f5420",
+    "symbol": "KAVAUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": 0.2,
+    "paperPnlPct": -0.2,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Short) Short เป็นกลาง (5m): ราคา +0.20% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:34:13.351Z",
+    "priceAtSend": 0.06913,
+    "priceAtGrade": 0.06927,
+    "score": 2,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Short)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "inflow"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "bf71c30f-996e-41fc-a4fe-a1d05b9cc886",
+    "alertId": "8df0bca2-a91c-4498-9154-9fd5da98a0f3",
+    "symbol": "EDGEUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": 1.31,
+    "paperPnlPct": -1.31,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Short) Short เป็นกลาง (60m): ราคา +1.31% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:39:13.657Z",
+    "priceAtSend": 0.5438,
+    "priceAtGrade": 0.55092378,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Short)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "af482097-16ae-48dc-88b8-84fb822d42bc",
+    "alertId": "5b9d4eff-4dd7-41ef-8736-a57f7b335e78",
+    "symbol": "GRTUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.42,
+    "paperPnlPct": 0.42,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา +0.42% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:39:13.657Z",
+    "priceAtSend": 0.02624,
+    "priceAtGrade": 0.026350208,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "e2fc5745-8782-45c8-b3f0-895143a4dcd1",
+    "alertId": "9a0d143f-8447-4624-9696-04af63c17f4b",
+    "symbol": "NEARUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.2,
+    "paperPnlPct": 0.2,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา +0.20% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:39:13.657Z",
+    "priceAtSend": 4.607,
+    "priceAtGrade": 4.616214,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "0c05a67e-f40f-4c1d-b4de-ed8409fe018e",
+    "alertId": "e06c425d-fd50-4611-b31f-a7bd7a321940",
+    "symbol": "TAOUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.23,
+    "paperPnlPct": 0.23,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา +0.23% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:39:13.657Z",
+    "priceAtSend": 302.38,
+    "priceAtGrade": 303.075474,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "6fd86a8f-1e5a-472e-85f5-1dcd1063036e",
+    "alertId": "4bc4524a-9b87-4768-8fb7-a0591d3a641e",
+    "symbol": "ARBUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.02,
+    "paperPnlPct": 0.02,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา +0.02% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:39:14.112Z",
+    "priceAtSend": 0.22015,
+    "priceAtGrade": 0.22019,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "ab30b42e-aa80-4cbc-b052-3d88f4159586",
+    "alertId": "c820d6f0-1cf8-448b-b50d-0bcf54406ea7",
+    "symbol": "FARTCOINUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.8,
+    "paperPnlPct": 0.8,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา +0.80% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:44:14.422Z",
+    "priceAtSend": 0.1868,
+    "priceAtGrade": 0.1882944,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "c848eb65-304e-424c-84ac-8c72de1b1935",
+    "alertId": "d42b2e1c-f655-4df8-ba37-93893d6f5420",
+    "symbol": "KAVAUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": 0.54,
+    "paperPnlPct": -0.54,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Short) Short เป็นกลาง (15m): ราคา +0.54% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:44:14.863Z",
+    "priceAtSend": 0.06913,
+    "priceAtGrade": 0.0695,
+    "score": 2,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Short)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "inflow"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "552c4afc-aad1-483c-a578-96999d8050bf",
+    "alertId": "5c557cb7-c049-445b-bbe9-528d07e71b02",
+    "symbol": "牛来USDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.46,
+    "paperPnlPct": 0.46,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (5m): ราคา +0.46% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:49:15.187Z",
+    "priceAtSend": 0.10499,
+    "priceAtGrade": 0.105472954,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "c8a59e27-c368-40e9-b268-4633495f5363",
+    "alertId": "836d77aa-a945-4428-9395-7c531e2dad67",
+    "symbol": "MORPHOUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": -0.21,
+    "paperPnlPct": -0.21,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (5m): ราคา -0.21% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:49:15.188Z",
+    "priceAtSend": 2.9051,
+    "priceAtGrade": 2.89899929,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "0f67fe7c-3a29-48c4-ac40-3597323e32dd",
+    "alertId": "09b06b6a-c70e-43a1-8a48-b6714e3ae598",
+    "symbol": "MORPHOUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 1.75,
+    "paperPnlPct": 1.75,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา +1.75% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:59:15.734Z",
+    "priceAtSend": 2.8469,
+    "priceAtGrade": 2.8967207500000005,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "fc4d05e1-9ec2-4fdb-8611-6bc4de46a992",
+    "alertId": "b8c15246-30c1-4074-9fcd-05d04c37a35a",
+    "symbol": "SPXUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 1.47,
+    "paperPnlPct": 1.47,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา +1.47% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:59:15.734Z",
+    "priceAtSend": 0.4433,
+    "priceAtGrade": 0.44981651,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "154da357-6556-4994-b1d2-52700b6879d0",
+    "alertId": "5c557cb7-c049-445b-bbe9-528d07e71b02",
+    "symbol": "牛来USDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.5,
+    "paperPnlPct": 0.5,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา +0.50% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:59:15.735Z",
+    "priceAtSend": 0.10499,
+    "priceAtGrade": 0.10551494999999998,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "826c00bc-34f5-40f7-a61a-4de9101f4bb6",
+    "alertId": "836d77aa-a945-4428-9395-7c531e2dad67",
+    "symbol": "MORPHOUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": -0.02,
+    "paperPnlPct": -0.02,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา -0.02% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:59:15.735Z",
+    "priceAtSend": 2.9051,
+    "priceAtGrade": 2.90451898,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "3155c022-75eb-49e2-9c94-12641045455b",
+    "alertId": "01e2b64c-6ccf-4ce0-9552-e8f7dface2fe",
+    "symbol": "BILLUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": 0.15,
+    "paperPnlPct": -0.15,
+    "horizon": "5m",
+    "noteTh": "Early กำลังแจกของ Short เป็นกลาง (5m): ราคา +0.15% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T08:59:15.735Z",
+    "priceAtSend": 0.01374,
+    "priceAtGrade": 0.013760610000000001,
+    "score": 4,
+    "source": "early",
+    "tier": "distribution",
+    "labelTh": "กำลังแจกของ",
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "taker",
+      "fade"
+    ],
+    "factorCount": 4,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "sl_too_wide"
+  },
+  {
+    "id": "6f438688-ce00-4d39-899d-3a2872842afb",
+    "alertId": "b683ce8e-8614-40a6-9eb5-3044133b3b8f",
+    "symbol": "PROMUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": -2.63,
+    "paperPnlPct": -2.63,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา -2.63% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:04:16.000Z",
+    "priceAtSend": 5.579,
+    "priceAtGrade": 5.4322723,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "8a99e2e9-6194-47db-8d69-3a73492f0322",
+    "alertId": "de53760e-bb10-42d9-9e24-44c913e79293",
+    "symbol": "USUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": -1.38,
+    "paperPnlPct": -1.38,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา -1.38% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:04:16.001Z",
+    "priceAtSend": 0.020218,
+    "priceAtGrade": 0.0199389916,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "d9885b80-0536-4e5a-b3ae-a5735082b982",
+    "alertId": "e24f90e9-6a14-40f3-bb3c-759968a01c46",
+    "symbol": "JASMYUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.3,
+    "paperPnlPct": 0.3,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (5m): ราคา +0.30% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:04:16.002Z",
+    "priceAtSend": 0.004594,
+    "priceAtGrade": 0.0046077819999999995,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "1d9480cd-255c-40c3-8dea-0e48b513d2f2",
+    "alertId": "2bea96d3-f4eb-4520-919c-f6c28628f522",
+    "symbol": "KASUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.63,
+    "paperPnlPct": 0.63,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (5m): ราคา +0.63% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:04:16.002Z",
+    "priceAtSend": 0.04128,
+    "priceAtGrade": 0.041540063999999995,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "33f2c9a1-a388-43f8-a7c0-c2eda3e8b52c",
+    "alertId": "14008c78-c1d7-4e36-b318-32fb42f6e88a",
+    "symbol": "ARUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 1.33,
+    "paperPnlPct": 1.33,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา +1.33% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:09:16.268Z",
+    "priceAtSend": 4.593,
+    "priceAtGrade": 4.6540869,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "61a96eb1-ec35-4e09-8cb5-bcb48a1c0916",
+    "alertId": "8d66fa31-497d-4c66-b95e-df446378410c",
+    "symbol": "FFUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": -0.75,
+    "paperPnlPct": -0.75,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา -0.75% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:09:16.269Z",
+    "priceAtSend": 0.13807,
+    "priceAtGrade": 0.13703447500000002,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "e8600369-61ff-4f39-be53-1a71e625eb83",
+    "alertId": "01e2b64c-6ccf-4ce0-9552-e8f7dface2fe",
+    "symbol": "BILLUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": 1.16,
+    "paperPnlPct": -1.16,
+    "horizon": "15m",
+    "noteTh": "Early กำลังแจกของ Short เป็นกลาง (15m): ราคา +1.16% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:09:16.269Z",
+    "priceAtSend": 0.01374,
+    "priceAtGrade": 0.013899384,
+    "score": 4,
+    "source": "early",
+    "tier": "distribution",
+    "labelTh": "กำลังแจกของ",
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "taker",
+      "fade"
+    ],
+    "factorCount": 4,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "sl_too_wide"
+  },
+  {
+    "id": "dcdac8a0-6e40-4649-ac84-00b643559d40",
+    "alertId": "e24f90e9-6a14-40f3-bb3c-759968a01c46",
+    "symbol": "JASMYUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.28,
+    "paperPnlPct": 0.28,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา +0.28% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:14:16.530Z",
+    "priceAtSend": 0.004594,
+    "priceAtGrade": 0.004606863199999999,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "d4eb6381-dbf9-4e74-8dff-dcb6a2fc5473",
+    "alertId": "2bea96d3-f4eb-4520-919c-f6c28628f522",
+    "symbol": "KASUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 1.02,
+    "paperPnlPct": 1.02,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา +1.02% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:14:16.530Z",
+    "priceAtSend": 0.04128,
+    "priceAtGrade": 0.04170105599999999,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "5a911ef0-c850-4d36-a28c-272feabd6e27",
+    "alertId": "5c91849f-522d-49c5-8827-d9cdc0876804",
+    "symbol": "PONSUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 1.91,
+    "paperPnlPct": 1.91,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา +1.91% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:19:16.782Z",
+    "priceAtSend": 0.6337,
+    "priceAtGrade": 0.6458036699999999,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "5743ee77-fc68-4be1-a1a2-f2edf8325422",
+    "alertId": "f5599dfd-241c-4e3b-89ce-f396dc30667f",
+    "symbol": "MYXUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.28,
+    "paperPnlPct": 0.28,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา +0.28% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:19:16.783Z",
+    "priceAtSend": 0.08487,
+    "priceAtGrade": 0.085107636,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "aa301f6f-7821-4958-906b-bfccabe6d523",
+    "alertId": "1b835e97-e050-4d25-b304-98140c2804bd",
+    "symbol": "VETUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.72,
+    "paperPnlPct": 0.72,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา +0.72% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:19:16.783Z",
+    "priceAtSend": 0.009304,
+    "priceAtGrade": 0.0093709888,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "6b824cba-88b7-43bc-9ad2-5c75dcfb86ee",
+    "alertId": "9e82afa7-6f19-44b6-b059-605b70e2490b",
+    "symbol": "WLDUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.58,
+    "paperPnlPct": 0.58,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา +0.58% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:19:16.783Z",
+    "priceAtSend": 0.4456,
+    "priceAtGrade": 0.44818448,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "0ceb3f81-f8b8-4882-9178-50d90659c431",
+    "alertId": "5b9d4eff-4dd7-41ef-8736-a57f7b335e78",
+    "symbol": "GRTUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 1.18,
+    "paperPnlPct": 1.18,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา +1.18% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:24:17.039Z",
+    "priceAtSend": 0.02624,
+    "priceAtGrade": 0.026549632,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "f7cbaa1f-bc9d-4367-88fc-7890082a7983",
+    "alertId": "9a0d143f-8447-4624-9696-04af63c17f4b",
+    "symbol": "NEARUSDT",
+    "side": "long",
+    "outcome": "win",
+    "movePct": 3.47,
+    "paperPnlPct": 3.47,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long ถูก (60m): ราคา +3.47% — heuristic ตรงทิศ",
+    "timestamp": "2026-09-25T09:24:17.039Z",
+    "priceAtSend": 4.607,
+    "priceAtGrade": 4.7668629,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "5badaaf1-a92a-4b43-b6a7-02cce840ef31",
+    "alertId": "e06c425d-fd50-4611-b31f-a7bd7a321940",
+    "symbol": "TAOUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.7,
+    "paperPnlPct": 0.7,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา +0.70% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:24:17.039Z",
+    "priceAtSend": 302.38,
+    "priceAtGrade": 304.49665999999996,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "0fa90029-10f9-41e4-80af-3756f1605c9b",
+    "alertId": "4bc4524a-9b87-4768-8fb7-a0591d3a641e",
+    "symbol": "ARBUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": -0.23,
+    "paperPnlPct": -0.23,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา -0.23% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:24:17.482Z",
+    "priceAtSend": 0.22015,
+    "priceAtGrade": 0.21965,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "dcfe238c-fd25-4ed4-b838-80ef4a9458e2",
+    "alertId": "c820d6f0-1cf8-448b-b50d-0bcf54406ea7",
+    "symbol": "FARTCOINUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 1.34,
+    "paperPnlPct": 1.34,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา +1.34% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:29:17.780Z",
+    "priceAtSend": 0.1868,
+    "priceAtGrade": 0.18930312000000002,
+    "score": 0,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [],
+    "factorCount": 0,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "b094f4ba-32d1-41bf-84e9-f07a63fb849b",
+    "alertId": "fb93d4c7-d80d-47cc-b1e4-9d8452ab5711",
+    "symbol": "MOODENGUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": 0.35,
+    "paperPnlPct": -0.35,
+    "horizon": "5m",
+    "noteTh": "Early กำลังแจกของ Short เป็นกลาง (5m): ราคา +0.35% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:29:17.780Z",
+    "priceAtSend": 0.04863,
+    "priceAtGrade": 0.048800205,
+    "score": 4,
+    "source": "early",
+    "tier": "distribution",
+    "labelTh": "กำลังแจกของ",
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "taker",
+      "fade"
+    ],
+    "factorCount": 4,
+    "aiAction": "send",
+    "aiScore": 72,
+    "aiReasonTh": "OI พุ่งแต่ราคาไม่ไป + Long แน่น + Taker Sell แรง ระวัง Short Squeeze",
+    "aiSkipped": false,
+    "tradeGrade": null,
+    "delivered": true,
+    "suppressed": null
+  },
+  {
+    "id": "d1274d2e-bd3c-4f78-8153-7a10b40f34ac",
+    "alertId": "d42b2e1c-f655-4df8-ba37-93893d6f5420",
+    "symbol": "KAVAUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": 0.52,
+    "paperPnlPct": -0.52,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Short) Short เป็นกลาง (60m): ราคา +0.52% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:29:18.225Z",
+    "priceAtSend": 0.06913,
+    "priceAtGrade": 0.06949,
+    "score": 2,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Short)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker",
+      "inflow"
+    ],
+    "factorCount": 2,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "cb557951-8e61-4077-b249-38be14cb31e5",
+    "alertId": "3dd54dd9-6933-48fc-95ac-bb7b88dc4698",
+    "symbol": "HUMAUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": 0.31,
+    "paperPnlPct": -0.31,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Short) Short เป็นกลาง (5m): ราคา +0.31% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:34:18.497Z",
+    "priceAtSend": 0.025639,
+    "priceAtGrade": 0.0257184809,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Short)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "39b55e85-7bc7-4200-b3b8-18dab18838a2",
+    "alertId": "fb93d4c7-d80d-47cc-b1e4-9d8452ab5711",
+    "symbol": "MOODENGUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": 0.62,
+    "paperPnlPct": -0.62,
+    "horizon": "15m",
+    "noteTh": "Early กำลังแจกของ Short เป็นกลาง (15m): ราคา +0.62% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:39:18.771Z",
+    "priceAtSend": 0.04863,
+    "priceAtGrade": 0.048931506,
+    "score": 4,
+    "source": "early",
+    "tier": "distribution",
+    "labelTh": "กำลังแจกของ",
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "taker",
+      "fade"
+    ],
+    "factorCount": 4,
+    "aiAction": "send",
+    "aiScore": 72,
+    "aiReasonTh": "OI พุ่งแต่ราคาไม่ไป + Long แน่น + Taker Sell แรง ระวัง Short Squeeze",
+    "aiSkipped": false,
+    "tradeGrade": null,
+    "delivered": true,
+    "suppressed": null
+  },
+  {
+    "id": "9fd6a86d-eb9c-420f-8a00-1e8da17dcc21",
+    "alertId": "9574e77b-948b-4759-8854-bc427e3e0d13",
+    "symbol": "RAYSOLUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.11,
+    "paperPnlPct": 0.11,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (5m): ราคา +0.11% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:39:18.771Z",
+    "priceAtSend": 2.074,
+    "priceAtGrade": 2.0762814,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "8677e05a-db83-4e24-8f3e-365463c2c7f0",
+    "alertId": "5c557cb7-c049-445b-bbe9-528d07e71b02",
+    "symbol": "牛来USDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.93,
+    "paperPnlPct": 0.93,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา +0.93% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:44:19.028Z",
+    "priceAtSend": 0.10499,
+    "priceAtGrade": 0.10596640700000001,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "91eeb4fc-dfab-4808-b36f-1bbd59ab67cb",
+    "alertId": "836d77aa-a945-4428-9395-7c531e2dad67",
+    "symbol": "MORPHOUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 1.8,
+    "paperPnlPct": 1.8,
+    "horizon": "60m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (60m): ราคา +1.80% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:44:19.029Z",
+    "priceAtSend": 2.9051,
+    "priceAtGrade": 2.9573918,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "92ebe3fc-cf53-4c9d-a35b-e1a496bcc443",
+    "alertId": "3dd54dd9-6933-48fc-95ac-bb7b88dc4698",
+    "symbol": "HUMAUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": 0.21,
+    "paperPnlPct": -0.21,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Short) Short เป็นกลาง (15m): ราคา +0.21% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:44:19.029Z",
+    "priceAtSend": 0.025639,
+    "priceAtGrade": 0.0256928419,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Short)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "7e82cd6d-8598-45c4-a38f-718e925fd6ff",
+    "alertId": "fe806580-46a0-4187-80cd-deeca707af03",
+    "symbol": "ESPORTSUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": -0.1,
+    "paperPnlPct": 0.1,
+    "horizon": "5m",
+    "noteTh": "Early price-only (Short) Short เป็นกลาง (5m): ราคา -0.10% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:44:19.029Z",
+    "priceAtSend": 0.0105,
+    "priceAtGrade": 0.0104895,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Short)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "eee1d02f-085d-4699-8687-6ed158fdf268",
+    "alertId": "9574e77b-948b-4759-8854-bc427e3e0d13",
+    "symbol": "RAYSOLUSDT",
+    "side": "long",
+    "outcome": "neutral",
+    "movePct": 0.03,
+    "paperPnlPct": 0.03,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Long) Long เป็นกลาง (15m): ราคา +0.03% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:49:19.272Z",
+    "priceAtSend": 2.074,
+    "priceAtGrade": 2.0746222,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Long)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "taker"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "a3c0ea54-8583-46a1-b420-480db1d7eaf9",
+    "alertId": "01e2b64c-6ccf-4ce0-9552-e8f7dface2fe",
+    "symbol": "BILLUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": -0.29,
+    "paperPnlPct": 0.29,
+    "horizon": "60m",
+    "noteTh": "Early กำลังแจกของ Short เป็นกลาง (60m): ราคา -0.29% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:54:19.529Z",
+    "priceAtSend": 0.01374,
+    "priceAtGrade": 0.013700154,
+    "score": 4,
+    "source": "early",
+    "tier": "distribution",
+    "labelTh": "กำลังแจกของ",
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "crowded",
+      "taker",
+      "fade"
+    ],
+    "factorCount": 4,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "sl_too_wide"
+  },
+  {
+    "id": "39365164-3fab-4318-8a4e-7b59d64b9385",
+    "alertId": "fe806580-46a0-4187-80cd-deeca707af03",
+    "symbol": "ESPORTSUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": -0.48,
+    "paperPnlPct": 0.48,
+    "horizon": "15m",
+    "noteTh": "Early price-only (Short) Short เป็นกลาง (15m): ราคา -0.48% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:54:19.530Z",
+    "priceAtSend": 0.0105,
+    "priceAtGrade": 0.0104496,
+    "score": 1,
+    "source": "early",
+    "tier": "ignition_price_only",
+    "labelTh": "price-only (Short)",
+    "earlyType": "ignition_price_only",
+    "factorKeys": [
+      "crowded"
+    ],
+    "factorCount": 1,
+    "aiAction": null,
+    "aiScore": null,
+    "aiReasonTh": null,
+    "aiSkipped": null,
+    "tradeGrade": null,
+    "delivered": false,
+    "suppressed": "no_confluence"
+  },
+  {
+    "id": "765b59f8-d885-490a-b2cf-8c2854a4d278",
+    "alertId": "da6cdf73-1650-4ef9-9840-67ae12187d2a",
+    "symbol": "SUSHIUSDT",
+    "side": "short",
+    "outcome": "neutral",
+    "movePct": 0.08,
+    "paperPnlPct": -0.08,
+    "horizon": "5m",
+    "noteTh": "Early กำลังแจกของ Short เป็นกลาง (5m): ราคา +0.08% — ยังไม่ถึงเกณฑ์",
+    "timestamp": "2026-09-25T09:54:19.530Z",
+    "priceAtSend": 0.259,
+    "priceAtGrade": 0.25920719999999997,
+    "score": 4,
+    "source": "early",
+    "tier": "distribution",
+    "labelTh": "กำลังแจกของ",
+    "earlyType": "watch",
+    "factorKeys": [
+      "oiBuild",
+      "taker",
+      "inflow",
+      "smart"
+    ],
+    "factorCount": 4,
+    "aiAction": "send",
+    "aiScore": 72,
+    "aiReasonTh": "OI สะสมเงียบ + ท็อปเทรดเดอร์ Short สวนรายย่อย ราคายังไม่พุ่ง เหมาะ Short",
+    "aiSkipped": false,
+    "tradeGrade": null,
+    "delivered": true,
+    "suppressed": null
   }
 ]

@@ -28,7 +28,8 @@
     "pages:preview": "vite preview --config pages-spa/vite.config.mts --base /crypto-pump-screener/",
     "early:fetch-30d": "node scripts/fetch-early-backtest-30d.mjs",
     "early:walkforward": "node scripts/walkforward-early.mjs",
-    "start:all": "bash scripts/start-all.sh"
+    "start:all": "bash scripts/start-all.sh",
+    "learn-from-mistakes": "node scripts/learn-from-mistakes.mjs"
   },
   "dependencies": {
     "next": "15.5.25",
