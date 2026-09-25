@@ -8,12 +8,26 @@ const SOFT_TIMEOUT_MS = 8_000;
 const cache = new Map(); // key → { at, result }
 
 function resolveProvider() {
+  const groqKey = (process.env.GROQ_API_KEY || "").trim();
+  if (groqKey) {
+    return {
+      key: groqKey,
+      base: (process.env.GROQ_BASE_URL || "https://api.groq.com/openai/v1").replace(/\/$/, ""),
+      model: process.env.GROQ_MODEL || process.env.OPENAI_MODEL || "qwen/qwen3.8-27b",
+      jsonMode: true,
+      name: "groq",
+    };
+  }
   const openaiKey = (process.env.OPENAI_API_KEY || "").trim();
   if (openaiKey) {
+    const base = (process.env.OPENAI_BASE_URL || "https://api.openai.com/v1").replace(/\/$/, "");
+    const isGroq = /groq\.com/i.test(base);
     return {
       key: openaiKey,
-      base: (process.env.OPENAI_BASE_URL || "https://api.openai.com/v1").replace(/\/$/, ""),
-      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+      base,
+      model: process.env.OPENAI_MODEL || (isGroq ? "qwen/qwen3.8-27b" : "gpt-4o-mini"),
+      jsonMode: true,
+      name: isGroq ? "groq" : "openai",
     };
   }
   const xaiKey = (process.env.XAI_API_KEY || "").trim();
@@ -22,6 +36,8 @@ function resolveProvider() {
       key: xaiKey,
       base: (process.env.XAI_BASE_URL || "https://api.x.ai/v1").replace(/\/$/, ""),
       model: process.env.XAI_MODEL || process.env.OPENAI_MODEL || "grok-2-latest",
+      jsonMode: true,
+      name: "xai",
     };
   }
   return null;
@@ -93,28 +109,36 @@ Rules:
 - score: confidence 0-100 that this alert is worth acting on.`;
 
 async function callChat(provider, payload, signal) {
-  const body = {
-    model: provider.model,
-    temperature: 0.2,
-    max_tokens: 180,
-    response_format: { type: "json_object" },
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: JSON.stringify(buildUserPayload(payload)) },
-    ],
-  };
-  const r = await fetch(`${provider.base}/chat/completions`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${provider.key}`,
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify(body),
-    signal,
-  });
+  const messages = [
+    { role: "system", content: SYSTEM_PROMPT },
+    { role: "user", content: JSON.stringify(buildUserPayload(payload)) },
+  ];
+  async function once(useJsonMode) {
+    const body = {
+      model: provider.model,
+      temperature: 0.2,
+      max_tokens: 180,
+      messages,
+    };
+    if (useJsonMode) body.response_format = { type: "json_object" };
+    const r = await fetch(`${provider.base}/chat/completions`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${provider.key}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(body),
+      signal,
+    });
+    const errText = r.ok ? "" : await r.text().catch(() => "");
+    return { r, errText };
+  }
+  let { r, errText } = await once(provider.jsonMode !== false);
+  if (!r.ok && /json|response_format|validate/i.test(errText)) {
+    ({ r, errText } = await once(false));
+  }
   if (!r.ok) {
-    const errText = await r.text().catch(() => "");
     throw new Error(`HTTP ${r.status} ${errText.slice(0, 120)}`);
   }
   const j = await r.json();
