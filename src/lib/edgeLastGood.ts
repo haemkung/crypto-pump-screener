@@ -15,7 +15,7 @@ export const EDGE_SCREEN_CACHE_URL =
 export const EDGE_HOT_CACHE_URL = "https://cps-last-good.internal/api/hot";
 
 const CACHE_NAME = "cps-last-good";
-const DEFAULT_MAX_AGE_SEC = 3600;
+const DEFAULT_MAX_AGE_SEC = 21600;
 
 function getCaches(): CacheStorage | null {
   try {
@@ -29,16 +29,18 @@ function getCaches(): CacheStorage | null {
 async function openCache(): Promise<Cache | null> {
   const cs = getCaches();
   if (!cs) return null;
+  // Workers: caches.default is the reliable Cache API. caches.open can be
+  // missing or flaky under OpenNext nodejs_compat — prefer default first.
+  try {
+    const def = (cs as CacheStorage & { default?: Cache }).default;
+    if (def) return def;
+  } catch {
+    // continue
+  }
   try {
     return await cs.open(CACHE_NAME);
   } catch {
-    // Some runtimes expose caches.default; typed CacheStorage may not.
-    try {
-      const def = (cs as CacheStorage & { default?: Cache }).default;
-      return def ?? null;
-    } catch {
-      return null;
-    }
+    return null;
   }
 }
 
