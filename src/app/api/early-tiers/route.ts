@@ -39,8 +39,18 @@ function jsonText(req: NextRequest, text: string, extra: Record<string, string> 
  * serve edge/in-memory last-good with X-Early-Tiers-Stale:1 (HTTP 200). Soft-fail
  * empty only when no last-good exists — never hard-blank the SPA.
  */
+function wantsFresh(req: NextRequest): boolean {
+  const sp = req.nextUrl.searchParams;
+  if (sp.has("t") || sp.get("fresh") === "1" || sp.get("bypassCache") === "1") {
+    return true;
+  }
+  const cc = (req.headers.get("cache-control") || "").toLowerCase();
+  return cc.includes("no-cache") || cc.includes("no-store");
+}
+
 export async function GET(req: NextRequest) {
   try {
+    const fresh = wantsFresh(req);
     const proxied = await proxyToUpstream(`/api/early-tiers`, {
       timeoutMs: 15_000,
       retries: 2,
@@ -59,7 +69,7 @@ export async function GET(req: NextRequest) {
         const teed = await stashEdgeLastGood(
           EDGE_EARLY_TIERS_CACHE_URL,
           toStash,
-          21600
+          900
         );
         // Drain client tee branch so the cache put can finish.
         try {
@@ -78,17 +88,21 @@ export async function GET(req: NextRequest) {
       }
     }
     if (await isCloudflareWorkersRuntime()) {
-      const edge = await matchEdgeLastGood(
-        EDGE_EARLY_TIERS_CACHE_URL,
-        "X-Early-Tiers-Stale"
-      );
-      if (edge) return withCors(req, edge);
+      // Manual refresh (?t=) skips sticky last-good so UI does not keep showing hours-old data
+      // when upstream is briefly unavailable — soft-fail instead.
+      if (!fresh) {
+        const edge = await matchEdgeLastGood(
+          EDGE_EARLY_TIERS_CACHE_URL,
+          "X-Early-Tiers-Stale"
+        );
+        if (edge) return withCors(req, edge);
 
-      if (lastGood && Date.now() - lastGood.at < LAST_GOOD_MAX_AGE_MS) {
-        return jsonText(req, lastGood.text, {
-          "X-Early-Tiers-Stale": "1",
-          "X-Early-Tiers-Cached-At": new Date(lastGood.at).toISOString(),
-        });
+        if (lastGood && Date.now() - lastGood.at < LAST_GOOD_MAX_AGE_MS) {
+          return jsonText(req, lastGood.text, {
+            "X-Early-Tiers-Stale": "1",
+            "X-Early-Tiers-Cached-At": new Date(lastGood.at).toISOString(),
+          });
+        }
       }
       return withCors(
         req,

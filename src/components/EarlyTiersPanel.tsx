@@ -328,10 +328,21 @@ export function EarlyTiersPanel() {
   const [error, setError] = useState<string | null>(null);
   const [stale, setStale] = useState(false);
   const [animKey, setAnimKey] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const [waking, setWaking] = useState(false);
+  const [wakeMsg, setWakeMsg] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (opts?: { bust?: boolean }) => {
+    const bust = !!opts?.bust;
     try {
-      const res = await fetch(apiUrl("/api/early-tiers"), { cache: "no-store" });
+      if (bust) {
+        try { localStorage.removeItem(LS_KEY); } catch { /* ignore */ }
+      }
+      const q = bust ? `?t=${Date.now()}&fresh=1` : "";
+      const res = await fetch(apiUrl(`/api/early-tiers${q}`), {
+        cache: "no-store",
+        headers: bust ? { "Cache-Control": "no-cache" } : undefined,
+      });
       const j = (await res.json().catch(() => null)) as Resp | null;
       if (!j || !res.ok || !j.updatedAt) throw new Error(j?.meta?.reason || `HTTP ${res.status}`);
       setData(j);
@@ -339,15 +350,83 @@ export function EarlyTiersPanel() {
       setError(null);
       setAnimKey((k) => k + 1);
       try { localStorage.setItem(LS_KEY, JSON.stringify(j)); } catch { /* ignore */ }
+      return true;
     } catch (e) {
       setError(String(e instanceof Error ? e.message : e));
       setData((cur) => {
-        if (cur) return cur;
+        if (cur && !bust) return cur;
+        if (bust) return cur; // keep showing previous while forced refresh fails
         try { const s = localStorage.getItem(LS_KEY); return s ? (JSON.parse(s) as Resp) : null; } catch { return null; }
       });
       setStale(true);
+      return false;
     }
   }, []);
+
+  const onRefresh = useCallback(async () => {
+    if (refreshing) return;
+    setRefreshing(true);
+    setWakeMsg(null);
+    try {
+      // Also cheap-refresh learning if present (ignore errors)
+      void fetch(apiUrl(`/api/learning-insights?t=${Date.now()}`), { cache: "no-store" }).catch(() => {});
+      await load({ bust: true });
+    } finally {
+      setRefreshing(false);
+    }
+  }, [load, refreshing]);
+
+  const onWake = useCallback(async () => {
+    if (waking) return;
+    setWaking(true);
+    setWakeMsg("กำลังปลุกระบบ…");
+    try {
+      const res = await fetch(apiUrl("/api/early-daemon/wake"), {
+        method: "POST",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: "{}",
+      });
+      const j = (await res.json().catch(() => null)) as {
+        ok?: boolean;
+        noteTh?: string;
+        error?: string;
+        retryAfterSec?: number;
+      } | null;
+      if (!res.ok || !j?.ok) {
+        const wait = j?.retryAfterSec ? ` (รอ ${j.retryAfterSec}s)` : "";
+        setWakeMsg((j?.noteTh || j?.error || `ปลุกไม่สำเร็จ HTTP ${res.status}`) + wait);
+        return;
+      }
+      setWakeMsg(j.noteTh || "ส่งสัญญาณปลุกแล้ว — รอ daemon รีสตาร์ท…");
+      // Poll for fresh updatedAt after heal (~30–90s)
+      for (let i = 0; i < 8; i++) {
+        await new Promise((r) => setTimeout(r, i === 0 ? 4000 : 5000));
+        await load({ bust: true });
+        try {
+          const check = await fetch(apiUrl(`/api/early-tiers?t=${Date.now()}&fresh=1`), { cache: "no-store" });
+          const body = (await check.json().catch(() => null)) as Resp | null;
+          if (body?.updatedAt) {
+            const age = Date.now() - Date.parse(body.updatedAt);
+            if (Number.isFinite(age) && age < 5 * 60_000) {
+              setData(body);
+              setStale(false);
+              setError(null);
+              setAnimKey((k) => k + 1);
+              try { localStorage.setItem(LS_KEY, JSON.stringify(body)); } catch { /* ignore */ }
+              setWakeMsg("ระบบกลับมาแล้ว — ข้อมูลสด");
+              return;
+            }
+          }
+        } catch { /* continue polling */ }
+      }
+      setWakeMsg("ปลุกแล้ว — กดรีเฟรชอีกครั้งหากข้อมูลยังค้าง");
+    } catch (e) {
+      setWakeMsg(String(e instanceof Error ? e.message : e));
+    } finally {
+      setWaking(false);
+    }
+  }, [waking, load]);
 
   useEffect(() => {
     void load();
@@ -373,20 +452,56 @@ export function EarlyTiersPanel() {
   const oldMs = data?.updatedAt ? Date.now() - Date.parse(data.updatedAt) : 0;
   return (
     <section id="early-tiers" className="mt-4 rounded-xl border border-sky-900/50 bg-zinc-900/60 px-3 py-3">
-      <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-base font-bold text-sky-200">ระยะต้น (หลักฐานซ่อนก่อน → ราคาเป็นแค่จังหวะ)</h2>
-        <span className="text-[11px] text-zinc-500">
-          อัปเดต {data?.updatedAt ? ago(data.updatedAt) : "—"}
-          {rules ? ` · ต้องมีหลักฐานซ่อน ≥3 ข้อเสมอ` : ""}
-        </span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-[11px] text-zinc-500">
+            อัปเดต {data?.updatedAt ? ago(data.updatedAt) : "—"}
+            {rules ? ` · ต้องมีหลักฐานซ่อน ≥3 ข้อเสมอ` : ""}
+          </span>
+          <button
+            type="button"
+            onClick={() => void onRefresh()}
+            disabled={refreshing || waking}
+            className="inline-flex items-center gap-1.5 rounded-md border border-sky-700/70 bg-sky-950/60 px-2.5 py-1 text-[11px] font-semibold text-sky-100 hover:bg-sky-900/70 disabled:cursor-wait disabled:opacity-60"
+            title="ดึงข้อมูลใหม่ทันที (ไม่ใช้ค่าค้างในเครื่อง)"
+          >
+            {refreshing ? (
+              <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-sky-300 border-t-transparent" aria-hidden />
+            ) : (
+              <span aria-hidden>↻</span>
+            )}
+            รีเฟรช
+          </button>
+          <button
+            type="button"
+            onClick={() => void onWake()}
+            disabled={waking || refreshing}
+            className="inline-flex items-center gap-1.5 rounded-md border border-amber-600/80 bg-amber-700/80 px-2.5 py-1 text-[11px] font-semibold text-amber-50 hover:bg-amber-600 disabled:cursor-wait disabled:opacity-60"
+            title="ปลุก/รีสตาร์ท early daemon บนเซิร์ฟเวอร์เมื่อข้อมูลค้าง"
+          >
+            {waking ? (
+              <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-amber-100 border-t-transparent" aria-hidden />
+            ) : (
+              <span aria-hidden>⚡</span>
+            )}
+            ปลุกระบบ
+          </button>
+        </div>
       </div>
       <AiLiveStrip symbols={scanSymbols} />
+      {wakeMsg && (
+        <div className="mb-2 rounded border border-sky-800/60 bg-sky-950/40 px-2 py-1 text-xs text-sky-100">
+          {wakeMsg}
+        </div>
+      )}
       {(error || stale || oldMs > 10 * 60e3) && (
         <div className="mb-2 rounded border border-amber-800/60 bg-amber-950/40 px-2 py-1 text-xs text-amber-200">
           {data
             ? `ข้อมูลค้าง — แสดงค่าล่าสุดที่มี (อัปเดต ${ago(data.updatedAt)})`
             : "ข้อมูลค้าง — ดึงข้อมูลไม่ได้ชั่วคราว"}
           {error ? ` · ${error}` : ""}
+          <span className="ml-1 text-amber-100/80">· กด「รีเฟรช」หรือ「ปลุกระบบ」ได้</span>
         </div>
       )}
       <TierStats data={data} />

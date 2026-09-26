@@ -3,6 +3,7 @@ import { readFile } from "fs/promises";
 import { existsSync } from "fs";
 import path from "path";
 import { withCors, corsPreflight } from "@/lib/cors";
+import { proxyToUpstream, isCloudflareWorkersRuntime } from "@/lib/upstreamProxy";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -16,6 +17,17 @@ export async function OPTIONS(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  try {
+    if (await isCloudflareWorkersRuntime()) {
+      const proxied = await proxyToUpstream("/api/health", {
+        timeoutMs: 8_000,
+        retries: 1,
+      });
+      if (proxied && proxied.ok) return withCors(req, proxied);
+    }
+  } catch {
+    /* fall through to local */
+  }
   const role = (process.env.BOT_ROLE || "").trim() || null;
   const disableUpstream =
     (process.env.DISABLE_BOT_UPSTREAM || "").trim().toLowerCase() === "1" ||

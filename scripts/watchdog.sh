@@ -25,6 +25,9 @@ DAEMON_STATUS="$ROOT/logs/early-ignition/status.json"
 DAEMON_PID_FILE="$ROOT/logs/early-ignition/daemon.pid"
 DAEMON_LOG="$ROOT/logs/early-ignition/daemon.log"
 DAEMON_SCRIPT="$ROOT/scripts/early-ignition-daemon.mjs"
+WAKE_FLAG="$ROOT/logs/early-ignition/wake.flag"
+# No live PID → heal within ~90s even if status.json looks recent.
+DAEMON_DEAD_SEC="${WATCHDOG_DAEMON_DEAD_SEC:-90}"
 
 declare -A FAILS LAST_ALERT ALERTED NEXT_RESTART BACKOFF
 log() { echo "[$(date -Iseconds)] $*" >>"$LOG"; }
@@ -172,6 +175,17 @@ start_daemon() {
   return 1
 }
 
+
+# UI / API wake request: flag file written by POST /api/early-daemon/wake
+consume_wake_flag() {
+  if [[ -f "$WAKE_FLAG" ]]; then
+    log "wake flag present — forcing daemon heal"
+    rm -f "$WAKE_FLAG"
+    return 0
+  fi
+  return 1
+}
+
 # Full heal: kill stale/dead, start if still absent.
 heal_daemon() {
   local reason="$1" age="$2"
@@ -209,10 +223,14 @@ while true; do
     if may_restart sup_sched; then log "starting supervise-local-scheduler.sh"; start_detached scripts/supervise-local-scheduler.sh logs/local-scheduler.nohup.out; fi
   fi
 
-  # 2) early daemon: dead PID OR stale heartbeat → kill + start (do NOT only kill and hope)
+  # 2) early daemon: wake flag OR dead PID OR stale heartbeat → kill + start
   age=$(daemon_heartbeat_age)
   live_pids=$(find_daemon_pids)
-  if (( age <= DAEMON_STALE_SEC )) && [[ -n "${live_pids// /}" ]]; then
+  wake=0
+  if consume_wake_flag; then wake=1; fi
+
+  # Healthy only when live PID AND fresh heartbeat AND no wake request
+  if (( wake == 0 )) && (( age <= DAEMON_STALE_SEC )) && [[ -n "${live_pids// /}" ]]; then
     errs=$(jq -r '.consecutiveErrors // 0' "$DAEMON_STATUS" 2>/dev/null || echo 0)
     if [[ "$errs" =~ ^[0-9]+$ ]] && (( errs >= 15 )); then
       fail daemon_err 1 "early daemon เรียก Binance ไม่สำเร็จ ${errs} รอบติด"
@@ -222,17 +240,30 @@ while true; do
     ok daemon "early daemon"; reset_backoff daemon
   else
     local_reason="unknown"
-    if [[ -z "${live_pids// /}" ]] && (( age > DAEMON_STALE_SEC )); then local_reason="dead+stale"
+    if (( wake == 1 )); then local_reason="wake_flag"
+    elif [[ -z "${live_pids// /}" ]] && (( age > DAEMON_STALE_SEC )); then local_reason="dead+stale"
     elif [[ -z "${live_pids// /}" ]]; then local_reason="dead"
     else local_reason="stale_heartbeat"; fi
-    # Log every few ticks while unhealthy so gaps are diagnosable (not only on kill)
-    if (( tick % 2 == 1 )); then
-      log "daemon unhealthy reason=$local_reason age=${age}s pids=[${live_pids}] fails=${FAILS[daemon]:-0}"
-    fi
-    fail daemon 2 "early daemon ${local_reason} (heartbeat ${age}s)"
-    if may_restart daemon; then
-      log "healing early daemon reason=$local_reason age=${age}s pids=[${live_pids}]"
-      heal_daemon "$local_reason" "$age"
+    # Dead (no PID): treat as unhealthy after DAEMON_DEAD_SEC even if status.json is newer
+    if [[ "$local_reason" == "dead" ]] && (( age <= DAEMON_DEAD_SEC )) && (( wake == 0 )); then
+      # Very recent status with no PID — give process a moment to spawn, but never more than DEAD_SEC
+      if (( tick % 2 == 1 )); then
+        log "daemon missing pid age=${age}s (deadSec=$DAEMON_DEAD_SEC) — waiting brief grace"
+      fi
+    else
+      if (( tick % 2 == 1 )) || (( wake == 1 )); then
+        log "daemon unhealthy reason=$local_reason age=${age}s pids=[${live_pids}] fails=${FAILS[daemon]:-0}"
+      fi
+      fail daemon 2 "early daemon ${local_reason} (heartbeat ${age}s)"
+      # Dead / wake: bypass exponential backoff so multi-hour gaps cannot happen
+      if [[ "$local_reason" == "dead" || "$local_reason" == "dead+stale" || "$local_reason" == "wake_flag" ]]; then
+        reset_backoff daemon
+        NEXT_RESTART[daemon]=0
+      fi
+      if may_restart daemon; then
+        log "healing early daemon reason=$local_reason age=${age}s pids=[${live_pids}]"
+        heal_daemon "$local_reason" "$age"
+      fi
     fi
   fi
 
@@ -247,5 +278,10 @@ while true; do
   printf '{"at":"%s","pid":%s,"daemonHeartbeatAgeSec":%s,"daemonPids":"%s","nextHttp":"%s","publicHttp":"%s","fails":{"sup_up":%s,"sup_sched":%s,"daemon":%s,"next":%s,"public":%s}}\n' \
     "$(date -Iseconds)" "$$" "$age" "${live_pids}" "$c1" "${c2:-}" "${FAILS[sup_up]:-0}" "${FAILS[sup_sched]:-0}" "${FAILS[daemon]:-0}" "${FAILS[next]:-0}" "${FAILS[public]:-0}" >"$STATUS.tmp" && mv "$STATUS.tmp" "$STATUS"
   if [[ $(stat -c %s "$LOG" 2>/dev/null || echo 0) -gt 2000000 ]]; then tail -c 500000 "$LOG" >"$LOG.tmp" && mv "$LOG.tmp" "$LOG"; fi
-  sleep "$POLL"
+  # Unhealthy / no PID → poll every 5s so empty-PID gaps heal within ~1–2 min max
+  if [[ -z "${live_pids// /}" ]] || (( age > DAEMON_STALE_SEC )) || (( wake == 1 )); then
+    sleep 5
+  else
+    sleep "$POLL"
+  fi
 done

@@ -43,6 +43,8 @@ EARLY_LOG="$EARLY_LOG_DIR/daemon.log"
 EARLY_PID_FILE="$EARLY_LOG_DIR/daemon.pid"
 EARLY_SCRIPT="$ROOT/scripts/early-ignition-daemon.mjs"
 EARLY_LOG_MAX_BYTES="${EARLY_LOG_MAX_BYTES:-5000000}"
+WAKE_FLAG="$EARLY_LOG_DIR/wake.flag"
+EARLY_DEAD_SEC="${EARLY_DEAD_SEC:-90}"
 
 NEXT_FAILS=0
 STARTED_AT="$(date -Iseconds)"
@@ -359,15 +361,26 @@ ensure_early() {
   if [[ -f "$EARLY_LOG" ]] && [[ "$(stat -c %s "$EARLY_LOG" 2>/dev/null || echo 0)" -gt "$EARLY_LOG_MAX_BYTES" ]]; then
     tail -n 3000 "$EARLY_LOG" >"$EARLY_LOG.tmp" 2>/dev/null && cat "$EARLY_LOG.tmp" >"$EARLY_LOG" && rm -f "$EARLY_LOG.tmp"
   fi
-  local p age
+  local p age wake=0
   p="$(find_early_pid)"
   age="$(early_heartbeat_age)"
-  if [[ -n "${p:-}" ]] && (( age <= EARLY_STALE_SEC )); then
+  if [[ -f "$WAKE_FLAG" ]]; then
+    wake=1
+    log "early-ignition wake flag present — forcing restart"
+    rm -f "$WAKE_FLAG"
+  fi
+  # Healthy: live PID + fresh heartbeat + no wake
+  if (( wake == 0 )) && [[ -n "${p:-}" ]] && (( age <= EARLY_STALE_SEC )); then
     echo "$p" >"$EARLY_PID_FILE"
     return 0
   fi
-  if [[ -n "${p:-}" ]] && (( age > EARLY_STALE_SEC )); then
-    log "early-ignition daemon STALE heartbeat age=${age}s (limit ${EARLY_STALE_SEC}s) pid=$p — killing for restart"
+  # No PID: start within EARLY_DEAD_SEC (do not wait full STALE_SEC)
+  if (( wake == 0 )) && [[ -z "${p:-}" ]] && (( age <= EARLY_DEAD_SEC )); then
+    # brief grace for a just-spawned process before status appears
+    :
+  fi
+  if [[ -n "${p:-}" ]] && { (( age > EARLY_STALE_SEC )) || (( wake == 1 )); }; then
+    log "early-ignition daemon STALE/wake heartbeat age=${age}s (limit ${EARLY_STALE_SEC}s) pid=$p wake=$wake — killing for restart"
     kill "$p" 2>/dev/null || true
     sleep 2
     if kill -0 "$p" 2>/dev/null; then
@@ -378,7 +391,14 @@ ensure_early() {
     rm -f "$EARLY_PID_FILE"
     p=""
   fi
+  # Empty PID past dead grace, or after kill, or wake with no pid
   if [[ -z "${p:-}" ]]; then
+    if (( wake == 0 )) && (( age <= EARLY_DEAD_SEC )); then
+      # still in grace — but if age is huge (99999 missing file) start now
+      if (( age < 90000 )); then
+        return 0
+      fi
+    fi
     # Re-check in case another healer (watchdog) already started it
     p="$(find_early_pid)"
     if [[ -n "${p:-}" ]]; then
@@ -386,7 +406,7 @@ ensure_early() {
       log "early-ignition daemon adopted pid=$p after stale/dead check"
       return 0
     fi
-    log "early-ignition daemon not running (age=${age}s) — starting"
+    log "early-ignition daemon not running (age=${age}s wake=$wake) — starting"
     (
       cd "$ROOT"
       exec 9>&- # do not let the daemon inherit the supervisor flock

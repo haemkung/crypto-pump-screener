@@ -164,3 +164,20 @@ export async function matchEdgeLastGood(
     return null;
   }
 }
+
+/**
+ * Drop a stashed last-good entry so the next GET cannot serve a sticky stale body
+ * when live upstream is available again (e.g. after a manual wake).
+ */
+export async function purgeEdgeLastGood(cacheUrl: string): Promise<boolean> {
+  const cache = await openCache();
+  if (!cache) return false;
+  try {
+    const deleted = await cache.delete(cacheKey(cacheUrl));
+    return !!deleted;
+  } catch (e) {
+    console.error("purgeEdgeLastGood failed", String(e));
+    return false;
+  }
+}
+
