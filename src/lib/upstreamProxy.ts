@@ -19,8 +19,8 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 const CF_CONTEXT_TIMEOUT_MS = 600;
 /** Screen builds often take 1–8s; under load can exceed 10s. Old 8s timeout caused false 503s. */
 const VPC_FETCH_TIMEOUT_MS = 25_000;
-const VPC_FETCH_RETRIES = 2;
-const VPC_RETRY_GAP_MS = 400;
+const VPC_FETCH_RETRIES = 3;
+const VPC_RETRY_GAP_MS = 500;
 
 export function upstreamOrigin(): string | null {
   const v =
@@ -223,8 +223,10 @@ export async function proxyToUpstream(
         if (opts?.requireUpstream) {
           return wrap(
             JSON.stringify({
-              error: "BOT_UPSTREAM unreachable (named tunnel / local :3000?)",
+              error: "upstream_unreachable",
               detail: String(e),
+              noteTh:
+                "อัปสตรีมยังไม่พร้อม (tunnel / :3000) — ระบบจะรีสตาร์ทอัตโนมัติภายใน 1–2 นาที",
             }),
             502,
             "application/json",

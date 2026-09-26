@@ -52,8 +52,8 @@ export async function GET(req: NextRequest) {
   try {
     const fresh = wantsFresh(req);
     const proxied = await proxyToUpstream(`/api/early-tiers`, {
-      timeoutMs: 15_000,
-      retries: 2,
+      timeoutMs: 12_000,
+      retries: 3,
     });
     if (proxied && proxied.ok) {
       const len = Number(proxied.headers.get("content-length") || 0);
@@ -88,21 +88,24 @@ export async function GET(req: NextRequest) {
       }
     }
     if (await isCloudflareWorkersRuntime()) {
-      // Manual refresh (?t=) skips sticky last-good so UI does not keep showing hours-old data
-      // when upstream is briefly unavailable — soft-fail instead.
-      if (!fresh) {
-        const edge = await matchEdgeLastGood(
-          EDGE_EARLY_TIERS_CACHE_URL,
-          "X-Early-Tiers-Stale"
-        );
-        if (edge) return withCors(req, edge);
+      // Prefer last-good over empty soft-fail — even on manual refresh — so Pages
+      // never shows only "BOT_UPSTREAM unreachable" with blank panels.
+      const edge = await matchEdgeLastGood(
+        EDGE_EARLY_TIERS_CACHE_URL,
+        "X-Early-Tiers-Stale"
+      );
+      if (edge) {
+        const headers = new Headers(edge.headers);
+        if (fresh) headers.set("X-Early-Tiers-Refresh-Miss", "1");
+        return withCors(req, new Response(edge.body, { status: 200, headers }));
+      }
 
-        if (lastGood && Date.now() - lastGood.at < LAST_GOOD_MAX_AGE_MS) {
-          return jsonText(req, lastGood.text, {
-            "X-Early-Tiers-Stale": "1",
-            "X-Early-Tiers-Cached-At": new Date(lastGood.at).toISOString(),
-          });
-        }
+      if (lastGood && Date.now() - lastGood.at < LAST_GOOD_MAX_AGE_MS) {
+        return jsonText(req, lastGood.text, {
+          "X-Early-Tiers-Stale": "1",
+          "X-Early-Tiers-Cached-At": new Date(lastGood.at).toISOString(),
+          ...(fresh ? { "X-Early-Tiers-Refresh-Miss": "1" } : {}),
+        });
       }
       return withCors(
         req,
@@ -111,8 +114,9 @@ export async function GET(req: NextRequest) {
             updatedAt: null,
             watch: [],
             ignition: [],
-            meta: { softFail: true, reason: "BOT_UPSTREAM unavailable" },
-            noteTh: "ข้อมูลค้าง — upstream ยังไม่พร้อม และยังไม่มี last-good",
+            meta: { softFail: true, reason: "upstream_unavailable" },
+            noteTh:
+              "ข้อมูลค้าง — เซิร์ฟเวอร์ยังไม่พร้อม และยังไม่มีค่าล่าสุดในแคช กด「ปลุกระบบ」แล้วรอ 1–2 นาที",
           },
           {
             status: 200,

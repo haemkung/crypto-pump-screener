@@ -334,31 +334,53 @@ export function EarlyTiersPanel() {
 
   const load = useCallback(async (opts?: { bust?: boolean }) => {
     const bust = !!opts?.bust;
+    const keepLastGood = () => {
+      setData((cur) => {
+        if (cur) return cur;
+        try {
+          const s = localStorage.getItem(LS_KEY);
+          return s ? (JSON.parse(s) as Resp) : null;
+        } catch {
+          return null;
+        }
+      });
+      setStale(true);
+    };
     try {
-      if (bust) {
-        try { localStorage.removeItem(LS_KEY); } catch { /* ignore */ }
-      }
+      // Never wipe localStorage before fetch — if upstream is down we still need last-good panels.
       const q = bust ? `?t=${Date.now()}&fresh=1` : "";
       const res = await fetch(apiUrl(`/api/early-tiers${q}`), {
         cache: "no-store",
         headers: bust ? { "Cache-Control": "no-cache" } : undefined,
       });
       const j = (await res.json().catch(() => null)) as Resp | null;
-      if (!j || !res.ok || !j.updatedAt) throw new Error(j?.meta?.reason || `HTTP ${res.status}`);
+      const soft = !!(j?.meta?.softFail || res.headers.get("X-Early-Tiers-Soft-Fail") === "1");
+      const headerStale = res.headers.get("X-Early-Tiers-Stale") === "1";
+      if (!j || !res.ok) {
+        keepLastGood();
+        setError(j?.noteTh || "ดึงข้อมูลไม่ได้ชั่วคราว");
+        return false;
+      }
+      if (!j.updatedAt) {
+        // Soft-fail empty body: keep last-good panels, show Thai status (never English BOT_UPSTREAM).
+        keepLastGood();
+        setError(j.noteTh || "ข้อมูลค้าง — รอระบบรีสตาร์ทอัตโนมัติ");
+        return false;
+      }
       setData(j);
-      setStale(res.headers.get("X-Early-Tiers-Stale") === "1");
-      setError(null);
+      setStale(headerStale || soft);
+      setError(soft || headerStale ? (j.noteTh || null) : null);
       setAnimKey((k) => k + 1);
       try { localStorage.setItem(LS_KEY, JSON.stringify(j)); } catch { /* ignore */ }
       return true;
     } catch (e) {
-      setError(String(e instanceof Error ? e.message : e));
-      setData((cur) => {
-        if (cur && !bust) return cur;
-        if (bust) return cur; // keep showing previous while forced refresh fails
-        try { const s = localStorage.getItem(LS_KEY); return s ? (JSON.parse(s) as Resp) : null; } catch { return null; }
-      });
-      setStale(true);
+      keepLastGood();
+      const raw = String(e instanceof Error ? e.message : e);
+      setError(
+        /BOT_UPSTREAM|upstream_unreachable|upstream_unavailable/i.test(raw)
+          ? "เซิร์ฟเวอร์ยังไม่พร้อม — ระบบจะรีสตาร์ทอัตโนมัติภายใน 1–2 นาที"
+          : raw
+      );
       return false;
     }
   }, []);
@@ -393,12 +415,26 @@ export function EarlyTiersPanel() {
         error?: string;
         retryAfterSec?: number;
       } | null;
-      if (!res.ok || !j?.ok) {
+      // Accept ok:true (including autoHeal when tunnel briefly down) — never surface English BOT_UPSTREAM.
+      if (j?.ok) {
+        setWakeMsg(
+          j.noteTh
+            ? j.noteTh
+            : (j as { autoHeal?: boolean }).autoHeal
+              ? "ระบบจะรีสตาร์ทอัตโนมัติภายใน 1–2 นาที — กำลังรอ…"
+              : "ส่งสัญญาณปลุกแล้ว — รอ daemon รีสตาร์ท…"
+        );
+      } else if (!res.ok || !j?.ok) {
         const wait = j?.retryAfterSec ? ` (รอ ${j.retryAfterSec}s)` : "";
-        setWakeMsg((j?.noteTh || j?.error || `ปลุกไม่สำเร็จ HTTP ${res.status}`) + wait);
-        return;
+        const raw = j?.noteTh || j?.error || `ปลุกไม่สำเร็จ HTTP ${res.status}`;
+        const nice = /BOT_UPSTREAM|upstream_unreachable/i.test(String(raw))
+          ? "เซิร์ฟเวอร์ยังไม่พร้อม — ระบบจะรีสตาร์ทอัตโนมัติภายใน 1–2 นาที"
+          : String(raw);
+        setWakeMsg(nice + wait);
+        // Still poll: heal-bot-once may bring upstream back without a successful wake proxy.
+      } else {
+        setWakeMsg("ส่งสัญญาณปลุกแล้ว — รอ daemon รีสตาร์ท…");
       }
-      setWakeMsg(j.noteTh || "ส่งสัญญาณปลุกแล้ว — รอ daemon รีสตาร์ท…");
       // Poll for fresh updatedAt after heal (~30–90s)
       for (let i = 0; i < 8; i++) {
         await new Promise((r) => setTimeout(r, i === 0 ? 4000 : 5000));
@@ -497,11 +533,11 @@ export function EarlyTiersPanel() {
       )}
       {(error || stale || oldMs > 10 * 60e3) && (
         <div className="mb-2 rounded border border-amber-800/60 bg-amber-950/40 px-2 py-1 text-xs text-amber-200">
-          {data
+          {data?.updatedAt
             ? `ข้อมูลค้าง — แสดงค่าล่าสุดที่มี (อัปเดต ${ago(data.updatedAt)})`
             : "ข้อมูลค้าง — ดึงข้อมูลไม่ได้ชั่วคราว"}
-          {error ? ` · ${error}` : ""}
-          <span className="ml-1 text-amber-100/80">· กด「รีเฟรช」หรือ「ปลุกระบบ」ได้</span>
+          {error && !/BOT_UPSTREAM/i.test(error) ? ` · ${error}` : ""}
+          <span className="ml-1 text-amber-100/80">· กด「รีเฟรช」หรือ「ปลุกระบบ」ได้ · ระบบรีสตาร์ทอัตโนมัติใน 1–2 นาที</span>
         </div>
       )}
       <TierStats data={data} />

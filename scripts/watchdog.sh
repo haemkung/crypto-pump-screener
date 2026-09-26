@@ -76,7 +76,7 @@ running() {
 start_detached() { # $1 script, $2 logfile
   setsid nohup bash "$1" >>"$2" 2>&1 </dev/null 8>&- &
 }
-http_code() { curl -s -o /dev/null -w '%{http_code}' --max-time "${2:-15}" "$1" 2>/dev/null || echo 000; }
+http_code() { local t="${2:-12}"; timeout $((t + 3)) curl -s -o /dev/null -w '%{http_code}' --max-time "$t" --connect-timeout 3 "$1" 2>/dev/null || echo 000; }
 
 # Heartbeat age: prefer JSON "at" (ISO), fall back to mtime. Returns seconds or 99999 if missing.
 daemon_heartbeat_age() {
@@ -88,8 +88,9 @@ daemon_heartbeat_age() {
     if [[ -n "$at" ]]; then
       at_epoch=$(date -d "$at" +%s 2>/dev/null || echo 0)
     fi
-    local best=$mtime_epoch
-    if (( at_epoch > best )); then best=$at_epoch; fi
+    local best=0
+    if (( at_epoch > 0 )); then best=$at_epoch
+    elif (( mtime_epoch > 0 )); then best=$mtime_epoch; fi
     if (( best > 0 )); then
       age=$(( $(now) - best ))
       (( age < 0 )) && age=0
@@ -275,6 +276,7 @@ while true; do
     c2=$(http_code "$PUBLIC_URL" 25)
     if [[ "$c2" == 200 ]]; then ok public "เว็บสาธารณะ (Workers)"; else log "public $PUBLIC_URL -> $c2"; fail public 3 "เว็บสาธารณะ Workers /api/early-tiers ตอบ ${c2}"; fi
   fi
+    if (( tick % 10 == 1 )); then log "watchdog tick=$tick daemonAge=${age}s pids=[${live_pids}] next=$c1"; fi
   printf '{"at":"%s","pid":%s,"daemonHeartbeatAgeSec":%s,"daemonPids":"%s","nextHttp":"%s","publicHttp":"%s","fails":{"sup_up":%s,"sup_sched":%s,"daemon":%s,"next":%s,"public":%s}}\n' \
     "$(date -Iseconds)" "$$" "$age" "${live_pids}" "$c1" "${c2:-}" "${FAILS[sup_up]:-0}" "${FAILS[sup_sched]:-0}" "${FAILS[daemon]:-0}" "${FAILS[next]:-0}" "${FAILS[public]:-0}" >"$STATUS.tmp" && mv "$STATUS.tmp" "$STATUS"
   if [[ $(stat -c %s "$LOG" 2>/dev/null || echo 0) -gt 2000000 ]]; then tail -c 500000 "$LOG" >"$LOG.tmp" && mv "$LOG.tmp" "$LOG"; fi

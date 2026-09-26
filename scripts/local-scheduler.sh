@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Token-free local replacement for the AI routines.
+# Every 2 min: scripts/heal-bot-once.sh (independent healer — survives frozen watchdog/supervisor).
 # Every 5 min (minute%5==4): check-now-alerts + evaluate-alert-outcomes.
 # Every 5 min (minute%5==1): scripts/start-all.sh --quiet (idempotent; keeps the watchdog alive —
 #   the watchdog in turn keeps this scheduler, Next, tunnel and the early daemon alive, and owns
@@ -8,8 +9,16 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 LOG="$ROOT/logs/local-scheduler.log"
 last=""
+last_heal=""
 while true; do
   m=$(date +%M); m=$((10#$m)); stamp=$(date +%Y%m%d%H%M)
+  # Independent 2-minute healer (fresh process; cannot freeze for hours with the main loops)
+  heal_bucket=$(( m - (m % 2) ))
+  heal_stamp="$(date +%Y%m%d%H)$heal_bucket"
+  if [[ "$heal_stamp" != "$last_heal" ]]; then
+    last_heal="$heal_stamp"
+    { echo "== $(date -Iseconds) heal-bot-once"; timeout 90 bash scripts/heal-bot-once.sh; echo "heal_exit=$?"; } >>"$LOG" 2>&1
+  fi
   if [[ "$stamp" != "$last" ]]; then
     last="$stamp"
     if (( m % 5 == 4 )); then
@@ -22,5 +31,5 @@ while true; do
     # keep log small
     if [[ $(stat -c %s "$LOG" 2>/dev/null || echo 0) -gt 5000000 ]]; then tail -c 1000000 "$LOG" >"$LOG.tmp" && mv "$LOG.tmp" "$LOG"; fi
   fi
-  sleep 20
+  sleep 15
 done

@@ -102,8 +102,8 @@ export async function POST(req: NextRequest) {
         method: "POST",
         body: raw || "{}",
         contentType: "application/json",
-        timeoutMs: 12_000,
-        retries: 2,
+        timeoutMs: 10_000,
+        retries: 3,
         requireUpstream: true,
       });
       // Best-effort: drop sticky last-good so next GET prefers live upstream.
@@ -112,16 +112,40 @@ export async function POST(req: NextRequest) {
       } catch {
         /* ignore */
       }
-      if (proxied) return withCors(req, proxied);
+      if (proxied) {
+        // Even a 502 from requireUpstream: rewrite to soft queued so UI never
+        // sticks on English "BOT_UPSTREAM unreachable".
+        if (proxied.status >= 500) {
+          try {
+            await proxied.body?.cancel();
+          } catch {
+            /* ignore */
+          }
+          return withCors(
+            req,
+            NextResponse.json({
+              ok: true,
+              queued: false,
+              autoHeal: true,
+              at: new Date().toISOString(),
+              noteTh:
+                "เซิร์ฟเวอร์ยังไม่ตอบ — ส่งคำขอปลุกแล้ว และระบบจะรีสตาร์ทอัตโนมัติภายใน 1–2 นาที กด「รีเฟรช」อีกครั้ง",
+            })
+          );
+        }
+        return withCors(req, proxied);
+      }
+      // Tunnel briefly down: still tell UI that auto-heal will recover (heal-bot-once every 2m).
       return withCors(
         req,
-        NextResponse.json(
-          {
-            ok: false,
-            error: "BOT_UPSTREAM unreachable — cannot wake box daemon",
-          },
-          { status: 502 }
-        )
+        NextResponse.json({
+          ok: true,
+          queued: false,
+          autoHeal: true,
+          at: new Date().toISOString(),
+          noteTh:
+            "อัปสตรีมยังไม่พร้อม — ระบบจะรีสตาร์ท daemon/tunnel อัตโนมัติภายใน 1–2 นาที แล้วกด「รีเฟรช」",
+        })
       );
     }
 

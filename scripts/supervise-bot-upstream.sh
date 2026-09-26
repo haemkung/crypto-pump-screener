@@ -30,7 +30,7 @@ TUNNEL_PID_FILE="$LOG_DIR/tunnel.pid"
 TOKEN_FILE="${TUNNEL_TOKEN_FILE:-$ROOT/.tunnel-token}"
 CF_BIN="${CLOUDFLARED_BIN:-/tmp/cloudflared}"
 NEXT_PORT="${UPSTREAM_NEXT_PORT:-3000}"
-HEALTH_URL="${UPSTREAM_HEALTH_URL:-http://127.0.0.1:${NEXT_PORT}/api/screen}"
+HEALTH_URL="${UPSTREAM_HEALTH_URL:-http://127.0.0.1:${NEXT_PORT}/api/health}"
 POLL_SEC="${BOT_UPSTREAM_POLL_SEC:-8}"
 NEXT_FAIL_THRESHOLD="${BOT_UPSTREAM_NEXT_FAIL_THRESHOLD:-3}"
 RESTART_BACKOFF_SEC="${BOT_UPSTREAM_RESTART_BACKOFF_SEC:-3}"
@@ -90,7 +90,8 @@ port_listening() {
 
 http_code() {
   local url="$1"
-  curl -sS -o /dev/null -w '%{http_code}' --max-time 12 "$url" 2>/dev/null || echo "000"
+  # timeout(1) + curl --max-time so a wedged Next cannot freeze the supervisor loop for hours
+  timeout 15 curl -sS -o /dev/null -w '%{http_code}' --max-time 8 --connect-timeout 3 "$url" 2>/dev/null || echo "000"
 }
 
 ensure_cloudflared() {
@@ -103,19 +104,26 @@ ensure_cloudflared() {
 }
 
 find_tunnel_pid() {
-  # Prefer recorded pid if still alive and is cloudflared
+  # Prefer recorded pid if still alive and exe is cloudflared
   if [[ -f "$TUNNEL_PID_FILE" ]]; then
-    local p
+    local p exe
     p="$(cat "$TUNNEL_PID_FILE" 2>/dev/null || true)"
     if [[ -n "${p:-}" ]] && kill -0 "$p" 2>/dev/null; then
-      if tr '\0' ' ' <"/proc/$p/cmdline" 2>/dev/null | grep -q 'cloudflared'; then
-        echo "$p"
-        return 0
-      fi
+      exe="$(readlink -f "/proc/$p/exe" 2>/dev/null || true)"
+      case "$exe" in */cloudflared) echo "$p"; return 0 ;; esac
     fi
   fi
-  # Adopt any named-tunnel cloudflared on this box
-  pgrep -f 'cloudflared tunnel .* run --token' 2>/dev/null | head -1 || true
+  # Adopt any named-tunnel cloudflared (exe check — ignore shells that mention the path)
+  local proc exe cmd
+  for proc in /proc/[0-9]*; do
+    exe="$(readlink -f "$proc/exe" 2>/dev/null || true)"
+    case "$exe" in */cloudflared) ;; *) continue ;; esac
+    cmd="$(tr '\0' ' ' <"$proc/cmdline" 2>/dev/null || true)"
+    case "$cmd" in
+      *run*--token*) echo "${proc#/proc/}"; return 0 ;;
+    esac
+  done
+  return 0
 }
 
 find_next_pid() {
@@ -340,8 +348,9 @@ early_heartbeat_age() {
     if [[ -n "$at" ]]; then
       at_epoch="$(date -d "$at" +%s 2>/dev/null || echo 0)"
     fi
-    best=$mtime_epoch
-    if [[ "$at_epoch" =~ ^[0-9]+$ ]] && (( at_epoch > best )); then best=$at_epoch; fi
+    best=0
+    if [[ "$at_epoch" =~ ^[0-9]+$ ]] && (( at_epoch > 0 )); then best=$at_epoch
+    elif (( mtime_epoch > 0 )); then best=$mtime_epoch; fi
     if (( best > 0 )); then
       age=$(( $(date +%s) - best ))
       (( age < 0 )) && age=0
