@@ -1,453 +1,505 @@
 {
- "updatedAt": "2026-09-30T06:49:38.901Z",
- "daemonAt": "2026-09-30T06:49:38.901Z",
- "daemonPid": 1009881,
- "rules": {
-  "ignitionMinFactors": 3,
-  "ignitionMinDirectional": 1,
-  "watchMinFactors": 3,
-  "watchMinDirectional": 2,
-  "preOrderMinFactors": 1,
-  "preOrderMaxFactors": 2
- },
- "risk": {
-  "minSlPct": 0.6,
-  "maxSlPct": 2.5,
-  "skipSlPct": 3,
-  "bufferPct": 0.1,
-  "tp1R": 1.5,
-  "tp2R": 3,
-  "costPct": 0.1,
-  "horizonMin": 720
- },
- "telegram": {
-  "ignitionLong": true,
-  "ignitionShort": true,
-  "watchLong": true,
-  "watchShort": true,
-  "preOrder": true
- },
- "tiers": {
-  "ignition_long": {
-   "params": {
-    "minFactors": 3,
-    "minDirectional": 2,
-    "requireRelMove": true,
-    "slMode": "swing15"
-   },
-   "oos": {
-    "n": 20,
-    "perDay": 2.4,
-    "tp1Rate": 50,
-    "tp1Wilson": [
-     29.9,
-     70.1
-    ],
-    "expR": 0.353,
-    "sumR": 7.06,
-    "maxConsecLoss": 3,
-    "tp2Rate": 30,
-    "bigRate": 20,
-    "medRate": 40,
-    "avgSlPct": 1.96,
-    "skippedWideSl": 0,
-    "days": 8.5
-   },
-   "baselines": {
-    "priceOnly": {
-     "n": 87,
-     "perDay": 10.3,
-     "tp1Rate": 44.8,
-     "tp1Wilson": [
-      34.8,
-      55.3
-     ],
-     "expR": 0.188,
-     "sumR": 16.33,
-     "maxConsecLoss": 7,
-     "tp2Rate": 12.6,
-     "bigRate": 10.3,
-     "medRate": 28.7,
-     "avgSlPct": 2.06,
-     "skippedWideSl": 0
+  "updatedAt": "2026-09-30T06:54:04.571Z",
+  "daemonAt": "2026-09-30T06:54:04.571Z",
+  "daemonPid": 1013360,
+  "rules": {
+    "ignitionMinFactors": 3,
+    "ignitionMinDirectional": 1,
+    "watchMinFactors": 3,
+    "watchMinDirectional": 2,
+    "preOrderMinFactors": 1,
+    "preOrderMaxFactors": 2
+  },
+  "risk": {
+    "minSlPct": 0.6,
+    "maxSlPct": 2.5,
+    "skipSlPct": 3,
+    "bufferPct": 0.1,
+    "tp1R": 1.5,
+    "tp2R": 3,
+    "costPct": 0.1,
+    "horizonMin": 720
+  },
+  "telegram": {
+    "ignitionLong": true,
+    "ignitionShort": true,
+    "watchLong": true,
+    "watchShort": true,
+    "preOrder": true
+  },
+  "tiers": {
+    "ignition_long": {
+      "params": {
+        "minFactors": 3,
+        "minDirectional": 2,
+        "requireRelMove": true,
+        "slMode": "swing15"
+      },
+      "oos": {
+        "n": 20,
+        "perDay": 2.4,
+        "tp1Rate": 50,
+        "tp1Wilson": [
+          29.9,
+          70.1
+        ],
+        "expR": 0.353,
+        "sumR": 7.06,
+        "maxConsecLoss": 3,
+        "tp2Rate": 30,
+        "bigRate": 20,
+        "medRate": 40,
+        "avgSlPct": 1.96,
+        "skippedWideSl": 0,
+        "days": 8.5
+      },
+      "baselines": {
+        "priceOnly": {
+          "n": 87,
+          "perDay": 10.3,
+          "tp1Rate": 44.8,
+          "tp1Wilson": [
+            34.8,
+            55.3
+          ],
+          "expR": 0.188,
+          "sumR": 16.33,
+          "maxConsecLoss": 7,
+          "tp2Rate": 12.6,
+          "bigRate": 10.3,
+          "medRate": 28.7,
+          "avgSlPct": 2.06,
+          "skippedWideSl": 0
+        },
+        "random": {
+          "n": 115439,
+          "perDay": 13648,
+          "tp1Rate": 43.5,
+          "tp1Wilson": [
+            43.2,
+            43.8
+          ],
+          "expR": -0.021,
+          "sumR": -2474.67,
+          "maxConsecLoss": 81,
+          "tp2Rate": 23.6,
+          "bigRate": 10.7,
+          "medRate": 33.2,
+          "avgSlPct": 0.75,
+          "skippedWideSl": 1615
+        }
+      },
+      "verdict": {
+        "telegram": false,
+        "reason": "train expectancy <= 0"
+      }
     },
-    "random": {
-     "n": 115439,
-     "perDay": 13648,
-     "tp1Rate": 43.5,
-     "tp1Wilson": [
-      43.2,
-      43.8
-     ],
-     "expR": -0.021,
-     "sumR": -2474.67,
-     "maxConsecLoss": 81,
-     "tp2Rate": 23.6,
-     "bigRate": 10.7,
-     "medRate": 33.2,
-     "avgSlPct": 0.75,
-     "skippedWideSl": 1615
-    }
-   },
-   "verdict": {
-    "telegram": false,
-    "reason": "train expectancy <= 0"
-   }
-  },
-  "ignition_short": {
-   "params": {
-    "minFactors": 3,
-    "minDirectional": 1,
-    "requireRelMove": false,
-    "slMode": "swing15"
-   },
-   "oos": {
-    "n": 31,
-    "perDay": 3.7,
-    "tp1Rate": 25.8,
-    "tp1Wilson": [
-     13.7,
-     43.2
-    ],
-    "expR": -0.467,
-    "sumR": -14.47,
-    "maxConsecLoss": 9,
-    "tp2Rate": 6.5,
-    "bigRate": 6.5,
-    "medRate": 16.1,
-    "avgSlPct": 1.91,
-    "skippedWideSl": 0,
-    "days": 8.5
-   },
-   "baselines": {
-    "priceOnly": {
-     "n": 48,
-     "perDay": 5.7,
-     "tp1Rate": 31.3,
-     "tp1Wilson": [
-      19.9,
-      45.3
-     ],
-     "expR": 0.055,
-     "sumR": 2.66,
-     "maxConsecLoss": 7,
-     "tp2Rate": 16.7,
-     "bigRate": 12.5,
-     "medRate": 29.2,
-     "avgSlPct": 2.22,
-     "skippedWideSl": 0
+    "ignition_short": {
+      "params": {
+        "minFactors": 3,
+        "minDirectional": 1,
+        "requireRelMove": false,
+        "slMode": "swing15"
+      },
+      "oos": {
+        "n": 31,
+        "perDay": 3.7,
+        "tp1Rate": 25.8,
+        "tp1Wilson": [
+          13.7,
+          43.2
+        ],
+        "expR": -0.467,
+        "sumR": -14.47,
+        "maxConsecLoss": 9,
+        "tp2Rate": 6.5,
+        "bigRate": 6.5,
+        "medRate": 16.1,
+        "avgSlPct": 1.91,
+        "skippedWideSl": 0,
+        "days": 8.5
+      },
+      "baselines": {
+        "priceOnly": {
+          "n": 48,
+          "perDay": 5.7,
+          "tp1Rate": 31.3,
+          "tp1Wilson": [
+            19.9,
+            45.3
+          ],
+          "expR": 0.055,
+          "sumR": 2.66,
+          "maxConsecLoss": 7,
+          "tp2Rate": 16.7,
+          "bigRate": 12.5,
+          "medRate": 29.2,
+          "avgSlPct": 2.22,
+          "skippedWideSl": 0
+        },
+        "random": {
+          "n": 115612,
+          "perDay": 13668.4,
+          "tp1Rate": 35.4,
+          "tp1Wilson": [
+            35.1,
+            35.7
+          ],
+          "expR": -0.302,
+          "sumR": -34939.72,
+          "maxConsecLoss": 95,
+          "tp2Rate": 14.4,
+          "bigRate": 4.4,
+          "medRate": 14.6,
+          "avgSlPct": 0.74,
+          "skippedWideSl": 1424
+        }
+      },
+      "verdict": {
+        "telegram": false,
+        "reason": "OOS expectancy -0.467R < 0.15R"
+      }
     },
-    "random": {
-     "n": 115612,
-     "perDay": 13668.4,
-     "tp1Rate": 35.4,
-     "tp1Wilson": [
-      35.1,
-      35.7
-     ],
-     "expR": -0.302,
-     "sumR": -34939.72,
-     "maxConsecLoss": 95,
-     "tp2Rate": 14.4,
-     "bigRate": 4.4,
-     "medRate": 14.6,
-     "avgSlPct": 0.74,
-     "skippedWideSl": 1424
-    }
-   },
-   "verdict": {
-    "telegram": false,
-    "reason": "OOS expectancy -0.467R < 0.15R"
-   }
-  },
-  "watch_long": {
-   "params": {
-    "minFactors": 3,
-    "minDirectional": 1,
-    "slMode": "swing60"
-   },
-   "oos": {
-    "n": 78,
-    "perDay": 9.2,
-    "tp1Rate": 43.6,
-    "tp1Wilson": [
-     33.1,
-     54.6
-    ],
-    "expR": 0.086,
-    "sumR": 6.69,
-    "maxConsecLoss": 9,
-    "tp2Rate": 26.9,
-    "bigRate": 10.3,
-    "medRate": 29.5,
-    "avgSlPct": 1.12,
-    "skippedWideSl": 0,
-    "days": 8.5
-   },
-   "baselines": {
-    "priceOnly": {
-     "n": 87,
-     "perDay": 10.3,
-     "tp1Rate": 44.8,
-     "tp1Wilson": [
-      34.8,
-      55.3
-     ],
-     "expR": 0.188,
-     "sumR": 16.33,
-     "maxConsecLoss": 7,
-     "tp2Rate": 12.6,
-     "bigRate": 10.3,
-     "medRate": 28.7,
-     "avgSlPct": 2.06,
-     "skippedWideSl": 0
+    "watch_long": {
+      "params": {
+        "minFactors": 3,
+        "minDirectional": 1,
+        "slMode": "swing60"
+      },
+      "oos": {
+        "n": 78,
+        "perDay": 9.2,
+        "tp1Rate": 43.6,
+        "tp1Wilson": [
+          33.1,
+          54.6
+        ],
+        "expR": 0.086,
+        "sumR": 6.69,
+        "maxConsecLoss": 9,
+        "tp2Rate": 26.9,
+        "bigRate": 10.3,
+        "medRate": 29.5,
+        "avgSlPct": 1.12,
+        "skippedWideSl": 0,
+        "days": 8.5
+      },
+      "baselines": {
+        "priceOnly": {
+          "n": 87,
+          "perDay": 10.3,
+          "tp1Rate": 44.8,
+          "tp1Wilson": [
+            34.8,
+            55.3
+          ],
+          "expR": 0.188,
+          "sumR": 16.33,
+          "maxConsecLoss": 7,
+          "tp2Rate": 12.6,
+          "bigRate": 10.3,
+          "medRate": 28.7,
+          "avgSlPct": 2.06,
+          "skippedWideSl": 0
+        },
+        "random": {
+          "n": 115439,
+          "perDay": 13648,
+          "tp1Rate": 43.5,
+          "tp1Wilson": [
+            43.2,
+            43.8
+          ],
+          "expR": -0.021,
+          "sumR": -2474.67,
+          "maxConsecLoss": 81,
+          "tp2Rate": 23.6,
+          "bigRate": 10.7,
+          "medRate": 33.2,
+          "avgSlPct": 0.75,
+          "skippedWideSl": 1615
+        }
+      },
+      "verdict": {
+        "telegram": false,
+        "reason": "OOS expectancy 0.086R < 0.15R"
+      }
     },
-    "random": {
-     "n": 115439,
-     "perDay": 13648,
-     "tp1Rate": 43.5,
-     "tp1Wilson": [
-      43.2,
-      43.8
-     ],
-     "expR": -0.021,
-     "sumR": -2474.67,
-     "maxConsecLoss": 81,
-     "tp2Rate": 23.6,
-     "bigRate": 10.7,
-     "medRate": 33.2,
-     "avgSlPct": 0.75,
-     "skippedWideSl": 1615
+    "watch_short": {
+      "params": {
+        "minFactors": 4,
+        "minDirectional": 1,
+        "slMode": "swing180"
+      },
+      "oos": {
+        "n": 19,
+        "perDay": 2.2,
+        "tp1Rate": 21.1,
+        "tp1Wilson": [
+          8.5,
+          43.3
+        ],
+        "expR": -0.228,
+        "sumR": -4.33,
+        "maxConsecLoss": 5,
+        "tp2Rate": 15.8,
+        "bigRate": 5.3,
+        "medRate": 10.5,
+        "avgSlPct": 1.76,
+        "skippedWideSl": 0,
+        "days": 8.5
+      },
+      "baselines": {
+        "priceOnly": {
+          "n": 48,
+          "perDay": 5.7,
+          "tp1Rate": 31.3,
+          "tp1Wilson": [
+            19.9,
+            45.3
+          ],
+          "expR": 0.055,
+          "sumR": 2.66,
+          "maxConsecLoss": 7,
+          "tp2Rate": 16.7,
+          "bigRate": 12.5,
+          "medRate": 29.2,
+          "avgSlPct": 2.22,
+          "skippedWideSl": 0
+        },
+        "random": {
+          "n": 115612,
+          "perDay": 13668.4,
+          "tp1Rate": 35.4,
+          "tp1Wilson": [
+            35.1,
+            35.7
+          ],
+          "expR": -0.302,
+          "sumR": -34939.72,
+          "maxConsecLoss": 95,
+          "tp2Rate": 14.4,
+          "bigRate": 4.4,
+          "medRate": 14.6,
+          "avgSlPct": 0.74,
+          "skippedWideSl": 1424
+        }
+      },
+      "verdict": {
+        "telegram": false,
+        "reason": "OOS expectancy -0.228R < 0.15R"
+      }
     }
-   },
-   "verdict": {
-    "telegram": false,
-    "reason": "OOS expectancy 0.086R < 0.15R"
-   }
   },
-  "watch_short": {
-   "params": {
-    "minFactors": 4,
-    "minDirectional": 1,
-    "slMode": "swing180"
-   },
-   "oos": {
-    "n": 19,
-    "perDay": 2.2,
-    "tp1Rate": 21.1,
-    "tp1Wilson": [
-     8.5,
-     43.3
-    ],
-    "expR": -0.228,
-    "sumR": -4.33,
-    "maxConsecLoss": 5,
-    "tp2Rate": 15.8,
-    "bigRate": 5.3,
-    "medRate": 10.5,
-    "avgSlPct": 1.76,
-    "skippedWideSl": 0,
-    "days": 8.5
-   },
-   "baselines": {
-    "priceOnly": {
-     "n": 48,
-     "perDay": 5.7,
-     "tp1Rate": 31.3,
-     "tp1Wilson": [
-      19.9,
-      45.3
-     ],
-     "expR": 0.055,
-     "sumR": 2.66,
-     "maxConsecLoss": 7,
-     "tp2Rate": 16.7,
-     "bigRate": 12.5,
-     "medRate": 29.2,
-     "avgSlPct": 2.22,
-     "skippedWideSl": 0
+  "backtest": {
+    "generatedAt": "2026-09-24T21:34:19.787Z",
+    "data": {
+      "symbols": 289,
+      "from": "2026-08-27T08:30:00.000Z",
+      "split": "2026-09-16T08:30:00.000Z",
+      "to": "2026-09-24T19:30:00.000Z",
+      "trainDays": 20,
+      "testDays": 8.5
+    }
+  },
+  "live": {
+    "ignition_long": {
+      "sent": {
+        "n": 0,
+        "tp1Rate": null,
+        "avgR": null
+      },
+      "all": {
+        "n": 5,
+        "tp1Rate": 20,
+        "avgR": -0.4
+      }
     },
-    "random": {
-     "n": 115612,
-     "perDay": 13668.4,
-     "tp1Rate": 35.4,
-     "tp1Wilson": [
-      35.1,
-      35.7
-     ],
-     "expR": -0.302,
-     "sumR": -34939.72,
-     "maxConsecLoss": 95,
-     "tp2Rate": 14.4,
-     "bigRate": 4.4,
-     "medRate": 14.6,
-     "avgSlPct": 0.74,
-     "skippedWideSl": 1424
+    "ignition_short": {
+      "sent": {
+        "n": 1,
+        "tp1Rate": 100,
+        "avgR": 1.93
+      },
+      "all": {
+        "n": 15,
+        "tp1Rate": 33.3,
+        "avgR": -0.09
+      }
+    },
+    "watch_long": {
+      "sent": {
+        "n": 7,
+        "tp1Rate": 28.6,
+        "avgR": -0.14
+      },
+      "all": {
+        "n": 24,
+        "tp1Rate": 33.3,
+        "avgR": -0.22
+      }
+    },
+    "watch_short": {
+      "sent": {
+        "n": 2,
+        "tp1Rate": 0,
+        "avgR": -1.07
+      },
+      "all": {
+        "n": 9,
+        "tp1Rate": 33.3,
+        "avgR": 0.02
+      }
     }
-   },
-   "verdict": {
-    "telegram": false,
-    "reason": "OOS expectancy -0.228R < 0.15R"
-   }
-  }
- },
- "backtest": {
-  "generatedAt": "2026-09-24T21:34:19.787Z",
-  "data": {
-   "symbols": 289,
-   "from": "2026-08-27T08:30:00.000Z",
-   "split": "2026-09-16T08:30:00.000Z",
-   "to": "2026-09-24T19:30:00.000Z",
-   "trainDays": 20,
-   "testDays": 8.5
-  }
- },
- "live": {
-  "ignition_long": {
-   "sent": {
-    "n": 0,
-    "tp1Rate": null,
-    "avgR": null
-   },
-   "all": {
-    "n": 5,
-    "tp1Rate": 20,
-    "avgR": -0.4
-   }
   },
-  "ignition_short": {
-   "sent": {
-    "n": 1,
-    "tp1Rate": 100,
-    "avgR": 1.93
-   },
-   "all": {
-    "n": 15,
-    "tp1Rate": 33.3,
-    "avgR": -0.09
-   }
-  },
-  "watch_long": {
-   "sent": {
-    "n": 7,
-    "tp1Rate": 28.6,
-    "avgR": -0.14
-   },
-   "all": {
-    "n": 24,
-    "tp1Rate": 33.3,
-    "avgR": -0.22
-   }
-  },
-  "watch_short": {
-   "sent": {
-    "n": 2,
-    "tp1Rate": 0,
-    "avgR": -1.07
-   },
-   "all": {
-    "n": 9,
-    "tp1Rate": 33.3,
-    "avgR": 0.02
-   }
-  }
- },
- "preOrder": [
-  {
-   "id": "9b3f012e-0883-4d7b-a608-71faa7ed4c85",
-   "type": "preOrder",
-   "tier": "distribution",
-   "symbol": "JASMYUSDT",
-   "side": "short",
-   "price": 0.005132,
-   "pct24h": -2,
-   "factors": [
+  "preOrder": [
     {
-     "key": "taker",
-     "labelTh": "แรง taker เอียง",
-     "detailTh": "taker buy/sell 1h 0.71 · 3h 0.71"
-    }
-   ],
-   "factorCount": 1,
-   "directional": 1,
-   "flaggedAt": "2026-09-30T06:49:38.901Z",
-   "firstFlaggedAt": "2026-09-30T06:49:38.901Z",
-   "telegram": "ai_veto",
-   "trigger": null,
-   "plan": {
-    "entry": 0.005132,
-    "sl": 0.005204198999999999,
-    "slPct": 1.41,
-    "tp1": 0.005023701500000002,
-    "tp2": 0.004915403000000004,
-    "slSkip": false,
-    "slNoteTh": "เหนือไฮ 15 นาทีล่าสุด"
-   },
-   "trade": null,
-   "ai": {
-    "action": "veto",
-    "score": 20,
-    "reasonTh": "ปัจจัยเดียว (taker) ไม่ถึงเกณฑ์ขั้นต่ำ 3 ปัจจัย",
-    "model": "qwen/qwen3.8-27b",
-    "latencyMs": 158,
-    "ok": true,
-    "skipped": false,
-    "cached": false,
-    "learnedAdjust": null
-   },
-   "status": "vetoed",
-   "statusTh": "วีโต้",
-   "source": "ignition_near",
-   "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
-  },
-  {
-   "id": "06ee6713-ca05-4fbd-be45-e05d64af9d68",
-   "type": "preOrder",
-   "tier": "distribution",
-   "symbol": "TRUMPUSDT",
-   "side": "short",
-   "price": 2.012,
-   "pct24h": 1.31,
-   "factors": [
+      "id": "b7b35440-1f4a-4cb3-bf75-5f2dba7e28a4",
+      "type": "preOrder",
+      "tier": "accumulation",
+      "symbol": "AZTECUSDT",
+      "side": "long",
+      "price": 0.01692,
+      "pct24h": -10.81,
+      "factors": [
+        {
+          "key": "oiBuild",
+          "labelTh": "OI สะสมขณะราคานิ่ง",
+          "detailTh": "OI +9.18% ใน 4 ชม. ขณะราคา +1.26% (กรอบ 4.5%)"
+        }
+      ],
+      "factorCount": 1,
+      "directional": 0,
+      "flaggedAt": "2026-09-30T06:51:28.724Z",
+      "firstFlaggedAt": "2026-09-30T06:51:28.724Z",
+      "telegram": "ai_veto",
+      "trigger": null,
+      "plan": {
+        "entry": 0.01692,
+        "sl": 0.01681848,
+        "slPct": 0.6,
+        "tp1": 0.01707228,
+        "tp2": 0.01722456,
+        "slSkip": false,
+        "slNoteTh": "ขั้นต่ำ 0.6% (โครงสร้าง 0.34%)"
+      },
+      "trade": null,
+      "ai": {
+        "action": "veto",
+        "score": 20,
+        "reasonTh": "OI สะสมแต่ราคา -10.8% ใน 24 ชม. ขัดแย้งกันชัดเจน",
+        "model": "qwen/qwen3.8-27b",
+        "latencyMs": 235,
+        "ok": true,
+        "skipped": false,
+        "cached": false,
+        "learnedAdjust": null
+      },
+      "status": "vetoed",
+      "statusTh": "วีโต้",
+      "source": "priority_scout",
+      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+    },
     {
-     "key": "taker",
-     "labelTh": "แรง taker เอียง",
-     "detailTh": "taker buy/sell 1h 0.78 · 3h 0.89"
+      "id": "9b3f012e-0883-4d7b-a608-71faa7ed4c85",
+      "type": "preOrder",
+      "tier": "distribution",
+      "symbol": "JASMYUSDT",
+      "side": "short",
+      "price": 0.005132,
+      "pct24h": -2,
+      "factors": [
+        {
+          "key": "taker",
+          "labelTh": "แรง taker เอียง",
+          "detailTh": "taker buy/sell 1h 0.71 · 3h 0.71"
+        }
+      ],
+      "factorCount": 1,
+      "directional": 1,
+      "flaggedAt": "2026-09-30T06:49:38.901Z",
+      "firstFlaggedAt": "2026-09-30T06:49:38.901Z",
+      "telegram": "ai_veto",
+      "trigger": null,
+      "plan": {
+        "entry": 0.005132,
+        "sl": 0.005204198999999999,
+        "slPct": 1.41,
+        "tp1": 0.005023701500000002,
+        "tp2": 0.004915403000000004,
+        "slSkip": false,
+        "slNoteTh": "เหนือไฮ 15 นาทีล่าสุด"
+      },
+      "trade": null,
+      "ai": {
+        "action": "veto",
+        "score": 20,
+        "reasonTh": "ปัจจัยเดียว (taker) ไม่ถึงเกณฑ์ขั้นต่ำ 3 ปัจจัย",
+        "model": "qwen/qwen3.8-27b",
+        "latencyMs": 158,
+        "ok": true,
+        "skipped": false,
+        "cached": false,
+        "learnedAdjust": null
+      },
+      "status": "vetoed",
+      "statusTh": "วีโต้",
+      "source": "ignition_near",
+      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+    },
+    {
+      "id": "06ee6713-ca05-4fbd-be45-e05d64af9d68",
+      "type": "preOrder",
+      "tier": "distribution",
+      "symbol": "TRUMPUSDT",
+      "side": "short",
+      "price": 2.012,
+      "pct24h": 1.31,
+      "factors": [
+        {
+          "key": "taker",
+          "labelTh": "แรง taker เอียง",
+          "detailTh": "taker buy/sell 1h 0.78 · 3h 0.89"
+        }
+      ],
+      "factorCount": 1,
+      "directional": 1,
+      "flaggedAt": "2026-09-30T06:49:38.901Z",
+      "firstFlaggedAt": "2026-09-30T06:49:38.901Z",
+      "telegram": "ai_veto",
+      "trigger": null,
+      "plan": {
+        "entry": 2.012,
+        "sl": 2.0390369999999995,
+        "slPct": 1.34,
+        "tp1": 1.9714445000000007,
+        "tp2": 1.9308890000000014,
+        "slSkip": false,
+        "slNoteTh": "เหนือไฮ 15 นาทีล่าสุด"
+      },
+      "trade": null,
+      "ai": {
+        "action": "veto",
+        "score": 20,
+        "reasonTh": "ปัจจัยเดียว (taker) ไม่ถึงเกณฑ์ขั้นต่ำ 3 ปัจจัย",
+        "model": "qwen/qwen3.8-27b",
+        "latencyMs": 159,
+        "ok": true,
+        "skipped": false,
+        "cached": false,
+        "learnedAdjust": null
+      },
+      "status": "vetoed",
+      "statusTh": "วีโต้",
+      "source": "ignition_near",
+      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
     }
-   ],
-   "factorCount": 1,
-   "directional": 1,
-   "flaggedAt": "2026-09-30T06:49:38.901Z",
-   "firstFlaggedAt": "2026-09-30T06:49:38.901Z",
-   "telegram": "ai_veto",
-   "trigger": null,
-   "plan": {
-    "entry": 2.012,
-    "sl": 2.0390369999999995,
-    "slPct": 1.34,
-    "tp1": 1.9714445000000007,
-    "tp2": 1.9308890000000014,
-    "slSkip": false,
-    "slNoteTh": "เหนือไฮ 15 นาทีล่าสุด"
-   },
-   "trade": null,
-   "ai": {
-    "action": "veto",
-    "score": 20,
-    "reasonTh": "ปัจจัยเดียว (taker) ไม่ถึงเกณฑ์ขั้นต่ำ 3 ปัจจัย",
-    "model": "qwen/qwen3.8-27b",
-    "latencyMs": 159,
-    "ok": true,
-    "skipped": false,
-    "cached": false,
-    "learnedAdjust": null
-   },
-   "status": "vetoed",
-   "statusTh": "วีโต้",
-   "source": "ignition_near",
-   "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+  ],
+  "watch": [],
+  "ignition": [],
+  "meta": {
+    "source": "local-box",
+    "publishedAt": "2026-09-30T06:54:34.032Z",
+    "pagesStatic": true
   }
- ],
- "watch": [],
- "ignition": []
 }
