@@ -14,6 +14,70 @@ export const runtime = "nodejs";
 let lastGood: { text: string; at: number } | null = null;
 const LAST_GOOD_MAX_AGE_MS = 24 * 3600e3;
 const MAX_BODY_BYTES = 400_000;
+/** Match daemon TIERS_SHOW_MS so web keeps cards across empty restart scans. */
+const CARD_TTL_MS = { watch: 8 * 3600e3, ignition: 6 * 3600e3 };
+
+function countCards(text: string): number {
+  try {
+    const j = JSON.parse(text) as { watch?: unknown[]; ignition?: unknown[] };
+    return (Array.isArray(j.watch) ? j.watch.length : 0) + (Array.isArray(j.ignition) ? j.ignition.length : 0);
+  } catch {
+    return 0;
+  }
+}
+
+function filterLiveCards(text: string): { text: string; kept: number } | null {
+  try {
+    const j = JSON.parse(text) as {
+      watch?: Array<{ flaggedAt?: string; firstFlaggedAt?: string; type?: string }>;
+      ignition?: Array<{ flaggedAt?: string; firstFlaggedAt?: string; type?: string }>;
+      noteTh?: string;
+      [k: string]: unknown;
+    };
+    const now = Date.now();
+    const keep = <T extends { flaggedAt?: string; firstFlaggedAt?: string }>(
+      rows: T[] | undefined,
+      ttl: number
+    ) =>
+      (Array.isArray(rows) ? rows : []).filter((r) => {
+        const t = Date.parse(r.flaggedAt || r.firstFlaggedAt || "");
+        return Number.isFinite(t) && now - t <= ttl;
+      });
+    const watch = keep(j.watch, CARD_TTL_MS.watch);
+    const ignition = keep(j.ignition, CARD_TTL_MS.ignition);
+    if (!watch.length && !ignition.length) return null;
+    const out = {
+      ...j,
+      watch,
+      ignition,
+      noteTh: j.noteTh || "แสดงการ์ดล่าสุดที่ยังอยู่ใน TTL (สแกนล่าสุดว่างชั่วคราว)",
+    };
+    return { text: JSON.stringify(out), kept: watch.length + ignition.length };
+  } catch {
+    return null;
+  }
+}
+/** Public Pages static last-good — independent of BOT_UPSTREAM / edge cache. */
+const PAGES_LAST_GOOD_URL =
+  "https://haemkung.github.io/crypto-pump-screener/data/early-tiers.json";
+
+async function fetchPagesLastGood(): Promise<string | null> {
+  try {
+    const res = await fetch(PAGES_LAST_GOOD_URL, {
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+      signal: AbortSignal.timeout(8_000),
+    });
+    if (!res.ok) return null;
+    const text = await res.text();
+    if (!text.startsWith("{") || text.length > MAX_BODY_BYTES) return null;
+    const j = JSON.parse(text) as { updatedAt?: string | null; meta?: { softFail?: boolean } };
+    if (!j.updatedAt || j.meta?.softFail) return null;
+    return text;
+  } catch {
+    return null;
+  }
+}
 
 export async function OPTIONS(req: NextRequest) {
   return corsPreflight(req) || new NextResponse(null, { status: 204 });
@@ -60,23 +124,40 @@ export async function GET(req: NextRequest) {
       if (len > MAX_BODY_BYTES) return withCors(req, proxied);
       const text = await proxied.text();
       if (text.length <= MAX_BODY_BYTES && text.startsWith("{")) {
-        lastGood = { text, at: Date.now() };
-        // Small JSON: buffer+stash is safe (unlike multi-MB /api/screen).
-        const toStash = new Response(text, {
-          status: 200,
-          headers: { "Content-Type": "application/json; charset=utf-8" },
-        });
-        const teed = await stashEdgeLastGood(
-          EDGE_EARLY_TIERS_CACHE_URL,
-          toStash,
-          900
-        );
-        // Drain client tee branch so the cache put can finish.
-        try {
-          await teed.arrayBuffer();
-        } catch {
-          /* ignore */
+        const cards = countCards(text);
+        // Permanent rule: never overwrite a non-empty last-good with a fresh empty scan.
+        // Empty can be valid (quiet market) — but only after prior cards expire by TTL.
+        if (cards > 0) {
+          lastGood = { text, at: Date.now() };
+          const toStash = new Response(text, {
+            status: 200,
+            headers: { "Content-Type": "application/json; charset=utf-8" },
+          });
+          const teed = await stashEdgeLastGood(
+            EDGE_EARLY_TIERS_CACHE_URL,
+            toStash,
+            900
+          );
+          try {
+            await teed.arrayBuffer();
+          } catch {
+            /* ignore */
+          }
+          return jsonText(req, text);
         }
+        // Upstream empty: prefer still-valid last-good cards (honest age via flaggedAt).
+        if (lastGood && Date.now() - lastGood.at < LAST_GOOD_MAX_AGE_MS) {
+          const filtered = filterLiveCards(lastGood.text);
+          if (filtered && filtered.kept > 0) {
+            return jsonText(req, filtered.text, {
+              "X-Early-Tiers-Stale": "1",
+              "X-Early-Tiers-Source": "memory-ttl",
+              "X-Early-Tiers-Cached-At": new Date(lastGood.at).toISOString(),
+            });
+          }
+        }
+        // No lasting cards — return live empty (quiet is valid). Still update updatedAt.
+        return jsonText(req, text);
       }
       return jsonText(req, text);
     }
@@ -104,6 +185,15 @@ export async function GET(req: NextRequest) {
         return jsonText(req, lastGood.text, {
           "X-Early-Tiers-Stale": "1",
           "X-Early-Tiers-Cached-At": new Date(lastGood.at).toISOString(),
+          "X-Early-Tiers-Source": "memory",
+          ...(fresh ? { "X-Early-Tiers-Refresh-Miss": "1" } : {}),
+        });
+      }
+      const pagesText = await fetchPagesLastGood();
+      if (pagesText) {
+        return jsonText(req, pagesText, {
+          "X-Early-Tiers-Stale": "1",
+          "X-Early-Tiers-Source": "pages-static",
           ...(fresh ? { "X-Early-Tiers-Refresh-Miss": "1" } : {}),
         });
       }
@@ -116,7 +206,7 @@ export async function GET(req: NextRequest) {
             ignition: [],
             meta: { softFail: true, reason: "upstream_unavailable" },
             noteTh:
-              "ข้อมูลค้าง — เซิร์ฟเวอร์ยังไม่พร้อม และยังไม่มีค่าล่าสุดในแคช กด「ปลุกระบบ」แล้วรอ 1–2 นาที",
+              "ข้อมูลค้าง — เซิร์ฟเวอร์และ Pages last-good ยังไม่พร้อม",
           },
           {
             status: 200,

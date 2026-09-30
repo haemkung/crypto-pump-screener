@@ -10,7 +10,17 @@ cd "$ROOT"
 LOG="$ROOT/logs/local-scheduler.log"
 last=""
 last_heal=""
+last_wall=$(date +%s)
 while true; do
+  now_wall=$(date +%s)
+  # Host/box sleep: wall advanced far beyond our 15s sleep → force heal immediately
+  if (( now_wall - last_wall > 300 )); then
+    echo "== $(date -Iseconds) WALL_CLOCK_JUMP delta=$((now_wall - last_wall))s — force heal" >>"$LOG"
+    last_heal=""
+    { echo "== $(date -Iseconds) heal-bot-once (post-jump)"; timeout 90 bash scripts/heal-bot-once.sh; echo "heal_exit=$?"; } >>"$LOG" 2>&1
+    last_heal="$(date +%Y%m%d%H)$(( 10#$(date +%M) - (10#$(date +%M) % 2) ))"
+  fi
+  last_wall=$now_wall
   m=$(date +%M); m=$((10#$m)); stamp=$(date +%Y%m%d%H%M)
   # Independent 2-minute healer (fresh process; cannot freeze for hours with the main loops)
   heal_bucket=$(( m - (m % 2) ))

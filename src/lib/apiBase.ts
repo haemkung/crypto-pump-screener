@@ -29,3 +29,29 @@ export function apiUrl(path: string): string {
   const base = getApiBase();
   return base ? `${base}${p}` : p;
 }
+
+/**
+ * GitHub Pages bundled last-good JSON (same origin on Pages; absolute on Workers).
+ * Manual Refresh: try Workers API first, then this static file.
+ */
+export function pagesStaticUrl(file: string): string {
+  const name = file.replace(/^\//, "");
+  if (typeof window === "undefined") {
+    return `https://haemkung.github.io/crypto-pump-screener/data/${name}`;
+  }
+  try {
+    const path = window.location.pathname || "";
+    if (path.includes("/crypto-pump-screener")) {
+      const base = path.endsWith("/")
+        ? path
+        : path.replace(/\/[^/]*$/, "/");
+      // Prefer relative to the Pages base
+      if (base.includes("/crypto-pump-screener")) {
+        return `${window.location.origin}/crypto-pump-screener/data/${name}`;
+      }
+    }
+  } catch {
+    /* ignore */
+  }
+  return `https://haemkung.github.io/crypto-pump-screener/data/${name}`;
+}

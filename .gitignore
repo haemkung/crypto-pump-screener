@@ -71,3 +71,4 @@ next-env.d.ts
 /data/early-tiers.json
 /.cache/
 .env.secrets
+/data/early-price-snaps.json

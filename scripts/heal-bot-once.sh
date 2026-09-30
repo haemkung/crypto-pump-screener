@@ -161,23 +161,37 @@ start_detached() {
 
 actions=()
 
+# --- 0) Next deps (node_modules wipe → infinite "next: not found" loops) ---
+if [[ ! -x "$ROOT/node_modules/.bin/next" ]]; then
+  log "next binary missing — ensure-next-deps (npm ci)"
+  actions+=("ensure_next_deps")
+  if ! bash "$ROOT/scripts/ensure-next-deps.sh"; then
+    log "ERROR: ensure-next-deps failed — refusing Next restart loop"
+    actions+=("ensure_next_deps_failed")
+  fi
+fi
+
 # --- 1) Next :3000 ---
 if ! port_listening; then
-  log "Next :$PORT down — starting via supervise-bot-upstream"
-  actions+=("start_next")
-  if ! script_running "scripts/supervise-bot-upstream.sh" >/dev/null; then
-    start_detached scripts/supervise-bot-upstream.sh logs/bot-upstream/nohup.out
-  fi
-  # Also try direct start if port still down after brief wait
-  sleep 2
-  if ! port_listening; then
-    (
-      cd "$ROOT"
-      exec 7>&- 8>&- 9>&-
-      export DISABLE_BOT_UPSTREAM=1 BOT_ROLE=upstream
-      exec npm run dev
-    ) >>logs/bot-upstream/next.log 2>&1 &
-    log "Next direct start pid=$!"
+  if [[ ! -x "$ROOT/node_modules/.bin/next" ]]; then
+    log "Next :$PORT down but next still missing after ensure — skip start"
+  else
+    log "Next :$PORT down — starting via supervise-bot-upstream"
+    actions+=("start_next")
+    if ! script_running "scripts/supervise-bot-upstream.sh" >/dev/null; then
+      start_detached scripts/supervise-bot-upstream.sh logs/bot-upstream/nohup.out
+    fi
+    # Also try direct start if port still down after brief wait
+    sleep 2
+    if ! port_listening; then
+      (
+        cd "$ROOT"
+        exec 7>&- 8>&- 9>&-
+        export DISABLE_BOT_UPSTREAM=1 BOT_ROLE=upstream
+        exec npm run dev
+      ) >>logs/bot-upstream/next.log 2>&1 &
+      log "Next direct start pid=$!"
+    fi
   fi
 fi
 
@@ -281,6 +295,36 @@ if ! script_running "scripts/supervise-bot-upstream.sh" >/dev/null; then
   actions+=("start_supervisor")
   rm -f /tmp/crypto-pump-bot-upstream.lock
   start_detached scripts/supervise-bot-upstream.sh logs/bot-upstream/nohup.out
+fi
+
+# --- 4b) Independent heal ticker must itself stay alive (heartbeat ≤ 4 min) ---
+TICKER_HB="$LOG_DIR/ticker-heartbeat.json"
+if ! script_running "scripts/independent-heal-ticker.sh" >/dev/null; then
+  log "independent-heal-ticker not running — starting"
+  actions+=("start_independent_ticker")
+  rm -f /tmp/crypto-pump-independent-heal.lock
+  start_detached scripts/independent-heal-ticker.sh logs/heal-once/independent-ticker.nohup.out
+else
+  th_age=$(file_age "$TICKER_HB")
+  # Heartbeat written every ≤30s while healthy; 240s = frozen/stuck mid-sleep across a box freeze
+  # that did not yet trip wall-jump (e.g. ticker deadlocked). Restart it.
+  if (( th_age > 240 )); then
+    log "independent-heal-ticker heartbeat age=${th_age}s — restarting"
+    actions+=("restart_independent_ticker")
+    tp=$(script_running "scripts/independent-heal-ticker.sh" || true)
+    if [[ -n "${tp:-}" ]]; then
+      kill "$tp" 2>/dev/null || true
+      sleep 1
+      kill -9 "$tp" 2>/dev/null || true
+    fi
+    rm -f /tmp/crypto-pump-independent-heal.lock
+    start_detached scripts/independent-heal-ticker.sh logs/heal-once/independent-ticker.nohup.out
+  fi
+fi
+
+# --- 5) Refresh local Pages last-good files (no git push; Actions/cron push) ---
+if [[ -f "$ROOT/data/early-tiers.json" ]]; then
+  bash "$ROOT/scripts/publish-pages-last-good.sh" >>"$LOG" 2>&1 || true
 fi
 
 # Trim heal log

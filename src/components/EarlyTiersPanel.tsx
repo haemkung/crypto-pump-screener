@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { apiUrl } from "@/lib/apiBase";
+import { apiUrl, pagesStaticUrl } from "@/lib/apiBase";
 
 type Factor = { key: string; labelTh?: string; detailTh: string };
 type AiReview = { action: "send" | "boost" | "veto"; score: number; reasonTh: string; skipped?: boolean };
@@ -48,6 +48,8 @@ type Resp = {
 
 const REFRESH_MS = 60_000;
 const LS_KEY = "cps-early-tiers-last-good";
+/** Match daemon TIERS_SHOW_MS — keep last-good cards across empty restart scans. */
+const CARD_TTL_MS = { watch: 8 * 3600_000, ignition: 6 * 3600_000 } as const;
 const FRESH_MS = 10 * 60_000;
 const STATUS_MS = 2600;
 const TICKER_MS = 1800;
@@ -77,6 +79,34 @@ const AI_STATUS_LINES = [
 ];
 
 const PLACEHOLDER_SYMS = ["BTC", "ETH", "SOL", "BNB", "XRP", "DOGE", "AVAX", "LINK", "NEAR", "SUI"];
+
+function cardAgeOk(r: Row): boolean {
+  const t = Date.parse(r.flaggedAt || r.firstFlaggedAt || "");
+  if (!Number.isFinite(t)) return false;
+  const ttl = r.type === "watch" ? CARD_TTL_MS.watch : CARD_TTL_MS.ignition;
+  return Date.now() - t <= ttl;
+}
+function stillValidCards(j: Resp | null): Resp | null {
+  if (!j) return null;
+  const watch = (j.watch ?? []).filter(cardAgeOk);
+  const ignition = (j.ignition ?? []).filter(cardAgeOk);
+  if (!watch.length && !ignition.length) return null;
+  return {
+    ...j,
+    watch,
+    ignition,
+    noteTh: j.noteTh || "แสดงการ์ดล่าสุดที่ยังอยู่ใน TTL",
+  };
+}
+function readLastGoodLs(): Resp | null {
+  try {
+    const s = localStorage.getItem(LS_KEY);
+    if (!s) return null;
+    return stillValidCards(JSON.parse(s) as Resp);
+  } catch {
+    return null;
+  }
+}
 
 function ago(iso: string | null | undefined): string {
   if (!iso) return "?";
@@ -323,6 +353,8 @@ function Group({ title, hint, rows, empty, animKey }: { title: string; hint: str
   );
 }
 
+type DataSource = "live" | "workers-stale" | "pages-static" | "localStorage" | "none";
+
 export function EarlyTiersPanel() {
   const [data, setData] = useState<Resp | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -331,23 +363,75 @@ export function EarlyTiersPanel() {
   const [refreshing, setRefreshing] = useState(false);
   const [waking, setWaking] = useState(false);
   const [wakeMsg, setWakeMsg] = useState<string | null>(null);
+  const [source, setSource] = useState<DataSource>("none");
+  const [lastWakeAt, setLastWakeAt] = useState<string | null>(null);
+
+  const applyData = useCallback((j: Resp, src: DataSource, isStale: boolean, err: string | null) => {
+    const liveCount = (j.watch?.length ?? 0) + (j.ignition?.length ?? 0);
+    // Permanent: never replace still-valid last-good cards with a fresh empty scan.
+    if (liveCount === 0) {
+      const kept = stillValidCards(j) || readLastGoodLs();
+      if (kept && ((kept.watch?.length ?? 0) + (kept.ignition?.length ?? 0)) > 0) {
+        setData(kept);
+        setSource(src === "live" ? "localStorage" : src);
+        setStale(true);
+        setError(err || "สแกนล่าสุดว่าง — แสดงการ์ดที่ยังอยู่ใน TTL");
+        setAnimKey((k) => k + 1);
+        return;
+      }
+    }
+    setData(j);
+    setSource(src);
+    setStale(isStale);
+    setError(err);
+    setAnimKey((k) => k + 1);
+    if (liveCount > 0) {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(j)); } catch { /* ignore */ }
+    }
+  }, []);
+
+  const loadPagesStatic = useCallback(async (): Promise<Resp | null> => {
+    try {
+      const res = await fetch(`${pagesStaticUrl("early-tiers.json")}?t=${Date.now()}`, {
+        cache: "no-store",
+      });
+      if (!res.ok) return null;
+      const j = (await res.json().catch(() => null)) as Resp | null;
+      if (!j?.updatedAt || j.meta?.softFail) return null;
+      return j;
+    } catch {
+      return null;
+    }
+  }, []);
 
   const load = useCallback(async (opts?: { bust?: boolean }) => {
     const bust = !!opts?.bust;
-    const keepLastGood = () => {
+    const keepLastGood = async (fallbackErr: string) => {
       setData((cur) => {
-        if (cur) return cur;
+        if (cur) {
+          setSource((s) => (s === "none" ? "localStorage" : s));
+          return cur;
+        }
         try {
           const s = localStorage.getItem(LS_KEY);
-          return s ? (JSON.parse(s) as Resp) : null;
-        } catch {
-          return null;
-        }
+          if (s) {
+            setSource("localStorage");
+            return JSON.parse(s) as Resp;
+          }
+        } catch { /* ignore */ }
+        return null;
       });
       setStale(true);
+      // Prefer Pages static over blank panels
+      const pages = await loadPagesStatic();
+      if (pages) {
+        applyData(pages, "pages-static", true, fallbackErr);
+        return true;
+      }
+      setError(fallbackErr);
+      return false;
     };
     try {
-      // Never wipe localStorage before fetch — if upstream is down we still need last-good panels.
       const q = bust ? `?t=${Date.now()}&fresh=1` : "";
       const res = await fetch(apiUrl(`/api/early-tiers${q}`), {
         cache: "no-store",
@@ -356,52 +440,56 @@ export function EarlyTiersPanel() {
       const j = (await res.json().catch(() => null)) as Resp | null;
       const soft = !!(j?.meta?.softFail || res.headers.get("X-Early-Tiers-Soft-Fail") === "1");
       const headerStale = res.headers.get("X-Early-Tiers-Stale") === "1";
+      const hdrSrc = res.headers.get("X-Early-Tiers-Source") || "";
       if (!j || !res.ok) {
-        keepLastGood();
-        setError(j?.noteTh || "ดึงข้อมูลไม่ได้ชั่วคราว");
-        return false;
+        return keepLastGood(j?.noteTh || "ดึงข้อมูลไม่ได้ชั่วคราว");
       }
       if (!j.updatedAt) {
-        // Soft-fail empty body: keep last-good panels, show Thai status (never English BOT_UPSTREAM).
-        keepLastGood();
-        setError(j.noteTh || "ข้อมูลค้าง — รอระบบรีสตาร์ทอัตโนมัติ");
-        return false;
+        return keepLastGood(j.noteTh || "ข้อมูลค้าง — ไม่มีค่าสดจากเซิร์ฟเวอร์");
       }
-      setData(j);
-      setStale(headerStale || soft);
-      setError(soft || headerStale ? (j.noteTh || null) : null);
-      setAnimKey((k) => k + 1);
-      try { localStorage.setItem(LS_KEY, JSON.stringify(j)); } catch { /* ignore */ }
+      const src: DataSource =
+        hdrSrc === "pages-static"
+          ? "pages-static"
+          : headerStale || soft
+            ? "workers-stale"
+            : "live";
+      applyData(
+        j,
+        src,
+        headerStale || soft || src === "pages-static",
+        soft || headerStale ? (j.noteTh || null) : null
+      );
       return true;
     } catch (e) {
-      keepLastGood();
       const raw = String(e instanceof Error ? e.message : e);
-      setError(
-        /BOT_UPSTREAM|upstream_unreachable|upstream_unavailable/i.test(raw)
-          ? "เซิร์ฟเวอร์ยังไม่พร้อม — ระบบจะรีสตาร์ทอัตโนมัติภายใน 1–2 นาที"
+      return keepLastGood(
+        /Failed to fetch|NetworkError|BOT_UPSTREAM|upstream_/i.test(raw)
+          ? "Workers ไม่ถึง — ลองโหลดค่าล่าสุดจาก Pages static"
           : raw
       );
-      return false;
     }
-  }, []);
+  }, [applyData, loadPagesStatic]);
 
   const onRefresh = useCallback(async () => {
     if (refreshing) return;
     setRefreshing(true);
     setWakeMsg(null);
     try {
-      // Also cheap-refresh learning if present (ignore errors)
       void fetch(apiUrl(`/api/learning-insights?t=${Date.now()}`), { cache: "no-store" }).catch(() => {});
-      await load({ bust: true });
+      const ok = await load({ bust: true });
+      if (!ok) {
+        const pages = await loadPagesStatic();
+        if (pages) applyData(pages, "pages-static", true, "รีเฟรช Workers ไม่สำเร็จ — แสดง Pages last-good");
+      }
     } finally {
       setRefreshing(false);
     }
-  }, [load, refreshing]);
+  }, [load, refreshing, loadPagesStatic, applyData]);
 
   const onWake = useCallback(async () => {
     if (waking) return;
     setWaking(true);
-    setWakeMsg("กำลังปลุกระบบ…");
+    setWakeMsg("กำลังส่งคำขอปลุก…");
     try {
       const res = await fetch(apiUrl("/api/early-daemon/wake"), {
         method: "POST",
@@ -414,55 +502,59 @@ export function EarlyTiersPanel() {
         noteTh?: string;
         error?: string;
         retryAfterSec?: number;
+        upstreamWake?: boolean;
+        pagesRefreshDispatched?: boolean;
+        githubDispatch?: { ok?: boolean; attempted?: boolean; detail?: string };
+        reason?: string;
+        at?: string;
       } | null;
-      // Accept ok:true (including autoHeal when tunnel briefly down) — never surface English BOT_UPSTREAM.
-      if (j?.ok) {
-        setWakeMsg(
-          j.noteTh
-            ? j.noteTh
-            : (j as { autoHeal?: boolean }).autoHeal
-              ? "ระบบจะรีสตาร์ทอัตโนมัติภายใน 1–2 นาที — กำลังรอ…"
-              : "ส่งสัญญาณปลุกแล้ว — รอ daemon รีสตาร์ท…"
-        );
-      } else if (!res.ok || !j?.ok) {
-        const wait = j?.retryAfterSec ? ` (รอ ${j.retryAfterSec}s)` : "";
-        const raw = j?.noteTh || j?.error || `ปลุกไม่สำเร็จ HTTP ${res.status}`;
-        const nice = /BOT_UPSTREAM|upstream_unreachable/i.test(String(raw))
-          ? "เซิร์ฟเวอร์ยังไม่พร้อม — ระบบจะรีสตาร์ทอัตโนมัติภายใน 1–2 นาที"
-          : String(raw);
-        setWakeMsg(nice + wait);
-        // Still poll: heal-bot-once may bring upstream back without a successful wake proxy.
+      setLastWakeAt(j?.at || new Date().toISOString());
+      if (j?.noteTh) {
+        setWakeMsg(j.noteTh);
+      } else if (j?.ok && j.upstreamWake) {
+        setWakeMsg("ส่งปลุกไปยังเซิร์ฟเวอร์แล้ว — รอ daemon");
+      } else if (j?.ok && j.pagesRefreshDispatched) {
+        setWakeMsg("สั่งรีเฟรช Pages last-good ผ่าน GitHub Actions แล้ว (box ไม่ตอบ)");
       } else {
-        setWakeMsg("ส่งสัญญาณปลุกแล้ว — รอ daemon รีสตาร์ท…");
+        const wait = j?.retryAfterSec ? ` (รอ ${j.retryAfterSec}s)` : "";
+        setWakeMsg((j?.error || `ปลุกไม่สำเร็จ HTTP ${res.status}`) + wait);
       }
-      // Poll for fresh updatedAt after heal (~30–90s)
-      for (let i = 0; i < 8; i++) {
-        await new Promise((r) => setTimeout(r, i === 0 ? 4000 : 5000));
-        await load({ bust: true });
-        try {
-          const check = await fetch(apiUrl(`/api/early-tiers?t=${Date.now()}&fresh=1`), { cache: "no-store" });
-          const body = (await check.json().catch(() => null)) as Resp | null;
-          if (body?.updatedAt) {
-            const age = Date.now() - Date.parse(body.updatedAt);
-            if (Number.isFinite(age) && age < 5 * 60_000) {
-              setData(body);
-              setStale(false);
-              setError(null);
-              setAnimKey((k) => k + 1);
-              try { localStorage.setItem(LS_KEY, JSON.stringify(body)); } catch { /* ignore */ }
-              setWakeMsg("ระบบกลับมาแล้ว — ข้อมูลสด");
-              return;
+      // Only poll for live recovery when upstream wake actually queued
+      if (j?.ok && j.upstreamWake) {
+        for (let i = 0; i < 8; i++) {
+          await new Promise((r) => setTimeout(r, i === 0 ? 4000 : 5000));
+          await load({ bust: true });
+          try {
+            const check = await fetch(apiUrl(`/api/early-tiers?t=${Date.now()}&fresh=1`), { cache: "no-store" });
+            const body = (await check.json().catch(() => null)) as Resp | null;
+            if (body?.updatedAt) {
+              const age = Date.now() - Date.parse(body.updatedAt);
+              if (Number.isFinite(age) && age < 5 * 60_000 && !body.meta?.softFail) {
+                applyData(body, "live", false, null);
+                setWakeMsg("ระบบกลับมาแล้ว — ข้อมูลสดจากเซิร์ฟเวอร์");
+                return;
+              }
             }
-          }
-        } catch { /* continue polling */ }
+          } catch { /* continue */ }
+        }
+        setWakeMsg((m) => (m ? `${m} · ยังไม่เห็นข้อมูลสด — กดรีเฟรชอีกครั้ง` : "ยังไม่เห็นข้อมูลสด"));
+      } else if (j?.pagesRefreshDispatched) {
+        await new Promise((r) => setTimeout(r, 8000));
+        const pages = await loadPagesStatic();
+        if (pages) applyData(pages, "pages-static", true, null);
+      } else {
+        // Honest miss: still try Pages static so panels are not blank
+        const pages = await loadPagesStatic();
+        if (pages) applyData(pages, "pages-static", true, null);
       }
-      setWakeMsg("ปลุกแล้ว — กดรีเฟรชอีกครั้งหากข้อมูลยังค้าง");
     } catch (e) {
       setWakeMsg(String(e instanceof Error ? e.message : e));
+      const pages = await loadPagesStatic();
+      if (pages) applyData(pages, "pages-static", true, null);
     } finally {
       setWaking(false);
     }
-  }, [waking, load]);
+  }, [waking, load, loadPagesStatic, applyData]);
 
   useEffect(() => {
     void load();
@@ -514,7 +606,7 @@ export function EarlyTiersPanel() {
             onClick={() => void onWake()}
             disabled={waking || refreshing}
             className="inline-flex items-center gap-1.5 rounded-md border border-amber-600/80 bg-amber-700/80 px-2.5 py-1 text-[11px] font-semibold text-amber-50 hover:bg-amber-600 disabled:cursor-wait disabled:opacity-60"
-            title="ปลุก/รีสตาร์ท early daemon บนเซิร์ฟเวอร์เมื่อข้อมูลค้าง"
+            title="ปลุก daemon บนเซิร์ฟเวอร์ถ้าถึงได้ — ถ้าไม่ถึงจะสั่งรีเฟรช Pages last-good (GitHub Actions) เมื่อมี credential"
           >
             {waking ? (
               <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-amber-100 border-t-transparent" aria-hidden />
@@ -526,18 +618,35 @@ export function EarlyTiersPanel() {
         </div>
       </div>
       <AiLiveStrip symbols={scanSymbols} />
+      <div className="mb-2 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-zinc-500">
+        <span>
+          แหล่งข้อมูล:{" "}
+          <strong className="text-zinc-300">
+            {source === "live"
+              ? "Workers สด"
+              : source === "workers-stale"
+                ? "Workers (ค้าง/แคช)"
+                : source === "pages-static"
+                  ? "Pages last-good"
+                  : source === "localStorage"
+                    ? "แคชในเครื่อง"
+                    : "—"}
+          </strong>
+        </span>
+        <span>อายุ: {data?.updatedAt ? ago(data.updatedAt) : "—"}</span>
+        {lastWakeAt && <span>ปลุกล่าสุด: {ago(lastWakeAt)}</span>}
+      </div>
       {wakeMsg && (
         <div className="mb-2 rounded border border-sky-800/60 bg-sky-950/40 px-2 py-1 text-xs text-sky-100">
           {wakeMsg}
         </div>
       )}
-      {(error || stale || oldMs > 10 * 60e3) && (
+      {!wakeMsg && (error || stale || oldMs > 10 * 60e3) && (
         <div className="mb-2 rounded border border-amber-800/60 bg-amber-950/40 px-2 py-1 text-xs text-amber-200">
           {data?.updatedAt
-            ? `ข้อมูลค้าง — แสดงค่าล่าสุดที่มี (อัปเดต ${ago(data.updatedAt)})`
+            ? `ข้อมูลค้าง — แสดงค่าล่าสุดที่มี (อัปเดต ${ago(data.updatedAt)} · แหล่ง ${source})`
             : "ข้อมูลค้าง — ดึงข้อมูลไม่ได้ชั่วคราว"}
           {error && !/BOT_UPSTREAM/i.test(error) ? ` · ${error}` : ""}
-          <span className="ml-1 text-amber-100/80">· กด「รีเฟรช」หรือ「ปลุกระบบ」ได้ · ระบบรีสตาร์ทอัตโนมัติใน 1–2 นาที</span>
         </div>
       )}
       <TierStats data={data} />

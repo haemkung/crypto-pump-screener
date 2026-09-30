@@ -24,12 +24,13 @@
     "upstream:health": "bash scripts/health-bot-upstream.sh",
     "upstream:next": "bash scripts/start-upstream-next.sh",
     "pages:dev": "vite --config pages-spa/vite.config.mts",
-    "pages:build": "vite build --config pages-spa/vite.config.mts",
+    "pages:build": "vite build --config pages-spa/vite.config.mts && mkdir -p docs/data && cp -f pages-spa/public/data/*.json docs/data/ 2>/dev/null || true && cp -f data/early-tiers.json pages-spa/public/data/early-tiers.json 2>/dev/null || true && cp -f data/early-tiers.json docs/data/early-tiers.json 2>/dev/null || true",
     "pages:preview": "vite preview --config pages-spa/vite.config.mts --base /crypto-pump-screener/",
     "early:fetch-30d": "node scripts/fetch-early-backtest-30d.mjs",
     "early:walkforward": "node scripts/walkforward-early.mjs",
     "start:all": "bash scripts/start-all.sh",
-    "learn-from-mistakes": "node scripts/learn-from-mistakes.mjs"
+    "learn-from-mistakes": "node scripts/learn-from-mistakes.mjs",
+    "pages:publish-last-good": "bash scripts/publish-pages-last-good.sh"
   },
   "dependencies": {
     "next": "15.5.25",

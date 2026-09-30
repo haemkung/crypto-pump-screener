@@ -192,6 +192,13 @@ start_next() {
     log "adopting existing Next on :$NEXT_PORT pid=${existing:-unknown}"
     return 0
   fi
+  if [[ ! -x "$ROOT/node_modules/.bin/next" ]]; then
+    log "next binary missing — running ensure-next-deps before start"
+    if ! bash "$ROOT/scripts/ensure-next-deps.sh"; then
+      log "ERROR: ensure-next-deps failed — not starting Next (avoids next: not found loop)"
+      return 1
+    fi
+  fi
   log "starting local Next upstream on :$NEXT_PORT"
   (
     cd "$ROOT"

@@ -35,8 +35,13 @@ script_running() {
 if script_running "scripts/supervise-bot-upstream.sh"; then say "supervise-bot-upstream: running"; else say "supervise-bot-upstream: starting"; start_detached scripts/supervise-bot-upstream.sh logs/bot-upstream/nohup.out; fi
 if script_running "scripts/supervise-local-scheduler.sh"; then say "local-scheduler: running"; else say "local-scheduler: starting"; start_detached scripts/supervise-local-scheduler.sh logs/local-scheduler.nohup.out; fi
 if flock -n /tmp/crypto-pump-watchdog.lock true 2>/dev/null; then say "watchdog: starting"; start_detached scripts/watchdog.sh logs/watchdog.nohup.out; else say "watchdog: running"; fi
-# best effort: survive a box reboot if cron exists
-if command -v crontab >/dev/null 2>&1 && ! crontab -l 2>/dev/null | grep -q "start-all.sh"; then
-  (crontab -l 2>/dev/null; echo "@reboot cd $ROOT && bash scripts/start-all.sh --quiet") | crontab - 2>/dev/null && say "cron @reboot installed"
+# Independent heal ticker (survives local-scheduler freezes on evaluate/alerts)
+if script_running "scripts/independent-heal-ticker.sh"; then say "independent-heal-ticker: running"; else say "independent-heal-ticker: starting"; start_detached scripts/independent-heal-ticker.sh logs/heal-once/independent-ticker.nohup.out; fi
+# Best-effort reboot persistence (crontab / systemd --user / ticker). Never blocks boot.
+bash "$ROOT/scripts/install-boot-persist.sh" >/dev/null 2>&1 || true
+# Ensure Next deps once at boot (non-blocking if already present)
+if [[ ! -x "$ROOT/node_modules/.bin/next" ]]; then
+  say "next missing — npm ci via ensure-next-deps"
+  bash "$ROOT/scripts/ensure-next-deps.sh" || say "warning: ensure-next-deps failed"
 fi
 exit 0

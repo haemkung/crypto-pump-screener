@@ -86,6 +86,11 @@ const CHAT_ID_FILE = resolve(ROOT, ".telegram-chat-id");
 const SETTINGS_FILE = resolve(DATA_DIR, "early-alert-settings.json");
 /** small public snapshot served by /api/early-tiers (web UI) */
 const TIERS_FILE = resolve(DATA_DIR, "early-tiers.json");
+/** persisted price snaps so restart does not wait ~5 min for warm/shortlist */
+const SNAPS_FILE = resolve(DATA_DIR, "early-price-snaps.json");
+const SNAPS_DISK_KEEP_MS = 25 * 60e3; // enough for 5/10/15m move + margin
+const SNAPS_SEED_LIMIT = 20; // 1m bars per symbol on cold start
+const SNAPS_SEED_SYMBOLS = 60; // top liquid + majors
 const TIERS_SHOW_MS = { watch: 8 * 3600e3, ignition: 6 * 3600e3 };
 /** frozen walk-forward parameters + OOS stats (scripts/walkforward-early.mjs → data/early-tier-config.json) */
 const TIER_CONFIG_FILE = resolve(DATA_DIR, "early-tier-config.json");
@@ -248,10 +253,23 @@ const isPerp = (s) => (perpSet ? perpSet.has(s) : s.endsWith("USDT") && !s.inclu
 
 // ---------- snapshots ----------
 const snaps = new Map();
+let snapsSeeded = false;
 function pushSnap(sym, t, p) {
+  if (!(p > 0) || !Number.isFinite(t)) return;
   let a = snaps.get(sym);
   if (!a) snaps.set(sym, (a = []));
-  a.push({ t, p });
+  const last = a[a.length - 1];
+  // de-dupe same-minute samples (seed + live ticker)
+  if (last && Math.abs(last.t - t) < 20e3 && Math.abs(last.p - p) / p < 1e-6) return;
+  if (last && t < last.t) {
+    // insert chronologically when seeding historical klines
+    let i = a.length - 1;
+    while (i >= 0 && a[i].t > t) i--;
+    if (i >= 0 && Math.abs(a[i].t - t) < 20e3) return;
+    a.splice(i + 1, 0, { t, p });
+  } else {
+    a.push({ t, p });
+  }
   while (a.length && t - a[0].t > SNAP_KEEP_MS) a.shift();
 }
 function snapMove(sym, now, p) {
@@ -274,6 +292,105 @@ function snapRange(sym, now, mins) {
   let hi = -Infinity, lo = Infinity;
   for (const s of a) if (now - s.t <= mins * 60e3) { hi = Math.max(hi, s.p); lo = Math.min(lo, s.p); }
   return lo > 0 ? ((hi - lo) / lo) * 100 : null;
+}
+function snapsAreWarm(now = Date.now()) {
+  // warm once any symbol has a ref old enough for the 5m window (+30s slack)
+  const need = now - 5 * 60e3 + 30e3;
+  for (const a of snaps.values()) {
+    if (a.length && a[0].t <= need) return true;
+  }
+  return false;
+}
+function loadSnapsFromDisk() {
+  const raw = readJson(SNAPS_FILE, null);
+  if (!raw || typeof raw !== "object") return 0;
+  const savedAt = Number(raw.savedAt) || 0;
+  const now = Date.now();
+  if (!savedAt || now - savedAt > SNAPS_DISK_KEEP_MS) return 0;
+  const obj = raw.snaps && typeof raw.snaps === "object" ? raw.snaps : null;
+  if (!obj) return 0;
+  let n = 0;
+  for (const [sym, arr] of Object.entries(obj)) {
+    if (!Array.isArray(arr)) continue;
+    for (const pt of arr) {
+      const t = Number(pt?.t ?? pt?.[0]);
+      const p = Number(pt?.p ?? pt?.[1]);
+      if (!(p > 0) || !Number.isFinite(t)) continue;
+      if (now - t > SNAP_KEEP_MS) continue;
+      pushSnap(sym, t, p);
+      n++;
+    }
+  }
+  return n;
+}
+function saveSnapsToDisk(now = Date.now()) {
+  if (DRY) return;
+  const out = {};
+  let pts = 0;
+  for (const [sym, a] of snaps) {
+    const keep = [];
+    for (const s of a) {
+      if (now - s.t <= SNAPS_DISK_KEEP_MS) keep.push({ t: s.t, p: s.p });
+    }
+    if (keep.length) {
+      // downsample to ~1/min to keep file small
+      const sparse = [];
+      for (const s of keep) {
+        const last = sparse[sparse.length - 1];
+        if (!last || s.t - last.t >= 50e3) sparse.push(s);
+        else sparse[sparse.length - 1] = s;
+      }
+      out[sym] = sparse;
+      pts += sparse.length;
+    }
+  }
+  try {
+    writeJsonAtomic(SNAPS_FILE, { savedAt: now, symbols: Object.keys(out).length, points: pts, snaps: out });
+  } catch (e) {
+    log("snaps save failed:", String(e).slice(0, 120));
+  }
+}
+/** Seed in-memory snaps from recent 1m klines so warm/shortlist work on cycle 1 after restart. */
+async function seedSnapsFromKlines(tickMap, now = Date.now()) {
+  if (snapsSeeded || snapsAreWarm(now)) {
+    snapsSeeded = true;
+    return { seeded: 0, reason: "already_warm" };
+  }
+  snapsSeeded = true;
+  const ranked = [...tickMap.entries()]
+    .filter(([, t]) => t.vol24 >= MIN_24H_VOL && t.p > 0)
+    .sort((a, b) => b[1].vol24 - a[1].vol24)
+    .map(([s]) => s);
+  const want = new Set(["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT"]);
+  for (const s of ranked) {
+    want.add(s);
+    if (want.size >= SNAPS_SEED_SYMBOLS) break;
+  }
+  const symbols = [...want];
+  let seeded = 0;
+  let errors = 0;
+  for (let i = 0; i < symbols.length; i += 5) {
+    const batch = symbols.slice(i, i + 5);
+    await Promise.all(batch.map(async (sym) => {
+      try {
+        const k = await fapi(`/fapi/v1/klines?symbol=${sym}&interval=1m&limit=${SNAPS_SEED_LIMIT}`, 8_000);
+        if (!Array.isArray(k) || !k.length) return;
+        for (const row of k) {
+          const openT = Number(row[0]);
+          const close = Number(row[4]);
+          if (!(close > 0) || !Number.isFinite(openT)) continue;
+          // use bar close time as snap timestamp
+          pushSnap(sym, openT + 60e3 - 1, close);
+        }
+        seeded++;
+      } catch (e) {
+        errors++;
+        if (isRate(e)) throw e;
+      }
+    }));
+    if (i + 5 < symbols.length) await sleep(80);
+  }
+  return { seeded, errors, symbols: symbols.length, warm: snapsAreWarm(now) };
 }
 
 // ---------- evidence data ----------
@@ -500,6 +617,20 @@ function writeTiersSnapshot(logObj, settings, now, tierCfg) {
         ai: a.ai || null,
       }));
   };
+  let watchRows = latest("watch");
+  let ignitionRows = latest("ignition");
+  // Restart / quiet-scan: do not flash blank UI while previous cards are still within their own TTL.
+  if (!watchRows.length && !ignitionRows.length) {
+    const prev = readJson(TIERS_FILE, null);
+    const keep = (rows, type) => (Array.isArray(rows) ? rows : []).filter((r) => {
+      const t = Date.parse(r?.flaggedAt || r?.firstFlaggedAt || "");
+      return Number.isFinite(t) && now - t <= TIERS_SHOW_MS[type];
+    });
+    if (prev) {
+      watchRows = keep(prev.watch, "watch");
+      ignitionRows = keep(prev.ignition, "ignition");
+    }
+  }
   writeJsonAtomic(TIERS_FILE, {
     updatedAt: new Date(now).toISOString(),
     daemonAt: new Date(now).toISOString(),
@@ -510,8 +641,11 @@ function writeTiersSnapshot(logObj, settings, now, tierCfg) {
     tiers: Object.fromEntries(["ignition_long", "ignition_short", "watch_long", "watch_short"].map((k) => [k, { params: tierCfg[k].params, oos: tierCfg[k].oos, baselines: tierCfg[k].baselines ? { priceOnly: tierCfg[k].baselines.priceOnlyTest, random: tierCfg[k].baselines.randomTest } : null, verdict: tierCfg[k].verdict }])),
     backtest: tierCfg._meta,
     live: liveStats(logObj),
-    watch: latest("watch"),
-    ignition: latest("ignition"),
+    watch: watchRows,
+    ignition: ignitionRows,
+    noteTh: (!watchRows.length && !ignitionRows.length)
+      ? "ยังไม่มีสัญญาณที่ผ่าน confluence ≥3 ปัจจัยในช่วง TTL"
+      : undefined,
   });
 }
 
@@ -754,6 +888,18 @@ async function cycle() {
     const pct24h = Number(tk.priceChangePercent);
     const vol24 = Number(tk.quoteVolume);
     tickMap.set(s, { p, pct24h, vol24, high24: Number(tk.highPrice), low24: Number(tk.lowPrice) });
+  }
+  // Cold start after restart: seed snaps from 1m klines so warm/shortlist rebuild in cycle 1–2.
+  if (!snapsAreWarm(now)) {
+    try {
+      const seed = await seedSnapsFromKlines(tickMap, now);
+      log(`snap-seed seeded=${seed.seeded}/${seed.symbols || 0} warm=${seed.warm} errors=${seed.errors || 0} reason=${seed.reason || "kline"}`);
+    } catch (e) {
+      log("snap-seed error:", String(e?.message || e).slice(0, 160));
+    }
+  }
+  for (const [s, tk] of tickMap) {
+    const { p, pct24h, vol24 } = tk;
     const mv = snapMove(s, now, p);
     pushSnap(s, now, p);
     if (mv != null) warm = true;
@@ -765,6 +911,7 @@ async function cycle() {
     shortlist.push({ s, mv, pct24h, vol24 });
   }
   shortlist.sort((a, b) => Math.abs(b.mv) - Math.abs(a.mv));
+  try { saveSnapsToDisk(now); } catch {}
 
   const state = readJson(STATE_FILE, {});
   state.sent ||= {};
@@ -907,6 +1054,12 @@ async function main() {
   const pi = process.argv.indexOf("--probe");
   if (pi > 0) { await probe(process.argv[pi + 1]); return; }
   log(`early daemon (confluence-first) start pid=${process.pid} dryRun=${DRY} once=${ONCE}`);
+  try {
+    const n = loadSnapsFromDisk();
+    if (n) log(`loaded ${n} price snaps from disk (warm=${snapsAreWarm()})`);
+  } catch (e) {
+    log("snap load failed:", String(e).slice(0, 120));
+  }
   process.on("SIGTERM", () => { log("SIGTERM — exiting"); process.exit(0); });
   process.on("SIGINT", () => process.exit(0));
   process.on("uncaughtException", (e) => log("uncaughtException (kept running):", String(e?.stack || e).slice(0, 300)));

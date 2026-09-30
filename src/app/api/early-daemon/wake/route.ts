@@ -17,6 +17,10 @@ const RATE_FILE = path.join(process.cwd(), "logs/early-ignition/wake-rate.json")
 const MIN_INTERVAL_MS = 45_000;
 const GLOBAL_MIN_MS = 20_000;
 
+const GH_OWNER = "haemkung";
+const GH_REPO = "crypto-pump-screener";
+const GH_WORKFLOW = "publish-last-good.yml";
+
 export async function OPTIONS(req: NextRequest) {
   return corsPreflight(req) || new NextResponse(null, { status: 204 });
 }
@@ -38,7 +42,6 @@ async function readRate(): Promise<RateState> {
 
 async function writeRate(state: RateState): Promise<void> {
   await mkdir(path.dirname(RATE_FILE), { recursive: true });
-  // prune old IPs
   const now = Date.now();
   const byIp: Record<string, number> = {};
   for (const [ip, t] of Object.entries(state.byIp)) {
@@ -52,7 +55,8 @@ async function writeRate(state: RateState): Promise<void> {
 }
 
 function clientIp(req: NextRequest): string {
-  const xf = req.headers.get("cf-connecting-ip") ||
+  const xf =
+    req.headers.get("cf-connecting-ip") ||
     req.headers.get("x-forwarded-for") ||
     req.headers.get("x-real-ip") ||
     "";
@@ -61,7 +65,6 @@ function clientIp(req: NextRequest): string {
 
 function authorize(req: NextRequest): { ok: boolean; reason?: string } {
   const origin = req.headers.get("origin");
-  // No Origin = Workers VPC / curl / same-box — always allow (rate-limited below).
   if (!origin) return { ok: true };
   if (!isAllowedCorsOrigin(origin)) {
     return { ok: false, reason: "origin not allowed" };
@@ -76,109 +79,228 @@ function authorize(req: NextRequest): { ok: boolean; reason?: string } {
   return { ok: false, reason: "wake token required" };
 }
 
+type GhDispatchResult = {
+  attempted: boolean;
+  ok: boolean;
+  status?: number;
+  detail?: string;
+  workflow?: string;
+};
+
+/**
+ * Independent of BOT_UPSTREAM: dispatch GitHub Actions publish-last-good.yml.
+ * Uses server-held GITHUB_WAKE_TOKEN (PAT with repo scope) when present.
+ * Never invents a token — if unset, returns attempted:false.
+ */
+async function dispatchGithubWake(reason: string): Promise<GhDispatchResult> {
+  const token = (process.env.GITHUB_WAKE_TOKEN || "").trim();
+  if (!token) {
+    return {
+      attempted: false,
+      ok: false,
+      detail: "GITHUB_WAKE_TOKEN not configured on Workers",
+      workflow: GH_WORKFLOW,
+    };
+  }
+  try {
+    const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/workflows/${GH_WORKFLOW}/dispatches`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${token}`,
+        "X-GitHub-Api-Version": "2022-11-28",
+        "Content-Type": "application/json",
+        "User-Agent": "cps-wake",
+      },
+      body: JSON.stringify({
+        ref: "main",
+        inputs: { reason: reason.slice(0, 100) },
+      }),
+    });
+    if (res.status === 204 || res.status === 200) {
+      return {
+        attempted: true,
+        ok: true,
+        status: res.status,
+        workflow: GH_WORKFLOW,
+        detail: "workflow_dispatch accepted",
+      };
+    }
+    const body = await res.text().catch(() => "");
+    return {
+      attempted: true,
+      ok: false,
+      status: res.status,
+      workflow: GH_WORKFLOW,
+      detail: body.slice(0, 240) || `HTTP ${res.status}`,
+    };
+  } catch (e) {
+    return {
+      attempted: true,
+      ok: false,
+      workflow: GH_WORKFLOW,
+      detail: String(e).slice(0, 240),
+    };
+  }
+}
+
+function wakeJson(
+  req: NextRequest,
+  body: Record<string, unknown>,
+  status = 200
+) {
+  return withCors(req, NextResponse.json(body, { status }));
+}
+
 /**
  * POST /api/early-daemon/wake
- * Writes a wake flag that watchdog/supervisor poll within a few seconds to
- * kill+restart early-ignition-daemon. Never runs shell from the request.
- * Workers: proxy to BOT_UPSTREAM. Rate-limited. Optional EARLY_WAKE_SECRET.
+ *
+ * Truthful wake — never claims box restart when BOT_UPSTREAM is down.
+ *
+ * Paths (Workers):
+ *  1) Proxy BOT_UPSTREAM (writes wake.flag on the box) when tunnel/Next alive
+ *  2) Independently dispatch GitHub Actions publish-last-good.yml when
+ *     GITHUB_WAKE_TOKEN is configured (refreshes Pages static last-good)
+ *  3) If neither works: ok:false with an honest Thai note (no fake autoHeal)
+ *
+ * Local upstream: writes wake.flag for heal/supervisor to consume.
  */
 export async function POST(req: NextRequest) {
   try {
     const auth = authorize(req);
     if (!auth.ok) {
-      return withCors(
+      return wakeJson(
         req,
-        NextResponse.json(
-          { ok: false, error: auth.reason || "unauthorized" },
-          { status: 401 }
-        )
+        { ok: false, error: auth.reason || "unauthorized" },
+        401
       );
     }
 
-    // On Workers, always proxy to the box (only the box can write the flag).
     if (await isCloudflareWorkersRuntime()) {
       const raw = await req.text().catch(() => "");
+      let upstreamOk = false;
+      let upstreamNote: string | null = null;
+      let upstreamStatus: number | null = null;
+
       const proxied = await proxyToUpstream("/api/early-daemon/wake", {
         method: "POST",
         body: raw || "{}",
         contentType: "application/json",
         timeoutMs: 10_000,
-        retries: 3,
+        retries: 2,
         requireUpstream: true,
       });
-      // Best-effort: drop sticky last-good so next GET prefers live upstream.
+
       try {
         await purgeEdgeLastGood(EDGE_EARLY_TIERS_CACHE_URL);
       } catch {
         /* ignore */
       }
+
       if (proxied) {
-        // Even a 502 from requireUpstream: rewrite to soft queued so UI never
-        // sticks on English "BOT_UPSTREAM unreachable".
-        if (proxied.status >= 500) {
+        upstreamStatus = proxied.status;
+        if (proxied.status >= 200 && proxied.status < 300) {
+          upstreamOk = true;
+          try {
+            const j = (await proxied.json()) as { noteTh?: string };
+            upstreamNote = j.noteTh || "upstream wake accepted";
+          } catch {
+            upstreamNote = "upstream wake accepted";
+          }
+        } else {
           try {
             await proxied.body?.cancel();
           } catch {
             /* ignore */
           }
-          return withCors(
-            req,
-            NextResponse.json({
-              ok: true,
-              queued: false,
-              autoHeal: true,
-              at: new Date().toISOString(),
-              noteTh:
-                "เซิร์ฟเวอร์ยังไม่ตอบ — ส่งคำขอปลุกแล้ว และระบบจะรีสตาร์ทอัตโนมัติภายใน 1–2 นาที กด「รีเฟรช」อีกครั้ง",
-            })
-          );
+          upstreamNote = `upstream HTTP ${proxied.status}`;
         }
-        return withCors(req, proxied);
+      } else {
+        upstreamNote = "BOT_UPSTREAM unreachable";
       }
-      // Tunnel briefly down: still tell UI that auto-heal will recover (heal-bot-once every 2m).
-      return withCors(
-        req,
-        NextResponse.json({
+
+      // Independent path — does NOT need the box/tunnel
+      const gh = await dispatchGithubWake(
+        upstreamOk ? "wake-after-upstream-ok" : "wake-upstream-down"
+      );
+
+      const at = new Date().toISOString();
+      if (upstreamOk) {
+        return wakeJson(req, {
           ok: true,
+          at,
+          upstreamWake: true,
+          upstreamStatus,
+          githubDispatch: gh,
+          queued: true,
+          noteTh: gh.ok
+            ? "ส่งปลุกไปยังเซิร์ฟเวอร์แล้ว และสั่งรีเฟรช Pages last-good ผ่าน GitHub Actions แล้ว"
+            : upstreamNote ||
+              "ส่งสัญญาณปลุกไปยังเซิร์ฟเวอร์แล้ว — รอ daemon รีสตาร์ทแล้วกด「รีเฟรช」",
+        });
+      }
+
+      if (gh.ok) {
+        return wakeJson(req, {
+          ok: true,
+          at,
+          upstreamWake: false,
+          upstreamStatus,
+          githubDispatch: gh,
           queued: false,
-          autoHeal: true,
-          at: new Date().toISOString(),
+          pagesRefreshDispatched: true,
           noteTh:
-            "อัปสตรีมยังไม่พร้อม — ระบบจะรีสตาร์ท daemon/tunnel อัตโนมัติภายใน 1–2 นาที แล้วกด「รีเฟรช」",
-        })
+            "เซิร์ฟเวอร์ (tunnel/box) ไม่ตอบ — สั่ง GitHub Actions รีเฟรช Pages last-good แล้ว (ไม่สามารถสตาร์ทโปรเซสบน box จากเว็บได้) กด「รีเฟรช」หลัง 1–2 นาที",
+        });
+      }
+
+      // Honest failure — do NOT claim autoHeal will fix a dead box from here
+      return wakeJson(
+        req,
+        {
+          ok: false,
+          at,
+          upstreamWake: false,
+          upstreamStatus,
+          githubDispatch: gh,
+          pagesRefreshDispatched: false,
+          reason: "no_independent_wake_path",
+          noteTh: gh.attempted
+            ? `เซิร์ฟเวอร์ไม่ตอบ และ GitHub wake ล้มเหลว (${gh.detail || gh.status}) — แสดงค่าล่าสุดจาก Pages static หากมี`
+            : "เซิร์ฟเวอร์ (tunnel/box) ไม่ตอบ และยังไม่มี GITHUB_WAKE_TOKEN บน Workers — ปุ่มปลุกจากเว็บปลุก box ไม่ได้ ระบบพึ่ง heal บนเครื่อง + Pages last-good",
+        },
+        503
       );
     }
 
+    // Local upstream box path
     const ip = clientIp(req);
     const rate = await readRate();
     const now = Date.now();
     if (now - rate.lastAt < GLOBAL_MIN_MS) {
-      return withCors(
+      return wakeJson(
         req,
-        NextResponse.json(
-          {
-            ok: false,
-            error: "rate_limited",
-            retryAfterSec: Math.ceil((GLOBAL_MIN_MS - (now - rate.lastAt)) / 1000),
-            noteTh: "รอสักครู่แล้วกดปลุกอีกครั้ง",
-          },
-          { status: 429 }
-        )
+        {
+          ok: false,
+          error: "rate_limited",
+          retryAfterSec: Math.ceil((GLOBAL_MIN_MS - (now - rate.lastAt)) / 1000),
+          noteTh: "รอสักครู่แล้วกดปลุกอีกครั้ง",
+        },
+        429
       );
     }
     const ipLast = rate.byIp[ip] || 0;
     if (now - ipLast < MIN_INTERVAL_MS) {
-      return withCors(
+      return wakeJson(
         req,
-        NextResponse.json(
-          {
-            ok: false,
-            error: "rate_limited",
-            retryAfterSec: Math.ceil((MIN_INTERVAL_MS - (now - ipLast)) / 1000),
-            noteTh: "กดปลุกบ่อยเกินไป — รอแล้วลองใหม่",
-          },
-          { status: 429 }
-        )
+        {
+          ok: false,
+          error: "rate_limited",
+          retryAfterSec: Math.ceil((MIN_INTERVAL_MS - (now - ipLast)) / 1000),
+          noteTh: "กดปลุกบ่อยเกินไป — รอแล้วลองใหม่",
+        },
+        429
       );
     }
 
@@ -194,21 +316,16 @@ export async function POST(req: NextRequest) {
     rate.byIp[ip] = now;
     await writeRate(rate);
 
-    return withCors(
-      req,
-      NextResponse.json({
-        ok: true,
-        queued: true,
-        at: payload.at,
-        noteTh:
-          "ส่งสัญญาณปลุกแล้ว — ระบบจะรีสตาร์ท daemon ในไม่กี่วินาที แล้วรีเฟรชข้อมูล",
-      })
-    );
+    return wakeJson(req, {
+      ok: true,
+      queued: true,
+      upstreamWake: true,
+      at: payload.at,
+      noteTh:
+        "ส่งสัญญาณปลุกแล้ว — heal/supervisor จะรีสตาร์ท daemon ในไม่กี่วินาที แล้วรีเฟรชข้อมูล",
+    });
   } catch (e) {
-    return withCors(
-      req,
-      NextResponse.json({ ok: false, error: String(e) }, { status: 500 })
-    );
+    return wakeJson(req, { ok: false, error: String(e) }, 500);
   }
 }
 
@@ -221,6 +338,13 @@ export async function GET(req: NextRequest) {
         retries: 1,
       });
       if (proxied) return withCors(req, proxied);
+      return wakeJson(req, {
+        ok: true,
+        wakePending: false,
+        upstreamReachable: false,
+        githubWakeConfigured: !!(process.env.GITHUB_WAKE_TOKEN || "").trim(),
+        noteTh: "อัปสตรีมไม่ตอบ — GET สถานะจาก Workers อย่างเดียว",
+      });
     }
     const pending = existsSync(WAKE_FLAG);
     let early: { at?: string; ageSec?: number | null; healthy?: boolean } = {};
@@ -245,18 +369,13 @@ export async function GET(req: NextRequest) {
         /* ignore */
       }
     }
-    return withCors(
-      req,
-      NextResponse.json({
-        ok: true,
-        wakePending: pending,
-        earlyDaemon: early,
-      })
-    );
+    return wakeJson(req, {
+      ok: true,
+      wakePending: pending,
+      earlyDaemon: early,
+      upstreamReachable: true,
+    });
   } catch (e) {
-    return withCors(
-      req,
-      NextResponse.json({ ok: false, error: String(e) }, { status: 500 })
-    );
+    return wakeJson(req, { ok: false, error: String(e) }, 500);
   }
 }

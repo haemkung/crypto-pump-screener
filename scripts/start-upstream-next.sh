@@ -3,6 +3,8 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
+# Fail fast / auto-repair when node_modules wiped (box rebuild) instead of looping "next: not found"
+bash "$ROOT/scripts/ensure-next-deps.sh"
 export DISABLE_BOT_UPSTREAM=1
 export BOT_ROLE=upstream
 PORT="${UPSTREAM_NEXT_PORT:-3000}"
