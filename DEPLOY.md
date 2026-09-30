@@ -57,20 +57,23 @@ curl -sS -o /dev/null -w '%{http_code}\n' https://crypto-pump-screener.jakahome2
 curl -sS -o /dev/null -w '%{http_code}\n' https://haemkung.github.io/crypto-pump-screener/
 ```
 
-## Early tiers daemon (เริ่มขยับ / เริ่มทุบ / กำลังสะสม / กำลังแจกของ)
+## Early tiers daemon (จ้อง/pre-order → กำลังสะสม / เริ่มขยับ)
 
 `scripts/early-ignition-daemon.mjs` runs **locally only** (never on Workers) and is started + auto-restarted by
 `scripts/supervise-bot-upstream.sh` (`ensure_early` every poll; disable with `EARLY_IGNITION_ENABLED=0`).
 Start the supervisor from a shell that has `TELEGRAM_BOT_TOKEN` exported (the daemon inherits it; chat id from `.telegram-chat-id`).
 
-- **Confluence-first** (price move alone never alerts). Ignition (every ~60s): price breakout is only the timing trigger;
-  it must be preceded by >=3 independent evidence factors (OI build while flat, funding against the crowd, crowded L/S,
-  taker imbalance, quiet volume inflow, spot leading, fade-after-pump for Short). Watch (every 5 min): OI build + >=3 factors (>=2 directional).
+- **Confluence-first** (price move alone never alerts). **Pre-order / กำลังจ้อง / พร้อมโจมตี** (web always): 1–2 hidden factors
+  or priority scout (OI-build) hits — not entered yet. Status chips: จ้องอยู่ → รอ AI → อนุมัติแล้ว / วีโต้ / หมดอายุ.
+  Short Telegram `👀 จ้อง…` optional (`sendPreOrder`, default ON, `maxPreOrderPer24h` capped low).
+  **Promote** to watch/ignition only when confluence ≥3 + AI send/boost. Never chase `|pct24h|≥12`. SL 2–3%. NOW off.
+- Ignition (every ~60s): price breakout is only the timing trigger; needs >=3 evidence factors before the move.
+  Watch (every 5 min): OI build + >=3 factors (>=2 directional).
 - Every row lists each reason with its number. Web: daemon writes `data/early-tiers.json` → `GET /api/early-tiers`
   (Workers proxies BOT_UPSTREAM pass-through, CORS for Pages) → `EarlyTiersPanel` section on Workers + Pages.
 - Backtest: `npm run early:fetch-bt -- --out /tmp/early-bt` then `npm run early:backtest-confluence -- --data /tmp/early-bt --windows "k:<ISO end>"`.
-- Telegram switches: `data/early-alert-settings.json` (`sendIgnitionLong`, `sendIgnitionShort`, `sendWatchLong`, `sendWatchShort`).
-  Short tiers ship **off**; suppressed signals are still logged + graded.
+- Telegram switches: `data/early-alert-settings.json` (`sendIgnitionLong/Short`, `sendWatchLong/Short`, `sendPreOrder`, caps).
+  Suppressed signals are still logged + graded.
 - Log / self-grading: `data/early-alerts.json` (5m/15m/60m + path rule; kept separate from `alert-log.json` so the main learning weights are untouched).
   Dedupe state `.early-alert-state.json`; daemon log + status under `logs/early-ignition/`.
 

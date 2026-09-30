@@ -6,9 +6,10 @@ import { apiUrl, pagesStaticUrl } from "@/lib/apiBase";
 type Factor = { key: string; labelTh?: string; detailTh: string };
 type AiReview = { action: "send" | "boost" | "veto"; score: number; reasonTh: string; skipped?: boolean };
 type Plan = { entry: number; sl: number; slPct: number; tp1: number; tp2: number; slSkip: boolean; slNoteTh?: string };
+type PreOrderStatus = "watching" | "waiting_ai" | "approved" | "vetoed" | "expired";
 type Row = {
   id: string;
-  type: "watch" | "ignition";
+  type: "watch" | "ignition" | "preOrder";
   tier?: "accumulation" | "distribution";
   symbol: string;
   side: "long" | "short";
@@ -23,6 +24,10 @@ type Row = {
   plan?: Plan | null;
   trade?: { tp1: boolean; tp2: boolean; r: number } | null;
   ai?: AiReview | null;
+  status?: PreOrderStatus | null;
+  statusTh?: string | null;
+  source?: string | null;
+  noteTh?: string | null;
 };
 type Stat = { n: number; days?: number; perDay?: number | null; tp1Rate: number | null; tp1Wilson?: number[]; expR: number; maxConsecLoss?: number; avgSlPct?: number | null };
 type TierInfo = {
@@ -40,6 +45,7 @@ type Resp = {
   tiers?: Record<string, TierInfo>;
   backtest?: { generatedAt?: string; data?: { symbols?: number; trainDays?: number; testDays?: number } } | null;
   live?: Record<string, LiveStat>;
+  preOrder?: Row[];
   watch: Row[];
   ignition: Row[];
   noteTh?: string;
@@ -49,7 +55,7 @@ type Resp = {
 const REFRESH_MS = 60_000;
 const LS_KEY = "cps-early-tiers-last-good";
 /** Match daemon TIERS_SHOW_MS — keep last-good cards across empty restart scans. */
-const CARD_TTL_MS = { watch: 8 * 3600_000, ignition: 6 * 3600_000 } as const;
+const CARD_TTL_MS = { watch: 8 * 3600_000, ignition: 6 * 3600_000, preOrder: 4 * 3600_000 } as const;
 const FRESH_MS = 10 * 60_000;
 const STATUS_MS = 2600;
 const TICKER_MS = 1800;
@@ -73,9 +79,10 @@ const TG_KEY: Record<string, string> = { watch_long: "watchLong", watch_short: "
 
 const AI_STATUS_LINES = [
   "AI กำลังสแกนหลักฐานซ่อน…",
+  "กำลังจ้อง pre-order / พร้อมโจมตี…",
   "กำลังชั่ง OI / funding / L-S / taker…",
   "โมเดลกำลังรีวิวสัญญาณ…",
-  "รอ confluence ≥3 ข้อ…",
+  "รอ confluence ≥3 ข้อก่อนเข้าจริง…",
 ];
 
 const PLACEHOLDER_SYMS = ["BTC", "ETH", "SOL", "BNB", "XRP", "DOGE", "AVAX", "LINK", "NEAR", "SUI"];
@@ -83,16 +90,23 @@ const PLACEHOLDER_SYMS = ["BTC", "ETH", "SOL", "BNB", "XRP", "DOGE", "AVAX", "LI
 function cardAgeOk(r: Row): boolean {
   const t = Date.parse(r.flaggedAt || r.firstFlaggedAt || "");
   if (!Number.isFinite(t)) return false;
-  const ttl = r.type === "watch" ? CARD_TTL_MS.watch : CARD_TTL_MS.ignition;
+  const ttl =
+    r.type === "preOrder"
+      ? CARD_TTL_MS.preOrder
+      : r.type === "watch"
+        ? CARD_TTL_MS.watch
+        : CARD_TTL_MS.ignition;
   return Date.now() - t <= ttl;
 }
 function stillValidCards(j: Resp | null): Resp | null {
   if (!j) return null;
   const watch = (j.watch ?? []).filter(cardAgeOk);
   const ignition = (j.ignition ?? []).filter(cardAgeOk);
-  if (!watch.length && !ignition.length) return null;
+  const preOrder = (j.preOrder ?? []).filter(cardAgeOk);
+  if (!watch.length && !ignition.length && !preOrder.length) return null;
   return {
     ...j,
+    preOrder,
     watch,
     ignition,
     noteTh: j.noteTh || "แสดงการ์ดล่าสุดที่ยังอยู่ใน TTL",
@@ -129,8 +143,25 @@ function fmtPct(v: number | null | undefined): string {
 }
 const fmtR = (v: number | null | undefined) => (v == null || !Number.isFinite(v) ? "?" : `${v > 0 ? "+" : ""}${v.toFixed(2)}R`);
 function title(r: Row): string {
+  if (r.type === "preOrder") return r.side === "long" ? "🎯 กำลังจ้อง (Long)" : "🎯 กำลังจ้อง (Short)";
   if (r.type === "watch") return r.side === "long" ? "👀 กำลังสะสม" : "👀 กำลังแจกของ";
   return r.side === "long" ? "🚀 เริ่มขยับ" : "🔻 เริ่มทุบ";
+}
+const STATUS_CHIP: Record<PreOrderStatus, { label: string; cls: string }> = {
+  watching: { label: "จ้องอยู่", cls: "bg-sky-800/70 text-sky-100" },
+  waiting_ai: { label: "รอ AI", cls: "bg-amber-800/70 text-amber-50" },
+  approved: { label: "อนุมัติแล้ว", cls: "bg-emerald-800/80 text-emerald-50" },
+  vetoed: { label: "วีโต้", cls: "bg-rose-800/80 text-rose-50" },
+  expired: { label: "หมดอายุ", cls: "bg-zinc-700/80 text-zinc-300" },
+};
+function StatusChip({ status, statusTh }: { status?: PreOrderStatus | null; statusTh?: string | null }) {
+  if (!status) return null;
+  const meta = STATUS_CHIP[status] || STATUS_CHIP.watching;
+  return (
+    <span className={`ml-1 rounded px-1.5 py-0.5 text-[10px] font-semibold ${meta.cls}`} title="pre-order · ยังไม่เข้า">
+      {statusTh || meta.label}
+    </span>
+  );
 }
 function tgText(t: string): string {
   if (t === "sent") return "ส่งแล้ว";
@@ -241,20 +272,35 @@ function RowCard({ r, animKey }: { r: Row; animKey: number }) {
   const long = r.side === "long";
   const fresh = isFresh(r.flaggedAt);
   const hasAi = !!(r.ai && !r.ai.skipped);
+  const isPre = r.type === "preOrder";
   return (
-    <li className={`et-card rounded-lg border px-3 py-2 ${long ? "et-card-long border-emerald-800/60 bg-emerald-950/30" : "et-card-short border-rose-800/60 bg-rose-950/30"}`}>
+    <li className={`et-card rounded-lg border px-3 py-2 ${isPre ? "border-amber-800/50 bg-amber-950/20" : long ? "et-card-long border-emerald-800/60 bg-emerald-950/30" : "et-card-short border-rose-800/60 bg-rose-950/30"}`}>
       <span className="et-scan-line" aria-hidden />
       <div className="relative z-[2] flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <div className="font-semibold">
           <span className="mr-1">{title(r)}</span>
           <span className="text-zinc-100">{shortSym(r.symbol)}</span>
           <span className={`ml-2 rounded px-1.5 py-0.5 text-[10px] uppercase ${long ? "bg-emerald-800/60 text-emerald-100" : "bg-rose-800/60 text-rose-100"}`}>{long ? "Long" : "Short"}</span>
-          {hasAi ? <AiBadge ai={r.ai!} /> : <ThinkingDots />}
+          {isPre && <StatusChip status={r.status} statusTh={r.statusTh} />}
+          {isPre ? (
+            hasAi ? <AiBadge ai={r.ai!} /> : r.status === "waiting_ai" ? <ThinkingDots /> : null
+          ) : hasAi ? (
+            <AiBadge ai={r.ai!} />
+          ) : (
+            <ThinkingDots />
+          )}
         </div>
         <div className="text-xs text-zinc-300">
           ราคา {fmtPrice(r.price)} · 24h {fmtPct(r.pct24h)} · หลักฐาน <strong>{r.factorCount}</strong> ข้อ
+          {isPre ? " · ยังไม่เข้า" : ""}
         </div>
       </div>
+      {isPre && (
+        <div className="relative z-[2] mt-1 rounded border border-amber-800/40 bg-amber-950/30 px-2 py-0.5 text-[10px] text-amber-100/90">
+          pre-order / พร้อมโจมตี · ยังไม่เข้าจริง · รอ confluence ≥3 + อนุมัติ AI กับระบบ
+          {r.source ? ` · แหล่ง: ${r.source === "priority_scout" ? "priority scout" : r.source === "ignition_near" ? "ราคาขยับแต่หลักฐานไม่ครบ" : r.source}` : ""}
+        </div>
+      )}
       {r.plan && <div className="relative z-[2]"><PlanBox p={r.plan} side={r.side} /></div>}
       <ol className="relative z-[2] mt-1 list-decimal space-y-0.5 pl-5 text-xs text-zinc-200">
         {r.factors.map((f, i) => (
@@ -367,11 +413,11 @@ export function EarlyTiersPanel() {
   const [lastWakeAt, setLastWakeAt] = useState<string | null>(null);
 
   const applyData = useCallback((j: Resp, src: DataSource, isStale: boolean, err: string | null) => {
-    const liveCount = (j.watch?.length ?? 0) + (j.ignition?.length ?? 0);
+    const liveCount = (j.watch?.length ?? 0) + (j.ignition?.length ?? 0) + (j.preOrder?.length ?? 0);
     // Permanent: never replace still-valid last-good cards with a fresh empty scan.
     if (liveCount === 0) {
       const kept = stillValidCards(j) || readLastGoodLs();
-      if (kept && ((kept.watch?.length ?? 0) + (kept.ignition?.length ?? 0)) > 0) {
+      if (kept && ((kept.watch?.length ?? 0) + (kept.ignition?.length ?? 0) + (kept.preOrder?.length ?? 0)) > 0) {
         setData(kept);
         setSource(src === "live" ? "localStorage" : src);
         setStale(true);
@@ -563,7 +609,7 @@ export function EarlyTiersPanel() {
   }, [load]);
 
   const scanSymbols = useMemo(() => {
-    const rows = [...(data?.watch ?? []), ...(data?.ignition ?? [])];
+    const rows = [...(data?.preOrder ?? []), ...(data?.watch ?? []), ...(data?.ignition ?? [])];
     const seen = new Set<string>();
     const out: string[] = [];
     for (const r of rows) {
@@ -581,11 +627,11 @@ export function EarlyTiersPanel() {
   return (
     <section id="early-tiers" className="mt-4 rounded-xl border border-sky-900/50 bg-zinc-900/60 px-3 py-3">
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-base font-bold text-sky-200">ระยะต้น (หลักฐานซ่อนก่อน → ราคาเป็นแค่จังหวะ)</h2>
+        <h2 className="text-base font-bold text-sky-200">ระยะต้น (จ้อง/pre-order → หลักฐานครบ → ราคาเป็นจังหวะ)</h2>
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-[11px] text-zinc-500">
             อัปเดต {data?.updatedAt ? ago(data.updatedAt) : "—"}
-            {rules ? ` · ต้องมีหลักฐานซ่อน ≥3 ข้อเสมอ` : ""}
+            {rules ? ` · เข้าจริงต้อง ≥3 ข้อ · pre-order แสดงตั้งแต่ 1–2 ข้อ` : ""}
           </span>
           <button
             type="button"
@@ -650,23 +696,34 @@ export function EarlyTiersPanel() {
         </div>
       )}
       <TierStats data={data} />
+      <div className="mb-4">
+        <Group
+          title="🎯 กำลังจ้อง / พร้อมโจมตี (pre-order)"
+          hint="เหรียญที่ระบบจับตาอยู่ตอนนี้ (หลักฐาน 1–2 ข้อ หรือ priority scout) — ยังไม่เข้า · รออนุมัติจาก AI กับระบบเมื่อ confluence ≥3"
+          rows={data?.preOrder ?? []}
+          empty="ยังไม่มีเหรียญในโหมดจ้อง / pre-order"
+          animKey={animKey}
+        />
+      </div>
       <div className="flex flex-col gap-4 md:flex-row">
         <Group
           title="เฝ้าดู: กำลังสะสม / กำลังแจกของ"
-          hint="OI สะสมขณะราคานิ่ง + หลักฐานอื่น (funding, L/S, taker, spot, top trader)"
+          hint="OI สะสมขณะราคานิ่ง + หลักฐานอื่น (funding, L/S, taker, spot, top trader) · confluence ≥3"
           rows={data?.watch ?? []}
           empty="ตอนนี้ยังไม่มีเหรียญที่หลักฐานครบเกณฑ์"
           animKey={animKey}
         />
         <Group
           title="ระยะต้น: เริ่มขยับ / เริ่มทุบ"
-          hint="ราคาเพิ่งเบรก หลังมีหลักฐานครบก่อนหน้า — ราคาขยับอย่างเดียวไม่นับ"
+          hint="ราคาเพิ่งเบรก หลังมีหลักฐานครบก่อนหน้า — ราคาขยับอย่างเดียวไม่นับ · confluence ≥3"
           rows={data?.ignition ?? []}
           empty="ยังไม่มีสัญญาณระยะต้นที่ผ่านเกณฑ์ confluence"
           animKey={animKey}
         />
       </div>
-      <p className="mt-2 text-[11px] text-zinc-500">สัญญาณระยะต้น เสี่ยงหลอกสูง · ใช้ SL ทุกครั้ง · ไม่ใช่คำแนะนำการลงทุน</p>
+      <p className="mt-2 text-[11px] text-zinc-500">
+        pre-order = จ้องอย่างเดียว ยังไม่เข้า · เข้าจริงเมื่อ ≥3 ปัจจัย + AI/ระบบอนุมัติ · ไม่ไล่เหรียญที่ปั๊มไปแล้ว (|24h|≥12%) · SL 2–3% · สัญญาณเสี่ยงหลอกสูง · ไม่ใช่คำแนะนำการลงทุน
+      </p>
     </section>
   );
 }

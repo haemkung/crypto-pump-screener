@@ -524,6 +524,9 @@ export const CONFLUENCE_RULES = {
   ignitionMinDirectional: 1,
   watchMinFactors: 3,
   watchMinDirectional: 2,
+  /** Pre-order / พร้อมโจมตี: show early interest before full enter (web always). */
+  preOrderMinFactors: 1,
+  preOrderMaxFactors: 2, // inclusive; full enter still needs >=3
 };
 
 // ---------------------------------------------------------------------------

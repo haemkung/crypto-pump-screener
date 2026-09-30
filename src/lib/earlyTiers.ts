@@ -23,9 +23,11 @@ export interface EarlyFactor {
   detailTh: string;
 }
 
+export type PreOrderStatus = "watching" | "waiting_ai" | "approved" | "vetoed" | "expired";
+
 export interface EarlyTierRow {
   id: string;
-  type: "watch" | "ignition";
+  type: "watch" | "ignition" | "preOrder";
   tier?: "accumulation" | "distribution";
   symbol: string;
   side: "long" | "short";
@@ -41,6 +43,11 @@ export interface EarlyTierRow {
   trigger?: { moveWindow: number; movePct: number; volMult: number; breakoutPct: number } | null;
   plan?: { entry: number; sl: number; slPct: number; tp1: number; tp2: number; slSkip: boolean; slNoteTh?: string } | null;
   trade?: { tp1: boolean; tp2: boolean; r: number } | null;
+  /** Pre-order lifecycle: จ้องอยู่ → รอ AI → อนุมัติแล้ว / วีโต้ / หมดอายุ */
+  status?: PreOrderStatus | null;
+  statusTh?: string | null;
+  source?: string | null;
+  noteTh?: string | null;
 }
 
 export interface EarlyTiersFile {
@@ -52,6 +59,8 @@ export interface EarlyTiersFile {
   tiers?: Record<string, unknown>;
   backtest?: unknown;
   live?: Record<string, unknown>;
+  /** กำลังจ้อง / พร้อมโจมตี — not entered yet */
+  preOrder?: EarlyTierRow[];
   watch: EarlyTierRow[];
   ignition: EarlyTierRow[];
   noteTh?: string;
@@ -59,7 +68,7 @@ export interface EarlyTiersFile {
 
 export function readEarlyTiers(): EarlyTiersFile {
   const p = resolve(process.cwd(), "data", "early-tiers.json");
-  if (!existsSync(p)) return { updatedAt: null, watch: [], ignition: [], noteTh: "daemon ยังไม่เขียนข้อมูล" };
+  if (!existsSync(p)) return { updatedAt: null, preOrder: [], watch: [], ignition: [], noteTh: "daemon ยังไม่เขียนข้อมูล" };
   try {
     const raw = JSON.parse(readFileSync(p, "utf8")) as Partial<EarlyTiersFile>;
     return {
@@ -71,11 +80,12 @@ export function readEarlyTiers(): EarlyTiersFile {
       tiers: raw.tiers,
       backtest: raw.backtest,
       live: raw.live,
+      preOrder: Array.isArray(raw.preOrder) ? raw.preOrder : [],
       watch: Array.isArray(raw.watch) ? raw.watch : [],
       ignition: Array.isArray(raw.ignition) ? raw.ignition : [],
       noteTh: raw.noteTh,
     };
   } catch {
-    return { updatedAt: null, watch: [], ignition: [], noteTh: "อ่านไฟล์ early-tiers ไม่ได้" };
+    return { updatedAt: null, preOrder: [], watch: [], ignition: [], noteTh: "อ่านไฟล์ early-tiers ไม่ได้" };
   }
 }

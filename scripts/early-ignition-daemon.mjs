@@ -11,6 +11,8 @@
  * the same functions grade the backtest (scripts/walkforward-early.mjs) and live alerts (a.trade).
  *
  * Tiers
+ *   👀 จ้อง / พร้อมโจมตี (pre-order, web always): 1–2 hidden factors OR priority scout (OI-build) hits —
+ *       NOT yet full confluence. Short Telegram optional/capped (👀 จ้อง…). Promote only when ≥3 + AI send/boost.
  *   👀 กำลังสะสม / 👀 กำลังแจกของ (watch, every 5 min): F1 required + total >= WATCH_MIN_FACTORS.
  *   🚀 เริ่มขยับ / 🔻 เริ่มทุบ (ระยะต้น, every ~60s): early price breakout (timing trigger) AND
  *       >= IGN_MIN_FACTORS evidence factors as of the bar BEFORE the move.
@@ -91,7 +93,7 @@ const SNAPS_FILE = resolve(DATA_DIR, "early-price-snaps.json");
 const SNAPS_DISK_KEEP_MS = 25 * 60e3; // enough for 5/10/15m move + margin
 const SNAPS_SEED_LIMIT = 20; // 1m bars per symbol on cold start
 const SNAPS_SEED_SYMBOLS = 60; // top liquid + majors
-const TIERS_SHOW_MS = { watch: 8 * 3600e3, ignition: 6 * 3600e3 };
+const TIERS_SHOW_MS = { watch: 8 * 3600e3, ignition: 6 * 3600e3, preOrder: 4 * 3600e3 };
 /** frozen walk-forward parameters + OOS stats (scripts/walkforward-early.mjs → data/early-tier-config.json) */
 const TIER_CONFIG_FILE = resolve(DATA_DIR, "early-tier-config.json");
 const DEFAULT_TIER_CFG = {
@@ -125,8 +127,11 @@ const DEFAULT_SETTINGS = {
   sendIgnitionShort: false,
   sendWatchLong: false,
   sendWatchShort: false,
+  /** Pre-order / กำลังจ้อง: short Telegram ON by default but hard-capped (web always shows). */
+  sendPreOrder: true,
   maxIgnitionPer24h: 7,
   maxWatchPer24h: 3,
+  maxPreOrderPer24h: 4,
   /** paper-trade → promote: a web-only tier is switched to Telegram automatically once its LIVE forward test
    *  (every confluent alert, graded with its exact SL) reaches n>=20, TP1 rate>=55%, avg>=+0.25R; an auto-enabled
    *  tier is switched back off if its last 20 graded alerts average < -0.1R. */
@@ -183,6 +188,17 @@ const WATCH_PRIORITY = 40;
 const ALREADY_PUMPED_ABS_PCT = 12;
 const MIN_24H_VOL = 5_000_000;
 const LOG_KEEP = 2000;
+/** Pre-order / พร้อมโจมตี (not entered yet). */
+const PREORDER_DEDUPE_MS = 3 * 3600e3;
+const PREORDER_TTL_MS = 4 * 3600e3;
+const PREORDER_MAX_PER_CYCLE = 3;
+const PREORDER_STATUS = {
+  watching: "จ้องอยู่",
+  waiting_ai: "รอ AI",
+  approved: "อนุมัติแล้ว",
+  vetoed: "วีโต้",
+  expired: "หมดอายุ",
+};
 
 const HOSTS = ["https://www.binance.com", "https://fstream.binance.com", "https://fapi.binance.com"];
 const HEADERS = { Accept: "application/json", "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) crypto-pump-screener-early/2.0" };
@@ -483,6 +499,10 @@ function baseSym(symbol) {
 function compactSignal(kind, side, symbol) {
   const base = baseSym(symbol);
   const sideWord = side === "long" ? "Long" : "Short";
+  if (kind === "preOrder") {
+    // Short pre-order ping — not an enter alert
+    return `👀 จ้อง…${base}${sideWord}`;
+  }
   if (kind === "watch") {
     const tier = side === "long" ? "กำลังสะสม" : "กำลังแจกของ";
     return `👀 ${tier}${base}${sideWord}`;
@@ -506,6 +526,15 @@ function formatWatch(w, cfg) {
   const brief = briefTradeLine(w);
   if (brief) lines.push(brief);
   return lines.join("\n");
+}
+/** Short pre-order Telegram — interest only, not enter. */
+function formatPreOrder(a) {
+  const n = a.factorCount ?? (a.factors || []).length;
+  const keys = (a.factors || []).map((f) => f.key).slice(0, 3).join(",");
+  return `${compactSignal("preOrder", a.side, a.symbol)} · ${n}f${keys ? " " + keys : ""} · ยังไม่เข้า`;
+}
+function preOrderStatusTh(status) {
+  return PREORDER_STATUS[status] || PREORDER_STATUS.watching;
 }
 /** stop/targets for an alert (same function the backtest graded) */
 function planTrade(side, entry, mode, bars, t, level) {
@@ -589,10 +618,34 @@ function liveStats(logObj) {
 }
 
 // ---------- web snapshot ----------
+function mapTierRow(a, first) {
+  return {
+    id: a.id, type: a.type, tier: a.tier, symbol: a.symbol, side: a.side, price: a.price, pct24h: a.pct24h ?? null,
+    factors: (a.factors || []).map((f) => ({ key: f.key, labelTh: FACTOR_LABELS[f.key] || f.key, detailTh: f.detailTh })),
+    factorCount: a.factorCount ?? (a.factors || []).length, directional: a.directional ?? null,
+    flaggedAt: a.sentAt, firstFlaggedAt: new Date(first.get(`${a.symbol}|${a.side}`) ?? Date.parse(a.sentAt)).toISOString(),
+    telegram: a.delivered ? "sent" : a.suppressed === "sl_too_wide" ? "sl_wide" : a.suppressed === "ai_veto" ? "ai_veto" : /disabled/.test(a.suppressed || "") ? "off" : a.suppressed === "cap" ? "capped" : a.suppressed ? "off" : "failed",
+    trigger: a.type === "ignition" ? { moveWindow: a.moveWindow, movePct: a.movePct, volMult: a.volMult, breakoutPct: a.breakoutPct } : null,
+    plan: Number.isFinite(a.slPct) ? { entry: a.entry, sl: a.sl, slPct: a.slPct, tp1: a.tp1, tp2: a.tp2, slSkip: !!a.slSkip, slNoteTh: a.slNoteTh } : null,
+    trade: a.trade || null,
+    ai: a.ai || null,
+    status: a.status || null,
+    statusTh: a.statusTh || null,
+    source: a.source || null,
+    noteTh: a.noteTh || null,
+  };
+}
 function writeTiersSnapshot(logObj, settings, now, tierCfg) {
-  // only confluence-era rows (factors listed and >= rule minimum); legacy price-only rows never shown
-  const recent = logObj.alerts.filter((a) => (a.type === "watch" || a.type === "ignition") && Array.isArray(a.factors) &&
-    a.factors.length >= (a.type === "watch" ? RULES.watchMinFactors : RULES.ignitionMinFactors) && now - Date.parse(a.sentAt) <= 24 * 3600e3);
+  // confluence-era rows (>= rule min) + pre-order (1–2 factors / scout, not entered yet)
+  const recent = logObj.alerts.filter((a) => {
+    if (!Array.isArray(a.factors)) return false;
+    const ageOk = now - Date.parse(a.sentAt) <= 24 * 3600e3;
+    if (!ageOk) return false;
+    if (a.type === "watch") return a.factors.length >= RULES.watchMinFactors;
+    if (a.type === "ignition") return a.factors.length >= RULES.ignitionMinFactors;
+    if (a.type === "preOrder") return a.factors.length >= (RULES.preOrderMinFactors ?? 1);
+    return false;
+  });
   const first = new Map();
   for (const a of recent) {
     const k = `${a.symbol}|${a.side}`;
@@ -601,38 +654,45 @@ function writeTiersSnapshot(logObj, settings, now, tierCfg) {
   }
   const latest = (type) => {
     const m = new Map();
+    const ttl = TIERS_SHOW_MS[type] || TIERS_SHOW_MS.watch;
     for (const a of recent) {
-      if (a.type !== type || now - Date.parse(a.sentAt) > TIERS_SHOW_MS[type]) continue;
+      if (a.type !== type || now - Date.parse(a.sentAt) > ttl) continue;
       const k = `${a.symbol}|${a.side}`;
       if (!m.has(k) || Date.parse(a.sentAt) > Date.parse(m.get(k).sentAt)) m.set(k, a);
     }
     return [...m.values()]
       .sort((x, y) => Date.parse(y.sentAt) - Date.parse(x.sentAt))
       .slice(0, 30)
-      .map((a) => ({
-        id: a.id, type: a.type, tier: a.tier, symbol: a.symbol, side: a.side, price: a.price, pct24h: a.pct24h ?? null,
-        factors: (a.factors || []).map((f) => ({ key: f.key, labelTh: FACTOR_LABELS[f.key] || f.key, detailTh: f.detailTh })),
-        factorCount: a.factorCount ?? (a.factors || []).length, directional: a.directional ?? null,
-        flaggedAt: a.sentAt, firstFlaggedAt: new Date(first.get(`${a.symbol}|${a.side}`) ?? Date.parse(a.sentAt)).toISOString(),
-        telegram: a.delivered ? "sent" : a.suppressed === "sl_too_wide" ? "sl_wide" : a.suppressed === "ai_veto" ? "ai_veto" : /disabled/.test(a.suppressed || "") ? "off" : a.suppressed === "cap" ? "capped" : a.suppressed ? "off" : "failed",
-        trigger: a.type === "ignition" ? { moveWindow: a.moveWindow, movePct: a.movePct, volMult: a.volMult, breakoutPct: a.breakoutPct } : null,
-        plan: Number.isFinite(a.slPct) ? { entry: a.entry, sl: a.sl, slPct: a.slPct, tp1: a.tp1, tp2: a.tp2, slSkip: !!a.slSkip, slNoteTh: a.slNoteTh } : null,
-        trade: a.trade || null,
-        ai: a.ai || null,
-      }));
+      .map((a) => mapTierRow(a, first));
   };
   let watchRows = latest("watch");
   let ignitionRows = latest("ignition");
+  let preOrderRows = latest("preOrder");
+  // Drop pre-order that already promoted to watch/ignition (same symbol+side still live).
+  const promoted = new Set([...watchRows, ...ignitionRows].map((r) => `${r.symbol}|${r.side}`));
+  const preMaxShow = RULES.preOrderMaxFactors ?? 2;
+  preOrderRows = preOrderRows.filter((r) => {
+    if (promoted.has(`${r.symbol}|${r.side}`)) return false;
+    // Hard rule: pre-order panel never shows ≥3 (those belong in watch/ignition)
+    if ((r.factorCount ?? (r.factors || []).length) > preMaxShow) return false;
+    // Hide expired/vetoed after brief display window (keep approved briefly via status)
+    if (r.status === "expired" || r.status === "vetoed") {
+      const age = now - Date.parse(r.flaggedAt || "");
+      return Number.isFinite(age) && age < 30 * 60e3;
+    }
+    return true;
+  });
   // Restart / quiet-scan: do not flash blank UI while previous cards are still within their own TTL.
-  if (!watchRows.length && !ignitionRows.length) {
+  if (!watchRows.length && !ignitionRows.length && !preOrderRows.length) {
     const prev = readJson(TIERS_FILE, null);
     const keep = (rows, type) => (Array.isArray(rows) ? rows : []).filter((r) => {
       const t = Date.parse(r?.flaggedAt || r?.firstFlaggedAt || "");
-      return Number.isFinite(t) && now - t <= TIERS_SHOW_MS[type];
+      return Number.isFinite(t) && now - t <= (TIERS_SHOW_MS[type] || TIERS_SHOW_MS.watch);
     });
     if (prev) {
       watchRows = keep(prev.watch, "watch");
       ignitionRows = keep(prev.ignition, "ignition");
+      preOrderRows = keep(prev.preOrder, "preOrder");
     }
   }
   writeJsonAtomic(TIERS_FILE, {
@@ -641,14 +701,21 @@ function writeTiersSnapshot(logObj, settings, now, tierCfg) {
     daemonPid: process.pid,
     rules: RULES,
     risk: RISK,
-    telegram: { ignitionLong: settings.sendIgnitionLong, ignitionShort: settings.sendIgnitionShort, watchLong: settings.sendWatchLong, watchShort: settings.sendWatchShort },
+    telegram: {
+      ignitionLong: settings.sendIgnitionLong,
+      ignitionShort: settings.sendIgnitionShort,
+      watchLong: settings.sendWatchLong,
+      watchShort: settings.sendWatchShort,
+      preOrder: !!settings.sendPreOrder,
+    },
     tiers: Object.fromEntries(["ignition_long", "ignition_short", "watch_long", "watch_short"].map((k) => [k, { params: tierCfg[k].params, oos: tierCfg[k].oos, baselines: tierCfg[k].baselines ? { priceOnly: tierCfg[k].baselines.priceOnlyTest, random: tierCfg[k].baselines.randomTest } : null, verdict: tierCfg[k].verdict }])),
     backtest: tierCfg._meta,
     live: liveStats(logObj),
+    preOrder: preOrderRows,
     watch: watchRows,
     ignition: ignitionRows,
-    noteTh: (!watchRows.length && !ignitionRows.length)
-      ? "ยังไม่มีสัญญาณที่ผ่าน confluence ≥3 ปัจจัยในช่วง TTL"
+    noteTh: (!watchRows.length && !ignitionRows.length && !preOrderRows.length)
+      ? "ยังไม่มีสัญญาณที่ผ่าน confluence ≥3 หรือ pre-order ในช่วง TTL"
       : undefined,
   });
 }
@@ -665,7 +732,7 @@ function buildAiPayload(a) {
   return {
     symbol: a.symbol,
     side: a.side,
-    tier: a.type === "watch" ? "watch" : "ignition",
+    tier: a.type === "preOrder" ? "preOrder" : a.type === "watch" ? "watch" : "ignition",
     factors,
     price: a.price ?? a.entry ?? null,
     fundingPct: a.fundingPct ?? null,
@@ -840,34 +907,68 @@ async function watchScan(tickMap, state, now, settings, tierCfg) {
     await sleep(120);
   }
   const hits = [];
+  const scouts = []; // pre-order: 1–2 factors / priority scout, NOT full confluence
+  const preMin = RULES.preOrderMinFactors ?? 1;
+  const preMax = RULES.preOrderMaxFactors ?? 2;
   for (const s of oiPass.slice(0, WATCH_FULL_CAP)) {
     try {
       const tk = tickMap.get(s);
+      if (Math.abs(tk.pct24h) >= ALREADY_PUMPED_ABS_PCT) continue; // never chase already pumped
       const data = await fetchEvidenceData(s, tk);
       const asOf = Date.now();
       let best = null;
+      let bestScout = null;
       for (const side of ["long", "short"]) {
         const ev = evaluateEvidence(side, data, asOf);
         const p = tierCfg[`watch_${side}`].params;
-        if (!passes(ev, p.minFactors, p.minDirectional, "oiBuild")) continue;
-        if (!best || ev.count > best.ev.count) best = { side, ev };
+        if (passes(ev, p.minFactors, p.minDirectional, "oiBuild")) {
+          if (!best || ev.count > best.ev.count) best = { side, ev };
+          continue;
+        }
+        // Pre-order: oiBuild priority scout OR 1–2 hidden factors — NEVER ≥3 (enter needs ≥3)
+        const hasOi = ev.factors.some((f) => f.key === "oiBuild");
+        const inBand = ev.count >= preMin && ev.count <= preMax;
+        if ((hasOi || inBand) && inBand) {
+          if (!bestScout || ev.count > bestScout.ev.count || (ev.count === bestScout.ev.count && hasOi && !bestScout.ev.factors.some((f) => f.key === "oiBuild"))) {
+            bestScout = { side, ev, hasOi };
+          }
+        }
       }
+      const b5 = data.p5.map((x) => [x[0], x[3], x[1], x[2], x[3]]);
       if (best) {
         // 5m bars as [ts, o, h, l, c]; swing60 = last 12 closed 5m bars
-        const b5 = data.p5.map((x) => [x[0], x[3], x[1], x[2], x[3]]);
         const mode = tierCfg[`watch_${best.side}`].params.slMode;
         const n5 = Math.max(1, Math.round((Number(String(mode).replace(/\D/g, "")) || 60) / 5));
         const plan = planTrade(best.side, tk.p, `swing${n5}`, b5, b5.length - 1, null);
         plan.slMode = mode;
         plan.slNoteTh = plan.slNoteTh.replace(/swing?\d+ นาทีล่าสุด|\d+ นาทีล่าสุด/, `${n5 * 5} นาทีล่าสุด`);
         hits.push({ symbol: s, side: best.side, tier: best.side === "long" ? "accumulation" : "distribution", factors: best.ev.factors, directional: best.ev.directional, price: tk.p, pct24h: tk.pct24h, fundingPct: data.fundingPct, ...plan });
+      } else if (bestScout) {
+        const mode = tierCfg[`watch_${bestScout.side}`].params.slMode;
+        const n5 = Math.max(1, Math.round((Number(String(mode).replace(/\D/g, "")) || 60) / 5));
+        const plan = planTrade(bestScout.side, tk.p, `swing${n5}`, b5, b5.length - 1, null);
+        plan.slMode = mode;
+        scouts.push({
+          symbol: s,
+          side: bestScout.side,
+          tier: bestScout.side === "long" ? "accumulation" : "distribution",
+          source: bestScout.hasOi ? "priority_scout" : "near_miss",
+          factors: bestScout.ev.factors,
+          directional: bestScout.ev.directional,
+          price: tk.p,
+          pct24h: tk.pct24h,
+          fundingPct: data.fundingPct,
+          ...plan,
+        });
       }
     } catch (e) { if (isRate(e)) throw e; }
   }
   const fresh = hits.filter((h) => !(state.watchSent[`${h.symbol}|${h.tier}`] && now - state.watchSent[`${h.symbol}|${h.tier}`] < WATCH_DEDUPE_MS));
   for (const h of fresh) h.suppressed = h.slSkip ? "sl_too_wide" : h.side === "long" ? (settings.sendWatchLong ? null : "long_disabled") : settings.sendWatchShort ? null : "short_disabled";
   fresh.sort((a, b) => b.factors.length - a.factors.length);
-  return { eligible: elig.length, checked, oiPass: oiPass.length, hits: fresh };
+  const freshScouts = scouts.filter((h) => !(state.preOrderSent?.[`${h.symbol}|${h.side}`] && now - state.preOrderSent[`${h.symbol}|${h.side}`] < PREORDER_DEDUPE_MS));
+  freshScouts.sort((a, b) => b.factors.length - a.factors.length || Math.abs(a.pct24h) - Math.abs(b.pct24h));
+  return { eligible: elig.length, checked, oiPass: oiPass.length, hits: fresh, scouts: freshScouts };
 }
 
 // ---------- main cycle ----------
@@ -940,6 +1041,20 @@ async function cycle() {
   state.watchRecent = (state.watchRecent || []).filter((x) => now - x < 24 * 3600e3);
   state.watchFlags ||= {};
   for (const [k, v] of Object.entries(state.watchFlags)) if (!v || now - v.at > WATCH_MENTION_MS) delete state.watchFlags[k];
+  state.preOrderSent ||= {};
+  for (const [k, v] of Object.entries(state.preOrderSent)) if (!v || now - v > PREORDER_DEDUPE_MS * 2) delete state.preOrderSent[k];
+  state.preOrderRecent = (state.preOrderRecent || []).filter((x) => now - x < 24 * 3600e3);
+  state.preOrderFlags ||= {};
+  for (const [k, v] of Object.entries(state.preOrderFlags)) {
+    if (!v) { delete state.preOrderFlags[k]; continue; }
+    const age = now - (v.firstAt || v.at || 0);
+    // Keep expired/vetoed/approved briefly for web chips, then drop.
+    if (age > PREORDER_TTL_MS + 30 * 60e3) delete state.preOrderFlags[k];
+    else if (age > PREORDER_TTL_MS && v.status !== "approved" && v.status !== "vetoed" && v.status !== "expired") {
+      v.status = "expired";
+      v.statusTh = PREORDER_STATUS.expired;
+    }
+  }
 
   const logObj = readJson(LOG_FILE, { alerts: [] });
   logObj.alerts ||= [];
@@ -970,6 +1085,7 @@ async function cycle() {
   // ----- watch (once per 5-min slot, >= 55s into it so the last futures/data bucket is published)
   let watch = null;
   let watchAlerts = [];
+  let scoutHits = [];
   const slot = Math.floor(now / 300e3);
   if (slot !== lastWatchSlot && now % 300e3 >= 55e3) {
     lastWatchSlot = slot;
@@ -988,12 +1104,118 @@ async function cycle() {
       }));
       const ws = watchAlerts.filter((a) => !a.suppressed);
       for (const a of ws) messages.push({ alerts: [a], body: formatWatch({ ...a, factors: a._h.factors }, tierCfg[`watch_${a.side}`]) });
+      scoutHits = Array.isArray(watch.scouts) ? watch.scouts : [];
     } catch (e) {
       log("watch error:", String(e?.message || e).slice(0, 200));
     }
   }
 
-  const allAlerts = [...ignAlerts, ...watchAlerts];
+  // ----- pre-order / กำลังจ้อง / พร้อมโจมตี (1–2 factors OR priority scout; NOT full enter)
+  // Also fold ignition near-misses (price timing hit but confluence < 3).
+  const preMin = RULES.preOrderMinFactors ?? 1;
+  const preMax = RULES.preOrderMaxFactors ?? 2;
+  const ignNear = ign.evaluated
+    .filter((h) => !h.confluent && Array.isArray(h.factors) && h.factors.length >= preMin && h.factors.length <= preMax)
+    .filter((h) => Math.abs(h.pct24h ?? 0) < ALREADY_PUMPED_ABS_PCT)
+    .map((h) => ({
+      symbol: h.symbol, side: h.side, tier: h.side === "long" ? "accumulation" : "distribution",
+      source: "ignition_near", factors: h.factors, directional: h.directional ?? 0,
+      price: h.close, pct24h: h.pct24h, fundingPct: h.fundingPct,
+      entry: h.entry, sl: h.sl, slPct: h.slPct, structPct: h.structPct, tp1: h.tp1, tp2: h.tp2,
+      slSkip: !!h.slSkip, slMode: h.slMode, slNoteTh: h.slNoteTh,
+    }));
+  const scoutPool = [...scoutHits, ...ignNear];
+  // Dedupe by symbol|side preferring higher factorCount
+  const scoutMap = new Map();
+  for (const h of scoutPool) {
+    const k = `${h.symbol}|${h.side}`;
+    const prev = scoutMap.get(k);
+    if (!prev || (h.factors?.length || 0) > (prev.factors?.length || 0)) scoutMap.set(k, h);
+  }
+  const promotedKeys = new Set(
+    [...watchAlerts, ...ignAlerts.filter((a) => a.type === "ignition")].map((a) => `${a.symbol}|${a.side}`)
+  );
+  // Mark existing pre-order flags as approved when they promote this cycle
+  for (const k of promotedKeys) {
+    const fl = state.preOrderFlags[k];
+    if (fl && fl.status !== "approved") {
+      fl.status = "approved";
+      fl.statusTh = PREORDER_STATUS.approved;
+      fl.promotedAt = now;
+    }
+  }
+  // Expire stale flags
+  for (const [k, fl] of Object.entries(state.preOrderFlags)) {
+    if (fl.status === "approved" || fl.status === "vetoed") continue;
+    if (now - (fl.firstAt || fl.at || 0) > PREORDER_TTL_MS) {
+      fl.status = "expired";
+      fl.statusTh = PREORDER_STATUS.expired;
+    }
+  }
+  const preCandidates = [...scoutMap.values()]
+    .filter((h) => !promotedKeys.has(`${h.symbol}|${h.side}`))
+    .filter((h) => !(state.preOrderSent[`${h.symbol}|${h.side}`] && now - state.preOrderSent[`${h.symbol}|${h.side}`] < PREORDER_DEDUPE_MS))
+    .sort((a, b) => (b.factors?.length || 0) - (a.factors?.length || 0))
+    .slice(0, PREORDER_MAX_PER_CYCLE);
+
+  const proom = Math.max(0, Math.min(PREORDER_MAX_PER_CYCLE, (settings.maxPreOrderPer24h ?? 4) - state.preOrderRecent.length));
+  let preOrderAlerts = preCandidates.map((h, idx) => {
+    const k = `${h.symbol}|${h.side}`;
+    const prev = state.preOrderFlags[k];
+    const firstAt = prev?.firstAt || now;
+    const n = h.factors?.length || 0;
+    // Status: 2 factors → waiting AI path; 1 factor / scout → watching
+    let status = n >= 2 ? "waiting_ai" : "watching";
+    if (prev?.status === "vetoed") status = "vetoed";
+    if (prev?.status === "approved") status = "approved";
+    if (prev?.status === "expired") status = "expired";
+    const wantTg = !!settings.sendPreOrder && status !== "vetoed" && status !== "expired" && idx < proom;
+    return {
+      id: randomUUID(),
+      type: "preOrder",
+      tier: h.tier,
+      symbol: h.symbol,
+      side: h.side,
+      sentAt: new Date(now).toISOString(),
+      barCloseMs: now,
+      ts: now,
+      price: h.price,
+      pct24h: Math.round((h.pct24h ?? 0) * 100) / 100,
+      factors: (h.factors || []).map((f) => ({ key: f.key, detailTh: f.detailTh })),
+      factorCount: n,
+      directional: h.directional ?? 0,
+      fundingPct: Number.isFinite(h.fundingPct) ? Math.round(h.fundingPct * 10000) / 10000 : null,
+      entry: h.entry, sl: h.sl, slPct: h.slPct, structPct: h.structPct, tp1: h.tp1, tp2: h.tp2,
+      slSkip: !!h.slSkip, slMode: h.slMode, slNoteTh: h.slNoteTh,
+      source: h.source || "scout",
+      status,
+      statusTh: preOrderStatusTh(status),
+      noteTh: "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ",
+      suppressed: wantTg ? null : (settings.sendPreOrder ? "cap" : "preorder_tg_off"),
+      delivered: false,
+      dryRun: DRY,
+      outcomes: { "5m": null, "15m": null, "60m": null },
+      firstAt,
+      _h: h,
+    };
+  });
+  // Persist flag bookkeeping (even when TG off — web always)
+  for (const a of preOrderAlerts) {
+    const k = `${a.symbol}|${a.side}`;
+    state.preOrderFlags[k] = {
+      side: a.side,
+      status: a.status,
+      statusTh: a.statusTh,
+      firstAt: a.firstAt,
+      at: now,
+      factorCount: a.factorCount,
+      source: a.source,
+    };
+  }
+  const preSendable = preOrderAlerts.filter((a) => !a.suppressed);
+  for (const a of preSendable) messages.push({ alerts: [a], body: formatPreOrder(a) });
+
+  const allAlerts = [...ignAlerts, ...watchAlerts, ...preOrderAlerts];
   // AI review ONLY for messages about to Telegram (code filters already passed).
   const reviewedMessages = [];
   for (const m of messages) {
@@ -1029,14 +1251,67 @@ async function cycle() {
       if (a.type !== "ignition") continue;
       state.sent[`${a.symbol}|${a.side}`] = { at: now, price: a.price };
       if (!a.suppressed) { state.recent.push(now); state.recent24h.push(now); }
+      const pk = `${a.symbol}|${a.side}`;
+      if (state.preOrderFlags[pk]) {
+        state.preOrderFlags[pk].status = "approved";
+        state.preOrderFlags[pk].statusTh = PREORDER_STATUS.approved;
+        state.preOrderFlags[pk].promotedAt = now;
+      }
     }
     for (const a of watchAlerts) {
       state.watchSent[`${a.symbol}|${a.tier}`] = now;
       state.watchFlags[a.symbol] = { tier: a.tier, side: a.side, at: now };
       if (!a.suppressed) state.watchRecent.push(now);
+      // Promotion: full watch enter clears pre-order interest for this symbol|side
+      const pk = `${a.symbol}|${a.side}`;
+      if (state.preOrderFlags[pk]) {
+        state.preOrderFlags[pk].status = "approved";
+        state.preOrderFlags[pk].statusTh = PREORDER_STATUS.approved;
+        state.preOrderFlags[pk].promotedAt = now;
+      }
+    }
+    for (const a of preOrderAlerts) {
+      state.preOrderSent[`${a.symbol}|${a.side}`] = now;
+      if (!a.suppressed) state.preOrderRecent.push(now);
+      // Reflect AI veto onto status for web chips
+      if (a.suppressed === "ai_veto") {
+        a.status = "vetoed";
+        a.statusTh = PREORDER_STATUS.vetoed;
+        const fl = state.preOrderFlags[`${a.symbol}|${a.side}`];
+        if (fl) { fl.status = "vetoed"; fl.statusTh = PREORDER_STATUS.vetoed; }
+      } else if (a.ai && !a.ai.skipped && (a.ai.action === "send" || a.ai.action === "boost") && a.status === "waiting_ai") {
+        // AI OK but still waiting system confluence ≥3 — "พร้อมโจมตี"
+        a.status = "approved";
+        a.statusTh = PREORDER_STATUS.approved;
+        a.noteTh = "AI อนุมัติแล้ว · รอระบบ confluence ≥3 ก่อนเข้าจริง";
+        const fl = state.preOrderFlags[`${a.symbol}|${a.side}`];
+        if (fl) { fl.status = "approved"; fl.statusTh = PREORDER_STATUS.approved; }
+      }
+      const rec = logObj.alerts.find((x) => x.id === a.id);
+      if (rec) {
+        rec.status = a.status;
+        rec.statusTh = a.statusTh;
+        rec.noteTh = a.noteTh;
+        if (a.suppressed) rec.suppressed = a.suppressed;
+      }
     }
     await gradeOpen(logObj, priceMap, now);
     try { autoPromote(logObj, settings); } catch (e) { log("autoPromote error:", String(e).slice(0, 120)); }
+    // Sync live pre-order flag statuses onto latest matching log rows (expiry / promote).
+    for (const [k, fl] of Object.entries(state.preOrderFlags || {})) {
+      if (!fl?.status) continue;
+      const [sym, side] = k.split("|");
+      for (let i = logObj.alerts.length - 1; i >= 0; i--) {
+        const a = logObj.alerts[i];
+        if (a.type !== "preOrder" || a.symbol !== sym || a.side !== side) continue;
+        a.status = fl.status;
+        a.statusTh = fl.statusTh || PREORDER_STATUS[fl.status] || a.statusTh;
+        if (fl.status === "approved" && fl.promotedAt) {
+          a.noteTh = "เลื่อนไปเฝ้าดู/เริ่มขยับแล้ว · เคยเป็น pre-order";
+        }
+        break;
+      }
+    }
     if (logObj.alerts.length > LOG_KEEP) logObj.alerts = logObj.alerts.slice(-LOG_KEEP);
     writeJsonAtomic(LOG_FILE, logObj);
     writeJsonAtomic(STATE_FILE, state);
@@ -1044,11 +1319,12 @@ async function cycle() {
   }
 
   const lbl = (a) => `${a.symbol}:${a.side}:${a.factorCount}f${a.suppressed ? "(" + a.suppressed + ")" : ""}`;
-  if (watch) lastWatchSummary = { at: ts(), eligible: watch.eligible, checked: watch.checked, oiPass: watch.oiPass, hits: watch.hits.length };
+  if (watch) lastWatchSummary = { at: ts(), eligible: watch.eligible, checked: watch.checked, oiPass: watch.oiPass, hits: watch.hits.length, scouts: (watch.scouts || []).length };
   log(
     `cycle ms=${Date.now() - t0} tickers=${priceMap.size} warm=${warm} shortlist=${shortlist.length} priceHits=${ign.priceHits} evaluated=${ign.evaluated.length} confluent=${confl.length} ${DRY ? "dry" : "sent"}=${ignSendable.length}` +
       (ignAlerts.length ? ` [${ignAlerts.map(lbl).join(",")}]` : "") +
       (watch ? ` | watch checked=${watch.checked}/${watch.eligible} oiBuild=${watch.oiPass} setups=${watch.hits.length}${watchAlerts.length ? " [" + watchAlerts.map(lbl).join(",") + "]" : ""}` : "") +
+      (preOrderAlerts.length ? ` | preOrder=${preOrderAlerts.length} [${preOrderAlerts.map(lbl).join(",")}]` : "") +
       ` weight1m=${usedWeight}`,
   );
   try {

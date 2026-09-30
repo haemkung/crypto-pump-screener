@@ -15,12 +15,16 @@ let lastGood: { text: string; at: number } | null = null;
 const LAST_GOOD_MAX_AGE_MS = 24 * 3600e3;
 const MAX_BODY_BYTES = 400_000;
 /** Match daemon TIERS_SHOW_MS so web keeps cards across empty restart scans. */
-const CARD_TTL_MS = { watch: 8 * 3600e3, ignition: 6 * 3600e3 };
+const CARD_TTL_MS = { watch: 8 * 3600e3, ignition: 6 * 3600e3, preOrder: 4 * 3600e3 };
 
 function countCards(text: string): number {
   try {
-    const j = JSON.parse(text) as { watch?: unknown[]; ignition?: unknown[] };
-    return (Array.isArray(j.watch) ? j.watch.length : 0) + (Array.isArray(j.ignition) ? j.ignition.length : 0);
+    const j = JSON.parse(text) as { watch?: unknown[]; ignition?: unknown[]; preOrder?: unknown[] };
+    return (
+      (Array.isArray(j.watch) ? j.watch.length : 0) +
+      (Array.isArray(j.ignition) ? j.ignition.length : 0) +
+      (Array.isArray(j.preOrder) ? j.preOrder.length : 0)
+    );
   } catch {
     return 0;
   }
@@ -31,6 +35,7 @@ function filterLiveCards(text: string): { text: string; kept: number } | null {
     const j = JSON.parse(text) as {
       watch?: Array<{ flaggedAt?: string; firstFlaggedAt?: string; type?: string }>;
       ignition?: Array<{ flaggedAt?: string; firstFlaggedAt?: string; type?: string }>;
+      preOrder?: Array<{ flaggedAt?: string; firstFlaggedAt?: string; type?: string }>;
       noteTh?: string;
       [k: string]: unknown;
     };
@@ -45,14 +50,16 @@ function filterLiveCards(text: string): { text: string; kept: number } | null {
       });
     const watch = keep(j.watch, CARD_TTL_MS.watch);
     const ignition = keep(j.ignition, CARD_TTL_MS.ignition);
-    if (!watch.length && !ignition.length) return null;
+    const preOrder = keep(j.preOrder, CARD_TTL_MS.preOrder);
+    if (!watch.length && !ignition.length && !preOrder.length) return null;
     const out = {
       ...j,
+      preOrder,
       watch,
       ignition,
       noteTh: j.noteTh || "แสดงการ์ดล่าสุดที่ยังอยู่ใน TTL (สแกนล่าสุดว่างชั่วคราว)",
     };
-    return { text: JSON.stringify(out), kept: watch.length + ignition.length };
+    return { text: JSON.stringify(out), kept: watch.length + ignition.length + preOrder.length };
   } catch {
     return null;
   }
@@ -202,6 +209,7 @@ export async function GET(req: NextRequest) {
         NextResponse.json(
           {
             updatedAt: null,
+            preOrder: [],
             watch: [],
             ignition: [],
             meta: { softFail: true, reason: "upstream_unavailable" },
@@ -239,6 +247,7 @@ export async function GET(req: NextRequest) {
       NextResponse.json(
         {
           updatedAt: null,
+          preOrder: [],
           watch: [],
           ignition: [],
           error: String(e),
