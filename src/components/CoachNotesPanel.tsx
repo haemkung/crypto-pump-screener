@@ -62,20 +62,24 @@ export function CoachNotesPanel({ refreshKey = 0 }: { refreshKey?: number }) {
     let cancelled = false;
     Promise.all([
       fetchCoachNotes(),
-      fetch(apiUrl("/api/learning-insights"), { cache: "no-store" }).then(
-        async (r) => (r.ok ? r.json() : null)
-      ),
+      fetch(apiUrl("/api/learning-insights"), { cache: "no-store" })
+        .then(async (r) => (r.ok ? r.json() : null))
+        .catch(() => null),
     ])
       .then(([coach, ins]) => {
         if (cancelled) return;
         setNotes(coach.notes);
         setInsights(ins);
+        // Soft empty / softFail never shows the red banner
         setErr(null);
       })
-      .catch((e) => {
-        // Soft empty is preferred over red error — only surface hard failures
-        // when both Workers and Pages static are unreachable.
-        if (!cancelled) setErr(String(e));
+      .catch(() => {
+        // fetchCoachNotes already soft-fails; keep panel usable
+        if (!cancelled) {
+          setNotes([]);
+          setInsights(null);
+          setErr(null);
+        }
       })
       .finally(() => {
         if (!cancelled) setLoaded(true);
