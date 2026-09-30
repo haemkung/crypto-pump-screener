@@ -177,6 +177,10 @@ const WATCH_FULL_CAP = 10;
 const WATCH_DEDUPE_MS = 4 * 3600e3;
 const WATCH_MAX_PER_CYCLE = 2;
 const WATCH_MENTION_MS = 12 * 3600e3;
+/** Always re-check this many freshest liquid+flat names every watch slot (pre-move scout). */
+const WATCH_PRIORITY = 40;
+/** Skip watch/ignition chase: already pumped a lot on the day (user hard rule). */
+const ALREADY_PUMPED_ABS_PCT = 12;
 const MIN_24H_VOL = 5_000_000;
 const LOG_KEEP = 2000;
 
@@ -800,12 +804,23 @@ async function watchScan(tickMap, state, now, settings, tierCfg) {
   const elig = [];
   for (const [s, t] of tickMap) {
     if (!(t.vol24 >= MIN_24H_VOL)) continue;
+    // Do NOT chase coins that already ran hard — watch is HIDDEN PRE-MOVE only.
+    if (Math.abs(t.pct24h) > ALREADY_PUMPED_ABS_PCT) continue;
     const r = snapRange(s, now, 240);
     if (r != null && r > 6) continue; // F1 needs a flat 4h price
     elig.push(s);
   }
-  elig.sort((a, b) => (watchChecked.get(a) || 0) - (watchChecked.get(b) || 0));
-  const batch = elig.slice(0, WATCH_BATCH);
+  // Priority scout: liquid flat names not checked recently (catch accumulation early).
+  // Round-robin alone left thin names unchecked for hours while SOON/MEW/MOVR loaded.
+  const byStale = [...elig].sort((a, b) => (watchChecked.get(a) || 0) - (watchChecked.get(b) || 0));
+  const byVolFlat = [...elig]
+    .filter((s) => Math.abs(tickMap.get(s).pct24h) <= TRIG.max24hAbsPct)
+    .sort((a, b) => tickMap.get(b).vol24 - tickMap.get(a).vol24);
+  const batchSet = new Set();
+  const batch = [];
+  const push = (s) => { if (!batchSet.has(s) && batch.length < WATCH_BATCH) { batchSet.add(s); batch.push(s); } };
+  for (const s of byVolFlat.slice(0, WATCH_PRIORITY)) push(s);
+  for (const s of byStale) push(s);
   const oiPass = [];
   let checked = 0;
   for (let i = 0; i < batch.length; i += 4) {
@@ -904,6 +919,8 @@ async function cycle() {
     pushSnap(s, now, p);
     if (mv != null) warm = true;
     if (mv == null || Math.abs(mv) < SHORTLIST_PCT || !(vol24 >= TRIG.min24hVolUsd)) continue;
+    // Never chase an already-pumped coin (user rule). Ignition is timing on early moves only.
+    if (Math.abs(pct24h) >= ALREADY_PUMPED_ABS_PCT) continue;
     if (Math.abs(pct24h) > TRIG.max24hAbsPct + 1 && Math.abs(pct24h) > 1) {
       if (mv > 0 && pct24h > TRIG.max24hAbsPct + 1) continue;
       if (mv < 0 && pct24h < -TRIG.max24hAbsPct - 1) continue;

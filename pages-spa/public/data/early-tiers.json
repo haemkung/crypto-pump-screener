@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-09-30T06:18:04.777Z",
-  "daemonAt": "2026-09-30T06:18:04.777Z",
-  "daemonPid": 958550,
+  "updatedAt": "2026-09-30T06:20:11.795Z",
+  "daemonAt": "2026-09-30T06:20:11.795Z",
+  "daemonPid": 967105,
   "rules": {
     "ignitionMinFactors": 3,
     "ignitionMinDirectional": 1,
@@ -354,7 +354,7 @@
   "noteTh": "ยังไม่มีสัญญาณที่ผ่าน confluence ≥3 ปัจจัยในช่วง TTL",
   "meta": {
     "source": "local-box",
-    "publishedAt": "2026-09-30T06:18:12.166Z",
+    "publishedAt": "2026-09-30T06:20:22.705Z",
     "pagesStatic": true
   }
 }
