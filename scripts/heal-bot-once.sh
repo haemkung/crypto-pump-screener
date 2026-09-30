@@ -162,37 +162,90 @@ start_detached() {
 actions=()
 
 # --- 0) Next deps (node_modules wipe → infinite "next: not found" loops) ---
-if [[ ! -x "$ROOT/node_modules/.bin/next" ]]; then
+# Also detect corrupted .next after a production build clobbered next-dev cache.
+NEXT_BIN="$ROOT/node_modules/.bin/next"
+force_next_restart=0
+if [[ ! -x "$NEXT_BIN" ]]; then
   log "next binary missing — ensure-next-deps (npm ci)"
   actions+=("ensure_next_deps")
-  if ! bash "$ROOT/scripts/ensure-next-deps.sh"; then
+  if bash "$ROOT/scripts/ensure-next-deps.sh"; then
+    force_next_restart=1
+    actions+=("ensure_next_deps_ok")
+  else
     log "ERROR: ensure-next-deps failed — refusing Next restart loop"
     actions+=("ensure_next_deps_failed")
   fi
 fi
 
+# Corrupted .next (MODULE_NOT_FOUND vendor-chunks) → health may still be 200 while
+# /api/screen|/api/coach-notes return 500. Wipe cache and force restart.
+screen_probe=$(http_code "http://127.0.0.1:${PORT}/api/screen" 8)
+coach_probe=$(http_code "http://127.0.0.1:${PORT}/api/coach-notes?limit=1" 8)
+if port_listening && [[ "$screen_probe" == "500" || "$coach_probe" == "500" ]]; then
+  if rg -q "Cannot find module.*vendor-chunks|MODULE_NOT_FOUND" logs/bot-upstream/next.log 2>/dev/null     || [[ ! -d "$ROOT/.next/server/chunks" ]]; then
+    log "Next cache corrupt (screen=$screen_probe coach=$coach_probe) — wiping .next and restarting"
+    actions+=("wipe_next_cache")
+    force_next_restart=1
+    rm -rf "$ROOT/.next"
+  elif [[ "$screen_probe" == "500" ]]; then
+    # Consecutive soft 500s without clear log — still bounce Next once per heal
+    log "Next /api/screen HTTP 500 — forcing Next restart"
+    actions+=("restart_next_screen_500")
+    force_next_restart=1
+  fi
+fi
+
+restart_next_now() {
+  log "restarting Next on :$PORT"
+  # Kill listeners on PORT (next-server / next dev)
+  if command -v ss >/dev/null 2>&1; then
+    local pids
+    pids=$(ss -tlnp "sport = :$PORT" 2>/dev/null | sed -n 's/.*pid=\([0-9]*\).*/\1/p' | sort -u)
+    for p in $pids; do kill "$p" 2>/dev/null || true; done
+    sleep 1
+    for p in $pids; do kill -9 "$p" 2>/dev/null || true; done
+  fi
+  pkill -f "next dev -H 0.0.0.0 -p ${PORT}" 2>/dev/null || true
+  pkill -f "next-server" 2>/dev/null || true
+  sleep 1
+  if ! script_running "scripts/supervise-bot-upstream.sh" >/dev/null; then
+    start_detached scripts/supervise-bot-upstream.sh logs/bot-upstream/nohup.out
+  fi
+  sleep 2
+  if ! port_listening && [[ -x "$NEXT_BIN" ]]; then
+    (
+      cd "$ROOT"
+      exec 7>&- 8>&- 9>&-
+      export DISABLE_BOT_UPSTREAM=1 BOT_ROLE=upstream
+      exec npm run dev
+    ) >>logs/bot-upstream/next.log 2>&1 &
+    log "Next direct start pid=$!"
+  fi
+}
+
 # --- 1) Next :3000 ---
-if ! port_listening; then
-  if [[ ! -x "$ROOT/node_modules/.bin/next" ]]; then
+if (( force_next_restart == 1 )); then
+  if [[ ! -x "$NEXT_BIN" ]]; then
+    log "Next restart requested but next still missing — skip"
+  else
+    actions+=("force_restart_next")
+    restart_next_now
+  fi
+elif ! port_listening; then
+  if [[ ! -x "$NEXT_BIN" ]]; then
     log "Next :$PORT down but next still missing after ensure — skip start"
   else
     log "Next :$PORT down — starting via supervise-bot-upstream"
     actions+=("start_next")
-    if ! script_running "scripts/supervise-bot-upstream.sh" >/dev/null; then
-      start_detached scripts/supervise-bot-upstream.sh logs/bot-upstream/nohup.out
-    fi
-    # Also try direct start if port still down after brief wait
-    sleep 2
-    if ! port_listening; then
-      (
-        cd "$ROOT"
-        exec 7>&- 8>&- 9>&-
-        export DISABLE_BOT_UPSTREAM=1 BOT_ROLE=upstream
-        exec npm run dev
-      ) >>logs/bot-upstream/next.log 2>&1 &
-      log "Next direct start pid=$!"
-    fi
+    restart_next_now
   fi
+fi
+
+# cloudflared binary missing (box wipe) — download once
+if [[ ! -x "$CF_BIN" ]]; then
+  log "cloudflared missing at $CF_BIN — downloading"
+  actions+=("download_cloudflared")
+  curl -fsSL -o "$CF_BIN"     "${CLOUDFLARED_DOWNLOAD_URL:-https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64}"     && chmod +x "$CF_BIN" || log "ERROR: cloudflared download failed"
 fi
 
 # --- 2) cloudflared tunnel ---

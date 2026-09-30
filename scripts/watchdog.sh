@@ -209,9 +209,29 @@ heal_daemon() {
 }
 
 log "watchdog start pid=$$ staleSec=$DAEMON_STALE_SEC"
+NEXT_BIN="$ROOT/node_modules/.bin/next"
 tick=0
 while true; do
   tick=$((tick + 1))
+  # 0) Missing next binary after box wipe — npm ci then bounce supervisor (in-process only;
+  # does NOT survive host reboot; that needs external boot/routine).
+  if [[ ! -x "$NEXT_BIN" ]]; then
+    fail next_deps 1 "next binary หาย (node_modules) — กำลัง npm ci อัตโนมัติ"
+    if may_restart next_deps; then
+      log "next binary missing — ensure-next-deps then restart supervisor"
+      timeout 700 bash "$ROOT/scripts/ensure-next-deps.sh" >>"$LOG" 2>&1 || log "ensure-next-deps failed"
+      if [[ -x "$NEXT_BIN" ]]; then
+        reset_backoff next_deps
+        ok next_deps "next binary"
+        sp=$(pgrep -f 'scripts/supervise-bot-upstream.sh' | head -1 || true)
+        if [[ -n "${sp:-}" ]]; then kill "$sp" 2>/dev/null || true; sleep 1; kill -9 "$sp" 2>/dev/null || true; fi
+        rm -f /tmp/crypto-pump-bot-upstream.lock
+        start_detached scripts/supervise-bot-upstream.sh logs/bot-upstream/nohup.out
+      fi
+    fi
+  else
+    ok next_deps "next binary"; reset_backoff next_deps
+  fi
   # 1) supervisors
   if running "scripts/supervise-bot-upstream.sh"; then ok sup_up "supervisor (Next/tunnel/daemon)"; reset_backoff sup_up
   else

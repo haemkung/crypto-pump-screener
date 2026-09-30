@@ -628,7 +628,7 @@ function mapTierRow(a, first) {
     trigger: a.type === "ignition" ? { moveWindow: a.moveWindow, movePct: a.movePct, volMult: a.volMult, breakoutPct: a.breakoutPct } : null,
     plan: Number.isFinite(a.slPct) ? { entry: a.entry, sl: a.sl, slPct: a.slPct, tp1: a.tp1, tp2: a.tp2, slSkip: !!a.slSkip, slNoteTh: a.slNoteTh } : null,
     trade: a.trade || null,
-    ai: a.ai || null,
+    ai: (a.type === "preOrder" && (a.factorCount ?? (a.factors || []).length) < 2) ? null : (a.ai || null),
     status: a.status || null,
     statusTh: a.statusTh || null,
     source: a.source || null,
@@ -759,6 +759,21 @@ function decorateTelegramBody(body, ai) {
 async function reviewMessage(m, settings) {
   const a = m.alerts[0];
   if (!a) return { body: m.body, veto: false };
+  // Pre-order 1-factor / scout: จ้องอยู่ only — no AI call, never ai_veto spam.
+  // Meaningful AI starts at 2f+ (waiting_ai / ready path).
+  const factorN = Number(a.factorCount ?? a.factors?.length ?? 0) || 0;
+  if (a.type === "preOrder" && factorN < 2) {
+    const skipped = {
+      ok: false,
+      action: "send",
+      score: 0,
+      reasonTh: "จ้องอยู่ (1f) — ข้าม AI จนกว่า ≥2 ปัจจัย",
+      latencyMs: 0,
+      skipped: true,
+    };
+    for (const x of m.alerts) x.ai = { action: skipped.action, score: skipped.score, reasonTh: skipped.reasonTh, skipped: true };
+    return { body: m.body, veto: false, ai: skipped };
+  }
   const wantAi = settings.aiReview !== false;
   const allowInDry = !DRY || AI_IN_DRY;
   if (!wantAi || !allowInDry) {
@@ -1166,8 +1181,9 @@ async function cycle() {
     const n = h.factors?.length || 0;
     // Status: 2 factors → waiting AI path; 1 factor / scout → watching
     let status = n >= 2 ? "waiting_ai" : "watching";
-    if (prev?.status === "vetoed") status = "vetoed";
-    if (prev?.status === "approved") status = "approved";
+    // 1f stays จ้องอยู่ — never sticky-veto from a prior AI pass
+    if (n >= 2 && prev?.status === "vetoed") status = "vetoed";
+    if (n >= 2 && prev?.status === "approved") status = "approved";
     if (prev?.status === "expired") status = "expired";
     const wantTg = !!settings.sendPreOrder && status !== "vetoed" && status !== "expired" && idx < proom;
     return {

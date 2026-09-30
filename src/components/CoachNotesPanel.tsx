@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fmtBangkok } from "@/lib/format";
-import { apiUrl } from "@/lib/apiBase";
+import { apiUrl, pagesStaticUrl } from "@/lib/apiBase";
 
 interface CoachNote {
   id: string;
@@ -24,6 +24,34 @@ interface InsightsPayload {
   stats?: { earlyWinRate?: number | null; earlyGraded?: number };
 }
 
+async function fetchCoachNotes(): Promise<{ notes: CoachNote[]; soft?: boolean }> {
+  try {
+    const r = await fetch(apiUrl("/api/coach-notes?limit=10"), { cache: "no-store" });
+    if (r.ok) {
+      const j = await r.json();
+      const notes = Array.isArray(j?.notes) ? (j.notes as CoachNote[]) : [];
+      if (notes.length > 0 || !j?.meta?.softFail) {
+        return { notes, soft: !!j?.meta?.softFail };
+      }
+    }
+  } catch {
+    /* fall through to Pages static */
+  }
+  try {
+    const r = await fetch(`${pagesStaticUrl("coach-notes.json")}?t=${Date.now()}`, {
+      cache: "no-store",
+    });
+    if (!r.ok) return { notes: [], soft: true };
+    const j = await r.json();
+    return {
+      notes: Array.isArray(j?.notes) ? (j.notes as CoachNote[]).slice().reverse().slice(0, 10) : [],
+      soft: true,
+    };
+  } catch {
+    return { notes: [], soft: true };
+  }
+}
+
 export function CoachNotesPanel({ refreshKey = 0 }: { refreshKey?: number }) {
   const [notes, setNotes] = useState<CoachNote[]>([]);
   const [insights, setInsights] = useState<InsightsPayload | null>(null);
@@ -33,20 +61,20 @@ export function CoachNotesPanel({ refreshKey = 0 }: { refreshKey?: number }) {
   useEffect(() => {
     let cancelled = false;
     Promise.all([
-      fetch(apiUrl("/api/coach-notes?limit=10")).then(async (r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      }),
+      fetchCoachNotes(),
       fetch(apiUrl("/api/learning-insights"), { cache: "no-store" }).then(
         async (r) => (r.ok ? r.json() : null)
       ),
     ])
-      .then(([j, ins]) => {
+      .then(([coach, ins]) => {
         if (cancelled) return;
-        setNotes(Array.isArray(j.notes) ? j.notes : []);
+        setNotes(coach.notes);
         setInsights(ins);
+        setErr(null);
       })
       .catch((e) => {
+        // Soft empty is preferred over red error — only surface hard failures
+        // when both Workers and Pages static are unreachable.
         if (!cancelled) setErr(String(e));
       })
       .finally(() => {

@@ -17,6 +17,8 @@ export const EDGE_EARLY_TIERS_CACHE_URL =
   "https://cps-last-good.internal/api/early-tiers";
 export const EDGE_LEARNING_INSIGHTS_CACHE_URL =
   "https://cps-last-good.internal/api/learning-insights";
+export const EDGE_COACH_NOTES_CACHE_URL =
+  "https://cps-last-good.internal/api/coach-notes";
 
 const CACHE_NAME = "cps-last-good";
 const DEFAULT_MAX_AGE_SEC = 21600;

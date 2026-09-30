@@ -39,11 +39,20 @@ if [[ -f "$SRC_LEARN" ]]; then
   cp -f "$SRC_LEARN" "$OUT_DOCS/learning-insights.json"
 fi
 
+SRC_COACH="${3:-$ROOT/data/coach-notes.json}"
+if [[ -f "$SRC_COACH" ]]; then
+  tmpc="$(mktemp)"
+  jq '{notes: (.notes[-30:] // []), total: ((.notes // []) | length), meta: {pagesStatic:true, source:("'"${PUBLISH_SOURCE:-local-box}"'")}, disclaimerTh: "โน้ตโค้ชเป็น heuristic หลังเกรด — ไม่ใช่คำแนะนำการลงทุน"}' "$SRC_COACH" >"$tmpc" 2>/dev/null     || cp -f "$SRC_COACH" "$tmpc"
+  cp -f "$tmpc" "$OUT_PUBLIC/coach-notes.json"
+  cp -f "$tmpc" "$OUT_DOCS/coach-notes.json"
+  rm -f "$tmpc"
+fi
+
 echo "published early-tiers updatedAt=$(jq -r .updatedAt "$OUT_DOCS/early-tiers.json") -> docs/data + pages-spa/public/data"
 
 if [[ "${PUBLISH_GIT_PUSH:-0}" == "1" ]]; then
-  git add docs/data/early-tiers.json docs/data/learning-insights.json \
-    pages-spa/public/data/early-tiers.json pages-spa/public/data/learning-insights.json 2>/dev/null || true
+  git add docs/data/early-tiers.json docs/data/learning-insights.json docs/data/coach-notes.json \
+    pages-spa/public/data/early-tiers.json pages-spa/public/data/learning-insights.json pages-spa/public/data/coach-notes.json 2>/dev/null || true
   if git diff --cached --quiet; then
     echo "no git changes"
     exit 0

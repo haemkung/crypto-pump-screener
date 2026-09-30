@@ -32,9 +32,13 @@ const PATH = resolve(DATA_DIR, "coach-notes.json");
 const MAX_NOTES = 80;
 
 function ensure() {
-  if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
-  if (!existsSync(PATH)) {
-    writeFileSync(PATH, JSON.stringify({ notes: [] }, null, 2) + "\n", "utf8");
+  try {
+    if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
+    if (!existsSync(PATH)) {
+      writeFileSync(PATH, JSON.stringify({ notes: [] }, null, 2) + "\n", "utf8");
+    }
+  } catch {
+    // Workers / unenv: fs stubs throw — callers must soft-fail instead.
   }
 }
 
