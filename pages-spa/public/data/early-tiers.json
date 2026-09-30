@@ -1,897 +1,892 @@
 {
-  "updatedAt": "2026-09-30T09:34:04.413Z",
-  "daemonAt": "2026-09-30T09:34:04.413Z",
-  "daemonPid": 46385,
-  "rules": {
-    "ignitionMinFactors": 3,
-    "ignitionMinDirectional": 1,
-    "watchMinFactors": 3,
-    "watchMinDirectional": 2,
-    "preOrderMinFactors": 1,
-    "preOrderMaxFactors": 2
-  },
-  "risk": {
-    "minSlPct": 0.6,
-    "maxSlPct": 2.5,
-    "skipSlPct": 3,
-    "bufferPct": 0.1,
-    "tp1R": 1.5,
-    "tp2R": 3,
-    "costPct": 0.1,
-    "horizonMin": 720
-  },
-  "telegram": {
-    "ignitionLong": true,
-    "ignitionShort": true,
-    "watchLong": true,
-    "watchShort": true,
-    "preOrder": true
-  },
-  "tiers": {
-    "ignition_long": {
-      "params": {
-        "minFactors": 3,
-        "minDirectional": 2,
-        "requireRelMove": true,
-        "slMode": "swing15"
-      },
-      "oos": {
-        "n": 20,
-        "perDay": 2.4,
-        "tp1Rate": 50,
-        "tp1Wilson": [
-          29.9,
-          70.1
-        ],
-        "expR": 0.353,
-        "sumR": 7.06,
-        "maxConsecLoss": 3,
-        "tp2Rate": 30,
-        "bigRate": 20,
-        "medRate": 40,
-        "avgSlPct": 1.96,
-        "skippedWideSl": 0,
-        "days": 8.5
-      },
-      "baselines": {
-        "priceOnly": {
-          "n": 87,
-          "perDay": 10.3,
-          "tp1Rate": 44.8,
-          "tp1Wilson": [
-            34.8,
-            55.3
-          ],
-          "expR": 0.188,
-          "sumR": 16.33,
-          "maxConsecLoss": 7,
-          "tp2Rate": 12.6,
-          "bigRate": 10.3,
-          "medRate": 28.7,
-          "avgSlPct": 2.06,
-          "skippedWideSl": 0
-        },
-        "random": {
-          "n": 115439,
-          "perDay": 13648,
-          "tp1Rate": 43.5,
-          "tp1Wilson": [
-            43.2,
-            43.8
-          ],
-          "expR": -0.021,
-          "sumR": -2474.67,
-          "maxConsecLoss": 81,
-          "tp2Rate": 23.6,
-          "bigRate": 10.7,
-          "medRate": 33.2,
-          "avgSlPct": 0.75,
-          "skippedWideSl": 1615
-        }
-      },
-      "verdict": {
-        "telegram": false,
-        "reason": "train expectancy <= 0"
-      }
+ "updatedAt": "2026-09-30T09:48:04.441Z",
+ "daemonAt": "2026-09-30T09:48:04.441Z",
+ "daemonPid": 58444,
+ "rules": {
+  "ignitionMinFactors": 3,
+  "ignitionMinDirectional": 1,
+  "watchMinFactors": 3,
+  "watchMinDirectional": 2,
+  "preOrderMinFactors": 1,
+  "preOrderMaxFactors": 2
+ },
+ "risk": {
+  "minSlPct": 0.6,
+  "maxSlPct": 2.5,
+  "skipSlPct": 3,
+  "bufferPct": 0.1,
+  "tp1R": 1.5,
+  "tp2R": 3,
+  "costPct": 0.1,
+  "horizonMin": 720
+ },
+ "telegram": {
+  "ignitionLong": true,
+  "ignitionShort": true,
+  "watchLong": true,
+  "watchShort": true,
+  "preOrder": true
+ },
+ "tiers": {
+  "ignition_long": {
+   "params": {
+    "minFactors": 3,
+    "minDirectional": 2,
+    "requireRelMove": true,
+    "slMode": "swing15"
+   },
+   "oos": {
+    "n": 20,
+    "perDay": 2.4,
+    "tp1Rate": 50,
+    "tp1Wilson": [
+     29.9,
+     70.1
+    ],
+    "expR": 0.353,
+    "sumR": 7.06,
+    "maxConsecLoss": 3,
+    "tp2Rate": 30,
+    "bigRate": 20,
+    "medRate": 40,
+    "avgSlPct": 1.96,
+    "skippedWideSl": 0,
+    "days": 8.5
+   },
+   "baselines": {
+    "priceOnly": {
+     "n": 87,
+     "perDay": 10.3,
+     "tp1Rate": 44.8,
+     "tp1Wilson": [
+      34.8,
+      55.3
+     ],
+     "expR": 0.188,
+     "sumR": 16.33,
+     "maxConsecLoss": 7,
+     "tp2Rate": 12.6,
+     "bigRate": 10.3,
+     "medRate": 28.7,
+     "avgSlPct": 2.06,
+     "skippedWideSl": 0
     },
-    "ignition_short": {
-      "params": {
-        "minFactors": 3,
-        "minDirectional": 1,
-        "requireRelMove": false,
-        "slMode": "swing15"
-      },
-      "oos": {
-        "n": 31,
-        "perDay": 3.7,
-        "tp1Rate": 25.8,
-        "tp1Wilson": [
-          13.7,
-          43.2
-        ],
-        "expR": -0.467,
-        "sumR": -14.47,
-        "maxConsecLoss": 9,
-        "tp2Rate": 6.5,
-        "bigRate": 6.5,
-        "medRate": 16.1,
-        "avgSlPct": 1.91,
-        "skippedWideSl": 0,
-        "days": 8.5
-      },
-      "baselines": {
-        "priceOnly": {
-          "n": 48,
-          "perDay": 5.7,
-          "tp1Rate": 31.3,
-          "tp1Wilson": [
-            19.9,
-            45.3
-          ],
-          "expR": 0.055,
-          "sumR": 2.66,
-          "maxConsecLoss": 7,
-          "tp2Rate": 16.7,
-          "bigRate": 12.5,
-          "medRate": 29.2,
-          "avgSlPct": 2.22,
-          "skippedWideSl": 0
-        },
-        "random": {
-          "n": 115612,
-          "perDay": 13668.4,
-          "tp1Rate": 35.4,
-          "tp1Wilson": [
-            35.1,
-            35.7
-          ],
-          "expR": -0.302,
-          "sumR": -34939.72,
-          "maxConsecLoss": 95,
-          "tp2Rate": 14.4,
-          "bigRate": 4.4,
-          "medRate": 14.6,
-          "avgSlPct": 0.74,
-          "skippedWideSl": 1424
-        }
-      },
-      "verdict": {
-        "telegram": false,
-        "reason": "OOS expectancy -0.467R < 0.15R"
-      }
-    },
-    "watch_long": {
-      "params": {
-        "minFactors": 3,
-        "minDirectional": 1,
-        "slMode": "swing60"
-      },
-      "oos": {
-        "n": 78,
-        "perDay": 9.2,
-        "tp1Rate": 43.6,
-        "tp1Wilson": [
-          33.1,
-          54.6
-        ],
-        "expR": 0.086,
-        "sumR": 6.69,
-        "maxConsecLoss": 9,
-        "tp2Rate": 26.9,
-        "bigRate": 10.3,
-        "medRate": 29.5,
-        "avgSlPct": 1.12,
-        "skippedWideSl": 0,
-        "days": 8.5
-      },
-      "baselines": {
-        "priceOnly": {
-          "n": 87,
-          "perDay": 10.3,
-          "tp1Rate": 44.8,
-          "tp1Wilson": [
-            34.8,
-            55.3
-          ],
-          "expR": 0.188,
-          "sumR": 16.33,
-          "maxConsecLoss": 7,
-          "tp2Rate": 12.6,
-          "bigRate": 10.3,
-          "medRate": 28.7,
-          "avgSlPct": 2.06,
-          "skippedWideSl": 0
-        },
-        "random": {
-          "n": 115439,
-          "perDay": 13648,
-          "tp1Rate": 43.5,
-          "tp1Wilson": [
-            43.2,
-            43.8
-          ],
-          "expR": -0.021,
-          "sumR": -2474.67,
-          "maxConsecLoss": 81,
-          "tp2Rate": 23.6,
-          "bigRate": 10.7,
-          "medRate": 33.2,
-          "avgSlPct": 0.75,
-          "skippedWideSl": 1615
-        }
-      },
-      "verdict": {
-        "telegram": false,
-        "reason": "OOS expectancy 0.086R < 0.15R"
-      }
-    },
-    "watch_short": {
-      "params": {
-        "minFactors": 4,
-        "minDirectional": 1,
-        "slMode": "swing180"
-      },
-      "oos": {
-        "n": 19,
-        "perDay": 2.2,
-        "tp1Rate": 21.1,
-        "tp1Wilson": [
-          8.5,
-          43.3
-        ],
-        "expR": -0.228,
-        "sumR": -4.33,
-        "maxConsecLoss": 5,
-        "tp2Rate": 15.8,
-        "bigRate": 5.3,
-        "medRate": 10.5,
-        "avgSlPct": 1.76,
-        "skippedWideSl": 0,
-        "days": 8.5
-      },
-      "baselines": {
-        "priceOnly": {
-          "n": 48,
-          "perDay": 5.7,
-          "tp1Rate": 31.3,
-          "tp1Wilson": [
-            19.9,
-            45.3
-          ],
-          "expR": 0.055,
-          "sumR": 2.66,
-          "maxConsecLoss": 7,
-          "tp2Rate": 16.7,
-          "bigRate": 12.5,
-          "medRate": 29.2,
-          "avgSlPct": 2.22,
-          "skippedWideSl": 0
-        },
-        "random": {
-          "n": 115612,
-          "perDay": 13668.4,
-          "tp1Rate": 35.4,
-          "tp1Wilson": [
-            35.1,
-            35.7
-          ],
-          "expR": -0.302,
-          "sumR": -34939.72,
-          "maxConsecLoss": 95,
-          "tp2Rate": 14.4,
-          "bigRate": 4.4,
-          "medRate": 14.6,
-          "avgSlPct": 0.74,
-          "skippedWideSl": 1424
-        }
-      },
-      "verdict": {
-        "telegram": false,
-        "reason": "OOS expectancy -0.228R < 0.15R"
-      }
+    "random": {
+     "n": 115439,
+     "perDay": 13648,
+     "tp1Rate": 43.5,
+     "tp1Wilson": [
+      43.2,
+      43.8
+     ],
+     "expR": -0.021,
+     "sumR": -2474.67,
+     "maxConsecLoss": 81,
+     "tp2Rate": 23.6,
+     "bigRate": 10.7,
+     "medRate": 33.2,
+     "avgSlPct": 0.75,
+     "skippedWideSl": 1615
     }
+   },
+   "verdict": {
+    "telegram": false,
+    "reason": "train expectancy <= 0"
+   }
   },
-  "backtest": {
-    "generatedAt": "2026-09-24T21:34:19.787Z",
-    "data": {
-      "symbols": 289,
-      "from": "2026-08-27T08:30:00.000Z",
-      "split": "2026-09-16T08:30:00.000Z",
-      "to": "2026-09-24T19:30:00.000Z",
-      "trainDays": 20,
-      "testDays": 8.5
+  "ignition_short": {
+   "params": {
+    "minFactors": 3,
+    "minDirectional": 1,
+    "requireRelMove": false,
+    "slMode": "swing15"
+   },
+   "oos": {
+    "n": 31,
+    "perDay": 3.7,
+    "tp1Rate": 25.8,
+    "tp1Wilson": [
+     13.7,
+     43.2
+    ],
+    "expR": -0.467,
+    "sumR": -14.47,
+    "maxConsecLoss": 9,
+    "tp2Rate": 6.5,
+    "bigRate": 6.5,
+    "medRate": 16.1,
+    "avgSlPct": 1.91,
+    "skippedWideSl": 0,
+    "days": 8.5
+   },
+   "baselines": {
+    "priceOnly": {
+     "n": 48,
+     "perDay": 5.7,
+     "tp1Rate": 31.3,
+     "tp1Wilson": [
+      19.9,
+      45.3
+     ],
+     "expR": 0.055,
+     "sumR": 2.66,
+     "maxConsecLoss": 7,
+     "tp2Rate": 16.7,
+     "bigRate": 12.5,
+     "medRate": 29.2,
+     "avgSlPct": 2.22,
+     "skippedWideSl": 0
+    },
+    "random": {
+     "n": 115612,
+     "perDay": 13668.4,
+     "tp1Rate": 35.4,
+     "tp1Wilson": [
+      35.1,
+      35.7
+     ],
+     "expR": -0.302,
+     "sumR": -34939.72,
+     "maxConsecLoss": 95,
+     "tp2Rate": 14.4,
+     "bigRate": 4.4,
+     "medRate": 14.6,
+     "avgSlPct": 0.74,
+     "skippedWideSl": 1424
     }
+   },
+   "verdict": {
+    "telegram": false,
+    "reason": "OOS expectancy -0.467R < 0.15R"
+   }
   },
-  "live": {
-    "ignition_long": {
-      "sent": {
-        "n": 0,
-        "tp1Rate": null,
-        "avgR": null
-      },
-      "all": {
-        "n": 5,
-        "tp1Rate": 20,
-        "avgR": -0.4
-      }
+  "watch_long": {
+   "params": {
+    "minFactors": 3,
+    "minDirectional": 1,
+    "slMode": "swing60"
+   },
+   "oos": {
+    "n": 78,
+    "perDay": 9.2,
+    "tp1Rate": 43.6,
+    "tp1Wilson": [
+     33.1,
+     54.6
+    ],
+    "expR": 0.086,
+    "sumR": 6.69,
+    "maxConsecLoss": 9,
+    "tp2Rate": 26.9,
+    "bigRate": 10.3,
+    "medRate": 29.5,
+    "avgSlPct": 1.12,
+    "skippedWideSl": 0,
+    "days": 8.5
+   },
+   "baselines": {
+    "priceOnly": {
+     "n": 87,
+     "perDay": 10.3,
+     "tp1Rate": 44.8,
+     "tp1Wilson": [
+      34.8,
+      55.3
+     ],
+     "expR": 0.188,
+     "sumR": 16.33,
+     "maxConsecLoss": 7,
+     "tp2Rate": 12.6,
+     "bigRate": 10.3,
+     "medRate": 28.7,
+     "avgSlPct": 2.06,
+     "skippedWideSl": 0
     },
-    "ignition_short": {
-      "sent": {
-        "n": 1,
-        "tp1Rate": 100,
-        "avgR": 1.93
-      },
-      "all": {
-        "n": 15,
-        "tp1Rate": 33.3,
-        "avgR": -0.09
-      }
-    },
-    "watch_long": {
-      "sent": {
-        "n": 7,
-        "tp1Rate": 28.6,
-        "avgR": -0.14
-      },
-      "all": {
-        "n": 24,
-        "tp1Rate": 33.3,
-        "avgR": -0.22
-      }
-    },
-    "watch_short": {
-      "sent": {
-        "n": 2,
-        "tp1Rate": 0,
-        "avgR": -1.07
-      },
-      "all": {
-        "n": 9,
-        "tp1Rate": 33.3,
-        "avgR": 0.02
-      }
+    "random": {
+     "n": 115439,
+     "perDay": 13648,
+     "tp1Rate": 43.5,
+     "tp1Wilson": [
+      43.2,
+      43.8
+     ],
+     "expR": -0.021,
+     "sumR": -2474.67,
+     "maxConsecLoss": 81,
+     "tp2Rate": 23.6,
+     "bigRate": 10.7,
+     "medRate": 33.2,
+     "avgSlPct": 0.75,
+     "skippedWideSl": 1615
     }
+   },
+   "verdict": {
+    "telegram": false,
+    "reason": "OOS expectancy 0.086R < 0.15R"
+   }
   },
-  "preOrder": [
-    {
-      "id": "cf1d9d3e-9ca3-4cfb-abb4-6be3d80acad7",
-      "type": "preOrder",
-      "tier": "accumulation",
-      "symbol": "WIFUSDT",
-      "side": "long",
-      "price": 0.255,
-      "pct24h": 5.93,
-      "factors": [
-        {
-          "key": "spot",
-          "labelTh": "spot นำ",
-          "detailTh": "spot วอลุ่ม 1 ชม. ×3.4 · spot ซื้อ 70%"
-        }
-      ],
-      "factorCount": 1,
-      "directional": 1,
-      "flaggedAt": "2026-09-30T09:34:04.413Z",
-      "firstFlaggedAt": "2026-09-30T09:34:04.413Z",
-      "telegram": "sent",
-      "trigger": null,
-      "plan": {
-        "entry": 0.255,
-        "sl": 0.2489508,
-        "slPct": 2.37,
-        "tp1": 0.2640738,
-        "tp2": 0.27314760000000005,
-        "slSkip": false,
-        "slNoteTh": "ใต้โลว์ 15 นาทีล่าสุด"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "watching",
-      "statusTh": "จ้องอยู่",
-      "source": "ignition_near",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+  "watch_short": {
+   "params": {
+    "minFactors": 4,
+    "minDirectional": 1,
+    "slMode": "swing180"
+   },
+   "oos": {
+    "n": 19,
+    "perDay": 2.2,
+    "tp1Rate": 21.1,
+    "tp1Wilson": [
+     8.5,
+     43.3
+    ],
+    "expR": -0.228,
+    "sumR": -4.33,
+    "maxConsecLoss": 5,
+    "tp2Rate": 15.8,
+    "bigRate": 5.3,
+    "medRate": 10.5,
+    "avgSlPct": 1.76,
+    "skippedWideSl": 0,
+    "days": 8.5
+   },
+   "baselines": {
+    "priceOnly": {
+     "n": 48,
+     "perDay": 5.7,
+     "tp1Rate": 31.3,
+     "tp1Wilson": [
+      19.9,
+      45.3
+     ],
+     "expR": 0.055,
+     "sumR": 2.66,
+     "maxConsecLoss": 7,
+     "tp2Rate": 16.7,
+     "bigRate": 12.5,
+     "medRate": 29.2,
+     "avgSlPct": 2.22,
+     "skippedWideSl": 0
     },
-    {
-      "id": "1b531c3b-2a0a-4c6e-9293-e05f872eb4e2",
-      "type": "preOrder",
-      "tier": "accumulation",
-      "symbol": "KSMUSDT",
-      "side": "long",
-      "price": 5.176,
-      "pct24h": 11.24,
-      "factors": [
-        {
-          "key": "funding",
-          "labelTh": "funding เอียงฝั่งตรงข้าม",
-          "detailTh": "funding -0.0625% (short จ่าย long)"
-        }
-      ],
-      "factorCount": 1,
-      "directional": 1,
-      "flaggedAt": "2026-09-30T09:28:26.638Z",
-      "firstFlaggedAt": "2026-09-30T09:28:26.638Z",
-      "telegram": "failed",
-      "trigger": null,
-      "plan": {
-        "entry": 5.176,
-        "sl": 5.077917,
-        "slPct": 1.89,
-        "tp1": 5.3231245000000005,
-        "tp2": 5.470249,
-        "slSkip": false,
-        "slNoteTh": "ใต้โลว์ 12 นาทีล่าสุด"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "watching",
-      "statusTh": "จ้องอยู่",
-      "source": "near_miss",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
-    },
-    {
-      "id": "b9fcd012-7eca-4ce7-b0c8-e61682d71b3e",
-      "type": "preOrder",
-      "tier": "distribution",
-      "symbol": "LSKUSDT",
-      "side": "short",
-      "price": 0.29376,
-      "pct24h": -2.22,
-      "factors": [
-        {
-          "key": "taker",
-          "labelTh": "แรง taker เอียง",
-          "detailTh": "taker buy/sell 1h 0.84 · 3h 0.93"
-        }
-      ],
-      "factorCount": 1,
-      "directional": 1,
-      "flaggedAt": "2026-09-30T08:07:04.588Z",
-      "firstFlaggedAt": "2026-09-30T08:07:04.588Z",
-      "telegram": "failed",
-      "trigger": null,
-      "plan": {
-        "entry": 0.29376,
-        "sl": 0.29925895999999996,
-        "slPct": 1.87,
-        "tp1": 0.28551156000000016,
-        "tp2": 0.27726312000000025,
-        "slSkip": false,
-        "slNoteTh": "เหนือไฮ 15 นาทีล่าสุด"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "watching",
-      "statusTh": "จ้องอยู่",
-      "source": "ignition_near",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
-    },
-    {
-      "id": "abb87aef-071a-4ac0-a38d-c66ede5a525f",
-      "type": "preOrder",
-      "tier": "accumulation",
-      "symbol": "PROMUSDT",
-      "side": "long",
-      "price": 6.286,
-      "pct24h": 0.69,
-      "factors": [
-        {
-          "key": "crowded",
-          "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
-          "detailTh": "L/S 0.40 (4 ชม. -1.00%) — short แน่น"
-        }
-      ],
-      "factorCount": 1,
-      "directional": 1,
-      "flaggedAt": "2026-09-30T08:06:04.609Z",
-      "firstFlaggedAt": "2026-09-30T08:06:04.609Z",
-      "telegram": "failed",
-      "trigger": null,
-      "plan": {
-        "entry": 6.286,
-        "sl": 6.20379,
-        "slPct": 1.31,
-        "tp1": 6.409314999999999,
-        "tp2": 6.53263,
-        "slSkip": false,
-        "slNoteTh": "ใต้โลว์ 15 นาทีล่าสุด"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "watching",
-      "statusTh": "จ้องอยู่",
-      "source": "ignition_near",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
-    },
-    {
-      "id": "a971053c-0fb6-458b-a4d7-62d48ed2359a",
-      "type": "preOrder",
-      "tier": "distribution",
-      "symbol": "QUSDT",
-      "side": "short",
-      "price": 0.022806,
-      "pct24h": -4.8,
-      "factors": [
-        {
-          "key": "fade",
-          "labelTh": "พุ่งแรงแล้วหมดแรง",
-          "detailTh": "24h พุ่ง 16% แล้วย่อจากยอด 11.4%"
-        }
-      ],
-      "factorCount": 1,
-      "directional": 1,
-      "flaggedAt": "2026-09-30T08:05:04.567Z",
-      "firstFlaggedAt": "2026-09-30T08:05:04.567Z",
-      "telegram": "failed",
-      "trigger": null,
-      "plan": {
-        "entry": 0.022806,
-        "sl": 0.02337615,
-        "slPct": 2.5,
-        "tp1": 0.021950775,
-        "tp2": 0.02109555,
-        "slSkip": false,
-        "slNoteTh": "โครงสร้างต้องการ 2.59% → ตัดที่เพดาน 2.5%"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "watching",
-      "statusTh": "จ้องอยู่",
-      "source": "ignition_near",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
-    },
-    {
-      "id": "9e59c879-8cd4-4b6e-b2fd-e12efb68f4f6",
-      "type": "preOrder",
-      "tier": "accumulation",
-      "symbol": "COWUSDT",
-      "side": "long",
-      "price": 0.1701,
-      "pct24h": 6.84,
-      "factors": [
-        {
-          "key": "taker",
-          "labelTh": "แรง taker เอียง",
-          "detailTh": "taker buy/sell 1h 1.23 · 3h 1.20"
-        }
-      ],
-      "factorCount": 1,
-      "directional": 1,
-      "flaggedAt": "2026-09-30T07:57:04.804Z",
-      "firstFlaggedAt": "2026-09-30T07:57:04.804Z",
-      "telegram": "failed",
-      "trigger": null,
-      "plan": {
-        "entry": 0.1701,
-        "sl": 0.16723259999999998,
-        "slPct": 1.69,
-        "tp1": 0.17440110000000006,
-        "tp2": 0.1787022000000001,
-        "slSkip": false,
-        "slNoteTh": "ใต้โลว์ 15 นาทีล่าสุด"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "watching",
-      "statusTh": "จ้องอยู่",
-      "source": "ignition_near",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
-    },
-    {
-      "id": "1d31bd45-5d97-49e5-8efb-8fb7f4fc63ce",
-      "type": "preOrder",
-      "tier": "accumulation",
-      "symbol": "CHIPUSDT",
-      "side": "long",
-      "price": 0.04457,
-      "pct24h": -1.07,
-      "factors": [
-        {
-          "key": "crowded",
-          "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
-          "detailTh": "L/S 0.80 (4 ชม. +1.63%) — short แน่น"
-        }
-      ],
-      "factorCount": 1,
-      "directional": 1,
-      "flaggedAt": "2026-09-30T07:48:04.595Z",
-      "firstFlaggedAt": "2026-09-30T07:48:04.595Z",
-      "telegram": "failed",
-      "trigger": null,
-      "plan": {
-        "entry": 0.04457,
-        "sl": 0.04357638,
-        "slPct": 2.23,
-        "tp1": 0.04606043,
-        "tp2": 0.04755086000000001,
-        "slSkip": false,
-        "slNoteTh": "ใต้โลว์ 15 นาทีล่าสุด"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "watching",
-      "statusTh": "จ้องอยู่",
-      "source": "ignition_near",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
-    },
-    {
-      "id": "766ad7fb-ec89-4b75-a89c-a46cfac0c4ba",
-      "type": "preOrder",
-      "tier": "distribution",
-      "symbol": "XPLUSDT",
-      "side": "short",
-      "price": 0.09422,
-      "pct24h": -6.19,
-      "factors": [
-        {
-          "key": "taker",
-          "labelTh": "แรง taker เอียง",
-          "detailTh": "taker buy/sell 1h 0.71 · 3h 0.95"
-        }
-      ],
-      "factorCount": 1,
-      "directional": 1,
-      "flaggedAt": "2026-09-30T07:14:04.784Z",
-      "firstFlaggedAt": "2026-09-30T07:14:04.784Z",
-      "telegram": "failed",
-      "trigger": null,
-      "plan": {
-        "entry": 0.09422,
-        "sl": 0.09568558999999999,
-        "slPct": 1.56,
-        "tp1": 0.09202161500000003,
-        "tp2": 0.08982323000000005,
-        "slSkip": false,
-        "slNoteTh": "เหนือไฮ 15 นาทีล่าสุด"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "watching",
-      "statusTh": "จ้องอยู่",
-      "source": "ignition_near",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
-    },
-    {
-      "id": "851455f7-f2ba-4638-ae5b-89e28b56050f",
-      "type": "preOrder",
-      "tier": "distribution",
-      "symbol": "STRKUSDT",
-      "side": "short",
-      "price": 0.04143,
-      "pct24h": -3.85,
-      "factors": [
-        {
-          "key": "taker",
-          "labelTh": "แรง taker เอียง",
-          "detailTh": "taker buy/sell 1h 0.73 · 3h 0.93"
-        }
-      ],
-      "factorCount": 1,
-      "directional": 1,
-      "flaggedAt": "2026-09-30T07:03:04.691Z",
-      "firstFlaggedAt": "2026-09-30T07:03:04.691Z",
-      "telegram": "failed",
-      "trigger": null,
-      "plan": {
-        "entry": 0.04143,
-        "sl": 0.04211207,
-        "slPct": 1.65,
-        "tp1": 0.040406895000000005,
-        "tp2": 0.03938379000000001,
-        "slSkip": false,
-        "slNoteTh": "เหนือไฮ 15 นาทีล่าสุด"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "watching",
-      "statusTh": "จ้องอยู่",
-      "source": "ignition_near",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
-    },
-    {
-      "id": "a22cbddb-7bb9-409e-858b-0eb73b94f203",
-      "type": "preOrder",
-      "tier": "distribution",
-      "symbol": "CFGUSDT",
-      "side": "short",
-      "price": 0.151,
-      "pct24h": -2.83,
-      "factors": [
-        {
-          "key": "taker",
-          "labelTh": "แรง taker เอียง",
-          "detailTh": "taker buy/sell 1h 0.66 · 3h 0.80"
-        }
-      ],
-      "factorCount": 1,
-      "directional": 1,
-      "flaggedAt": "2026-09-30T07:00:04.618Z",
-      "firstFlaggedAt": "2026-09-30T07:00:04.618Z",
-      "telegram": "failed",
-      "trigger": null,
-      "plan": {
-        "entry": 0.151,
-        "sl": 0.15295279999999997,
-        "slPct": 1.29,
-        "tp1": 0.14807080000000003,
-        "tp2": 0.14514160000000007,
-        "slSkip": false,
-        "slNoteTh": "เหนือไฮ 15 นาทีล่าสุด"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "watching",
-      "statusTh": "จ้องอยู่",
-      "source": "ignition_near",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
-    },
-    {
-      "id": "b7b35440-1f4a-4cb3-bf75-5f2dba7e28a4",
-      "type": "preOrder",
-      "tier": "accumulation",
-      "symbol": "AZTECUSDT",
-      "side": "long",
-      "price": 0.01692,
-      "pct24h": -10.81,
-      "factors": [
-        {
-          "key": "oiBuild",
-          "labelTh": "OI สะสมขณะราคานิ่ง",
-          "detailTh": "OI +9.18% ใน 4 ชม. ขณะราคา +1.26% (กรอบ 4.5%)"
-        }
-      ],
-      "factorCount": 1,
-      "directional": 0,
-      "flaggedAt": "2026-09-30T06:51:28.724Z",
-      "firstFlaggedAt": "2026-09-30T06:51:28.724Z",
-      "telegram": "failed",
-      "trigger": null,
-      "plan": {
-        "entry": 0.01692,
-        "sl": 0.01681848,
-        "slPct": 0.6,
-        "tp1": 0.01707228,
-        "tp2": 0.01722456,
-        "slSkip": false,
-        "slNoteTh": "ขั้นต่ำ 0.6% (โครงสร้าง 0.34%)"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "watching",
-      "statusTh": "จ้องอยู่",
-      "source": "priority_scout",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
-    },
-    {
-      "id": "9b3f012e-0883-4d7b-a608-71faa7ed4c85",
-      "type": "preOrder",
-      "tier": "distribution",
-      "symbol": "JASMYUSDT",
-      "side": "short",
-      "price": 0.005132,
-      "pct24h": -2,
-      "factors": [
-        {
-          "key": "taker",
-          "labelTh": "แรง taker เอียง",
-          "detailTh": "taker buy/sell 1h 0.71 · 3h 0.71"
-        }
-      ],
-      "factorCount": 1,
-      "directional": 1,
-      "flaggedAt": "2026-09-30T06:49:38.901Z",
-      "firstFlaggedAt": "2026-09-30T06:49:38.901Z",
-      "telegram": "failed",
-      "trigger": null,
-      "plan": {
-        "entry": 0.005132,
-        "sl": 0.005204198999999999,
-        "slPct": 1.41,
-        "tp1": 0.005023701500000002,
-        "tp2": 0.004915403000000004,
-        "slSkip": false,
-        "slNoteTh": "เหนือไฮ 15 นาทีล่าสุด"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "watching",
-      "statusTh": "จ้องอยู่",
-      "source": "ignition_near",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
-    },
-    {
-      "id": "06ee6713-ca05-4fbd-be45-e05d64af9d68",
-      "type": "preOrder",
-      "tier": "distribution",
-      "symbol": "TRUMPUSDT",
-      "side": "short",
-      "price": 2.012,
-      "pct24h": 1.31,
-      "factors": [
-        {
-          "key": "taker",
-          "labelTh": "แรง taker เอียง",
-          "detailTh": "taker buy/sell 1h 0.78 · 3h 0.89"
-        }
-      ],
-      "factorCount": 1,
-      "directional": 1,
-      "flaggedAt": "2026-09-30T06:49:38.901Z",
-      "firstFlaggedAt": "2026-09-30T06:49:38.901Z",
-      "telegram": "failed",
-      "trigger": null,
-      "plan": {
-        "entry": 2.012,
-        "sl": 2.0390369999999995,
-        "slPct": 1.34,
-        "tp1": 1.9714445000000007,
-        "tp2": 1.9308890000000014,
-        "slSkip": false,
-        "slNoteTh": "เหนือไฮ 15 นาทีล่าสุด"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "watching",
-      "statusTh": "จ้องอยู่",
-      "source": "ignition_near",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+    "random": {
+     "n": 115612,
+     "perDay": 13668.4,
+     "tp1Rate": 35.4,
+     "tp1Wilson": [
+      35.1,
+      35.7
+     ],
+     "expR": -0.302,
+     "sumR": -34939.72,
+     "maxConsecLoss": 95,
+     "tp2Rate": 14.4,
+     "bigRate": 4.4,
+     "medRate": 14.6,
+     "avgSlPct": 0.74,
+     "skippedWideSl": 1424
     }
-  ],
-  "watch": [],
-  "ignition": [
-    {
-      "id": "ef4ac68d-d952-4c7e-93eb-531147fa8551",
-      "type": "ignition",
-      "symbol": "INITUSDT",
-      "side": "short",
-      "price": 0.10089,
-      "pct24h": 4.59,
-      "factors": [
-        {
-          "key": "crowded",
-          "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
-          "detailTh": "L/S 1.28 (4 ชม. +11.39%) — long แน่น"
-        },
-        {
-          "key": "taker",
-          "labelTh": "แรง taker เอียง",
-          "detailTh": "taker buy/sell 1h 0.77 · 3h 0.84"
-        },
-        {
-          "key": "fade",
-          "labelTh": "พุ่งแรงแล้วหมดแรง",
-          "detailTh": "24h พุ่ง 22% แล้วย่อจากยอด 10.2%"
-        }
-      ],
-      "factorCount": 3,
-      "directional": 3,
-      "flaggedAt": "2026-09-30T07:46:04.599Z",
-      "firstFlaggedAt": "2026-09-30T07:46:04.599Z",
-      "telegram": "sl_wide",
-      "trigger": {
-        "moveWindow": 10,
-        "movePct": -3.93,
-        "volMult": 3.4,
-        "breakoutPct": -1.02
-      },
-      "plan": {
-        "entry": 0.10089,
-        "sl": 0.10341224999999998,
-        "slPct": 2.5,
-        "tp1": 0.097106625,
-        "tp2": 0.09332325,
-        "slSkip": true,
-        "slNoteTh": "โครงสร้างต้องการ 4.39% → ตัดที่เพดาน 2.5%"
-      },
-      "trade": null,
-      "ai": null,
-      "status": null,
-      "statusTh": null,
-      "source": null,
-      "noteTh": null
-    }
-  ],
-  "meta": {
-    "source": "local-box",
-    "publishedAt": "2026-09-30T09:34:24.613Z",
-    "pagesStatic": true
+   },
+   "verdict": {
+    "telegram": false,
+    "reason": "OOS expectancy -0.228R < 0.15R"
+   }
   }
+ },
+ "backtest": {
+  "generatedAt": "2026-09-24T21:34:19.787Z",
+  "data": {
+   "symbols": 289,
+   "from": "2026-08-27T08:30:00.000Z",
+   "split": "2026-09-16T08:30:00.000Z",
+   "to": "2026-09-24T19:30:00.000Z",
+   "trainDays": 20,
+   "testDays": 8.5
+  }
+ },
+ "live": {
+  "ignition_long": {
+   "sent": {
+    "n": 0,
+    "tp1Rate": null,
+    "avgR": null
+   },
+   "all": {
+    "n": 5,
+    "tp1Rate": 20,
+    "avgR": -0.4
+   }
+  },
+  "ignition_short": {
+   "sent": {
+    "n": 1,
+    "tp1Rate": 100,
+    "avgR": 1.93
+   },
+   "all": {
+    "n": 15,
+    "tp1Rate": 33.3,
+    "avgR": -0.09
+   }
+  },
+  "watch_long": {
+   "sent": {
+    "n": 7,
+    "tp1Rate": 28.6,
+    "avgR": -0.14
+   },
+   "all": {
+    "n": 24,
+    "tp1Rate": 33.3,
+    "avgR": -0.22
+   }
+  },
+  "watch_short": {
+   "sent": {
+    "n": 2,
+    "tp1Rate": 0,
+    "avgR": -1.07
+   },
+   "all": {
+    "n": 9,
+    "tp1Rate": 33.3,
+    "avgR": 0.02
+   }
+  }
+ },
+ "preOrder": [
+  {
+   "id": "cf1d9d3e-9ca3-4cfb-abb4-6be3d80acad7",
+   "type": "preOrder",
+   "tier": "accumulation",
+   "symbol": "WIFUSDT",
+   "side": "long",
+   "price": 0.255,
+   "pct24h": 5.93,
+   "factors": [
+    {
+     "key": "spot",
+     "labelTh": "spot นำ",
+     "detailTh": "spot วอลุ่ม 1 ชม. ×3.4 · spot ซื้อ 70%"
+    }
+   ],
+   "factorCount": 1,
+   "directional": 1,
+   "flaggedAt": "2026-09-30T09:34:04.413Z",
+   "firstFlaggedAt": "2026-09-30T09:34:04.413Z",
+   "telegram": "sent",
+   "trigger": null,
+   "plan": {
+    "entry": 0.255,
+    "sl": 0.2489508,
+    "slPct": 2.37,
+    "tp1": 0.2640738,
+    "tp2": 0.27314760000000005,
+    "slSkip": false,
+    "slNoteTh": "ใต้โลว์ 15 นาทีล่าสุด"
+   },
+   "trade": null,
+   "ai": null,
+   "status": "watching",
+   "statusTh": "จ้องอยู่",
+   "source": "ignition_near",
+   "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+  },
+  {
+   "id": "1b531c3b-2a0a-4c6e-9293-e05f872eb4e2",
+   "type": "preOrder",
+   "tier": "accumulation",
+   "symbol": "KSMUSDT",
+   "side": "long",
+   "price": 5.176,
+   "pct24h": 11.24,
+   "factors": [
+    {
+     "key": "funding",
+     "labelTh": "funding เอียงฝั่งตรงข้าม",
+     "detailTh": "funding -0.0625% (short จ่าย long)"
+    }
+   ],
+   "factorCount": 1,
+   "directional": 1,
+   "flaggedAt": "2026-09-30T09:28:26.638Z",
+   "firstFlaggedAt": "2026-09-30T09:28:26.638Z",
+   "telegram": "failed",
+   "trigger": null,
+   "plan": {
+    "entry": 5.176,
+    "sl": 5.077917,
+    "slPct": 1.89,
+    "tp1": 5.3231245000000005,
+    "tp2": 5.470249,
+    "slSkip": false,
+    "slNoteTh": "ใต้โลว์ 12 นาทีล่าสุด"
+   },
+   "trade": null,
+   "ai": null,
+   "status": "watching",
+   "statusTh": "จ้องอยู่",
+   "source": "near_miss",
+   "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+  },
+  {
+   "id": "b9fcd012-7eca-4ce7-b0c8-e61682d71b3e",
+   "type": "preOrder",
+   "tier": "distribution",
+   "symbol": "LSKUSDT",
+   "side": "short",
+   "price": 0.29376,
+   "pct24h": -2.22,
+   "factors": [
+    {
+     "key": "taker",
+     "labelTh": "แรง taker เอียง",
+     "detailTh": "taker buy/sell 1h 0.84 · 3h 0.93"
+    }
+   ],
+   "factorCount": 1,
+   "directional": 1,
+   "flaggedAt": "2026-09-30T08:07:04.588Z",
+   "firstFlaggedAt": "2026-09-30T08:07:04.588Z",
+   "telegram": "failed",
+   "trigger": null,
+   "plan": {
+    "entry": 0.29376,
+    "sl": 0.29925895999999996,
+    "slPct": 1.87,
+    "tp1": 0.28551156000000016,
+    "tp2": 0.27726312000000025,
+    "slSkip": false,
+    "slNoteTh": "เหนือไฮ 15 นาทีล่าสุด"
+   },
+   "trade": null,
+   "ai": null,
+   "status": "watching",
+   "statusTh": "จ้องอยู่",
+   "source": "ignition_near",
+   "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+  },
+  {
+   "id": "abb87aef-071a-4ac0-a38d-c66ede5a525f",
+   "type": "preOrder",
+   "tier": "accumulation",
+   "symbol": "PROMUSDT",
+   "side": "long",
+   "price": 6.286,
+   "pct24h": 0.69,
+   "factors": [
+    {
+     "key": "crowded",
+     "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
+     "detailTh": "L/S 0.40 (4 ชม. -1.00%) — short แน่น"
+    }
+   ],
+   "factorCount": 1,
+   "directional": 1,
+   "flaggedAt": "2026-09-30T08:06:04.609Z",
+   "firstFlaggedAt": "2026-09-30T08:06:04.609Z",
+   "telegram": "failed",
+   "trigger": null,
+   "plan": {
+    "entry": 6.286,
+    "sl": 6.20379,
+    "slPct": 1.31,
+    "tp1": 6.409314999999999,
+    "tp2": 6.53263,
+    "slSkip": false,
+    "slNoteTh": "ใต้โลว์ 15 นาทีล่าสุด"
+   },
+   "trade": null,
+   "ai": null,
+   "status": "watching",
+   "statusTh": "จ้องอยู่",
+   "source": "ignition_near",
+   "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+  },
+  {
+   "id": "a971053c-0fb6-458b-a4d7-62d48ed2359a",
+   "type": "preOrder",
+   "tier": "distribution",
+   "symbol": "QUSDT",
+   "side": "short",
+   "price": 0.022806,
+   "pct24h": -4.8,
+   "factors": [
+    {
+     "key": "fade",
+     "labelTh": "พุ่งแรงแล้วหมดแรง",
+     "detailTh": "24h พุ่ง 16% แล้วย่อจากยอด 11.4%"
+    }
+   ],
+   "factorCount": 1,
+   "directional": 1,
+   "flaggedAt": "2026-09-30T08:05:04.567Z",
+   "firstFlaggedAt": "2026-09-30T08:05:04.567Z",
+   "telegram": "failed",
+   "trigger": null,
+   "plan": {
+    "entry": 0.022806,
+    "sl": 0.02337615,
+    "slPct": 2.5,
+    "tp1": 0.021950775,
+    "tp2": 0.02109555,
+    "slSkip": false,
+    "slNoteTh": "โครงสร้างต้องการ 2.59% → ตัดที่เพดาน 2.5%"
+   },
+   "trade": null,
+   "ai": null,
+   "status": "watching",
+   "statusTh": "จ้องอยู่",
+   "source": "ignition_near",
+   "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+  },
+  {
+   "id": "9e59c879-8cd4-4b6e-b2fd-e12efb68f4f6",
+   "type": "preOrder",
+   "tier": "accumulation",
+   "symbol": "COWUSDT",
+   "side": "long",
+   "price": 0.1701,
+   "pct24h": 6.84,
+   "factors": [
+    {
+     "key": "taker",
+     "labelTh": "แรง taker เอียง",
+     "detailTh": "taker buy/sell 1h 1.23 · 3h 1.20"
+    }
+   ],
+   "factorCount": 1,
+   "directional": 1,
+   "flaggedAt": "2026-09-30T07:57:04.804Z",
+   "firstFlaggedAt": "2026-09-30T07:57:04.804Z",
+   "telegram": "failed",
+   "trigger": null,
+   "plan": {
+    "entry": 0.1701,
+    "sl": 0.16723259999999998,
+    "slPct": 1.69,
+    "tp1": 0.17440110000000006,
+    "tp2": 0.1787022000000001,
+    "slSkip": false,
+    "slNoteTh": "ใต้โลว์ 15 นาทีล่าสุด"
+   },
+   "trade": null,
+   "ai": null,
+   "status": "watching",
+   "statusTh": "จ้องอยู่",
+   "source": "ignition_near",
+   "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+  },
+  {
+   "id": "1d31bd45-5d97-49e5-8efb-8fb7f4fc63ce",
+   "type": "preOrder",
+   "tier": "accumulation",
+   "symbol": "CHIPUSDT",
+   "side": "long",
+   "price": 0.04457,
+   "pct24h": -1.07,
+   "factors": [
+    {
+     "key": "crowded",
+     "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
+     "detailTh": "L/S 0.80 (4 ชม. +1.63%) — short แน่น"
+    }
+   ],
+   "factorCount": 1,
+   "directional": 1,
+   "flaggedAt": "2026-09-30T07:48:04.595Z",
+   "firstFlaggedAt": "2026-09-30T07:48:04.595Z",
+   "telegram": "failed",
+   "trigger": null,
+   "plan": {
+    "entry": 0.04457,
+    "sl": 0.04357638,
+    "slPct": 2.23,
+    "tp1": 0.04606043,
+    "tp2": 0.04755086000000001,
+    "slSkip": false,
+    "slNoteTh": "ใต้โลว์ 15 นาทีล่าสุด"
+   },
+   "trade": null,
+   "ai": null,
+   "status": "watching",
+   "statusTh": "จ้องอยู่",
+   "source": "ignition_near",
+   "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+  },
+  {
+   "id": "766ad7fb-ec89-4b75-a89c-a46cfac0c4ba",
+   "type": "preOrder",
+   "tier": "distribution",
+   "symbol": "XPLUSDT",
+   "side": "short",
+   "price": 0.09422,
+   "pct24h": -6.19,
+   "factors": [
+    {
+     "key": "taker",
+     "labelTh": "แรง taker เอียง",
+     "detailTh": "taker buy/sell 1h 0.71 · 3h 0.95"
+    }
+   ],
+   "factorCount": 1,
+   "directional": 1,
+   "flaggedAt": "2026-09-30T07:14:04.784Z",
+   "firstFlaggedAt": "2026-09-30T07:14:04.784Z",
+   "telegram": "failed",
+   "trigger": null,
+   "plan": {
+    "entry": 0.09422,
+    "sl": 0.09568558999999999,
+    "slPct": 1.56,
+    "tp1": 0.09202161500000003,
+    "tp2": 0.08982323000000005,
+    "slSkip": false,
+    "slNoteTh": "เหนือไฮ 15 นาทีล่าสุด"
+   },
+   "trade": null,
+   "ai": null,
+   "status": "watching",
+   "statusTh": "จ้องอยู่",
+   "source": "ignition_near",
+   "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+  },
+  {
+   "id": "851455f7-f2ba-4638-ae5b-89e28b56050f",
+   "type": "preOrder",
+   "tier": "distribution",
+   "symbol": "STRKUSDT",
+   "side": "short",
+   "price": 0.04143,
+   "pct24h": -3.85,
+   "factors": [
+    {
+     "key": "taker",
+     "labelTh": "แรง taker เอียง",
+     "detailTh": "taker buy/sell 1h 0.73 · 3h 0.93"
+    }
+   ],
+   "factorCount": 1,
+   "directional": 1,
+   "flaggedAt": "2026-09-30T07:03:04.691Z",
+   "firstFlaggedAt": "2026-09-30T07:03:04.691Z",
+   "telegram": "failed",
+   "trigger": null,
+   "plan": {
+    "entry": 0.04143,
+    "sl": 0.04211207,
+    "slPct": 1.65,
+    "tp1": 0.040406895000000005,
+    "tp2": 0.03938379000000001,
+    "slSkip": false,
+    "slNoteTh": "เหนือไฮ 15 นาทีล่าสุด"
+   },
+   "trade": null,
+   "ai": null,
+   "status": "watching",
+   "statusTh": "จ้องอยู่",
+   "source": "ignition_near",
+   "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+  },
+  {
+   "id": "a22cbddb-7bb9-409e-858b-0eb73b94f203",
+   "type": "preOrder",
+   "tier": "distribution",
+   "symbol": "CFGUSDT",
+   "side": "short",
+   "price": 0.151,
+   "pct24h": -2.83,
+   "factors": [
+    {
+     "key": "taker",
+     "labelTh": "แรง taker เอียง",
+     "detailTh": "taker buy/sell 1h 0.66 · 3h 0.80"
+    }
+   ],
+   "factorCount": 1,
+   "directional": 1,
+   "flaggedAt": "2026-09-30T07:00:04.618Z",
+   "firstFlaggedAt": "2026-09-30T07:00:04.618Z",
+   "telegram": "failed",
+   "trigger": null,
+   "plan": {
+    "entry": 0.151,
+    "sl": 0.15295279999999997,
+    "slPct": 1.29,
+    "tp1": 0.14807080000000003,
+    "tp2": 0.14514160000000007,
+    "slSkip": false,
+    "slNoteTh": "เหนือไฮ 15 นาทีล่าสุด"
+   },
+   "trade": null,
+   "ai": null,
+   "status": "watching",
+   "statusTh": "จ้องอยู่",
+   "source": "ignition_near",
+   "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+  },
+  {
+   "id": "b7b35440-1f4a-4cb3-bf75-5f2dba7e28a4",
+   "type": "preOrder",
+   "tier": "accumulation",
+   "symbol": "AZTECUSDT",
+   "side": "long",
+   "price": 0.01692,
+   "pct24h": -10.81,
+   "factors": [
+    {
+     "key": "oiBuild",
+     "labelTh": "OI สะสมขณะราคานิ่ง",
+     "detailTh": "OI +9.18% ใน 4 ชม. ขณะราคา +1.26% (กรอบ 4.5%)"
+    }
+   ],
+   "factorCount": 1,
+   "directional": 0,
+   "flaggedAt": "2026-09-30T06:51:28.724Z",
+   "firstFlaggedAt": "2026-09-30T06:51:28.724Z",
+   "telegram": "failed",
+   "trigger": null,
+   "plan": {
+    "entry": 0.01692,
+    "sl": 0.01681848,
+    "slPct": 0.6,
+    "tp1": 0.01707228,
+    "tp2": 0.01722456,
+    "slSkip": false,
+    "slNoteTh": "ขั้นต่ำ 0.6% (โครงสร้าง 0.34%)"
+   },
+   "trade": null,
+   "ai": null,
+   "status": "watching",
+   "statusTh": "จ้องอยู่",
+   "source": "priority_scout",
+   "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+  },
+  {
+   "id": "9b3f012e-0883-4d7b-a608-71faa7ed4c85",
+   "type": "preOrder",
+   "tier": "distribution",
+   "symbol": "JASMYUSDT",
+   "side": "short",
+   "price": 0.005132,
+   "pct24h": -2,
+   "factors": [
+    {
+     "key": "taker",
+     "labelTh": "แรง taker เอียง",
+     "detailTh": "taker buy/sell 1h 0.71 · 3h 0.71"
+    }
+   ],
+   "factorCount": 1,
+   "directional": 1,
+   "flaggedAt": "2026-09-30T06:49:38.901Z",
+   "firstFlaggedAt": "2026-09-30T06:49:38.901Z",
+   "telegram": "failed",
+   "trigger": null,
+   "plan": {
+    "entry": 0.005132,
+    "sl": 0.005204198999999999,
+    "slPct": 1.41,
+    "tp1": 0.005023701500000002,
+    "tp2": 0.004915403000000004,
+    "slSkip": false,
+    "slNoteTh": "เหนือไฮ 15 นาทีล่าสุด"
+   },
+   "trade": null,
+   "ai": null,
+   "status": "watching",
+   "statusTh": "จ้องอยู่",
+   "source": "ignition_near",
+   "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+  },
+  {
+   "id": "06ee6713-ca05-4fbd-be45-e05d64af9d68",
+   "type": "preOrder",
+   "tier": "distribution",
+   "symbol": "TRUMPUSDT",
+   "side": "short",
+   "price": 2.012,
+   "pct24h": 1.31,
+   "factors": [
+    {
+     "key": "taker",
+     "labelTh": "แรง taker เอียง",
+     "detailTh": "taker buy/sell 1h 0.78 · 3h 0.89"
+    }
+   ],
+   "factorCount": 1,
+   "directional": 1,
+   "flaggedAt": "2026-09-30T06:49:38.901Z",
+   "firstFlaggedAt": "2026-09-30T06:49:38.901Z",
+   "telegram": "failed",
+   "trigger": null,
+   "plan": {
+    "entry": 2.012,
+    "sl": 2.0390369999999995,
+    "slPct": 1.34,
+    "tp1": 1.9714445000000007,
+    "tp2": 1.9308890000000014,
+    "slSkip": false,
+    "slNoteTh": "เหนือไฮ 15 นาทีล่าสุด"
+   },
+   "trade": null,
+   "ai": null,
+   "status": "watching",
+   "statusTh": "จ้องอยู่",
+   "source": "ignition_near",
+   "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+  }
+ ],
+ "watch": [],
+ "ignition": [
+  {
+   "id": "ef4ac68d-d952-4c7e-93eb-531147fa8551",
+   "type": "ignition",
+   "symbol": "INITUSDT",
+   "side": "short",
+   "price": 0.10089,
+   "pct24h": 4.59,
+   "factors": [
+    {
+     "key": "crowded",
+     "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
+     "detailTh": "L/S 1.28 (4 ชม. +11.39%) — long แน่น"
+    },
+    {
+     "key": "taker",
+     "labelTh": "แรง taker เอียง",
+     "detailTh": "taker buy/sell 1h 0.77 · 3h 0.84"
+    },
+    {
+     "key": "fade",
+     "labelTh": "พุ่งแรงแล้วหมดแรง",
+     "detailTh": "24h พุ่ง 22% แล้วย่อจากยอด 10.2%"
+    }
+   ],
+   "factorCount": 3,
+   "directional": 3,
+   "flaggedAt": "2026-09-30T07:46:04.599Z",
+   "firstFlaggedAt": "2026-09-30T07:46:04.599Z",
+   "telegram": "sl_wide",
+   "trigger": {
+    "moveWindow": 10,
+    "movePct": -3.93,
+    "volMult": 3.4,
+    "breakoutPct": -1.02
+   },
+   "plan": {
+    "entry": 0.10089,
+    "sl": 0.10341224999999998,
+    "slPct": 2.5,
+    "tp1": 0.097106625,
+    "tp2": 0.09332325,
+    "slSkip": true,
+    "slNoteTh": "โครงสร้างต้องการ 4.39% → ตัดที่เพดาน 2.5%"
+   },
+   "trade": null,
+   "ai": null,
+   "status": null,
+   "statusTh": null,
+   "source": null,
+   "noteTh": null
+  }
+ ]
 }
