@@ -1,43 +1,15 @@
 {
-  "updatedAt": "2026-10-16T06:24:06.808Z",
+  "updatedAt": "2026-10-16T07:29:15.404Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 144,
-    "earlyWins": 92,
-    "earlyLosses": 52,
-    "earlyWinRate": 0.6388888888888888,
+    "earlyGraded": 143,
+    "earlyWins": 90,
+    "earlyLosses": 53,
+    "earlyWinRate": 0.6293706293706294,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
   "mistakes": [
-    {
-      "side": "long",
-      "factorKeys": [
-        "crowded",
-        "funding",
-        "oiDiverg",
-        "taker"
-      ],
-      "losses": 2,
-      "wins": 0,
-      "winRate": 0,
-      "noteTh": "❌ Long crowded+funding+oiDiverg+taker: แพ้ 2/2 (WR 0%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "samples": [
-        {
-          "symbol": "SANDUSDT",
-          "outcome": "loss",
-          "aiAction": "veto",
-          "horizon": "60m"
-        },
-        {
-          "symbol": "BLURUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "5m"
-        }
-      ]
-    },
     {
       "side": "long",
       "factorKeys": [
@@ -90,6 +62,34 @@
           "outcome": "loss",
           "aiAction": "veto",
           "horizon": "5m"
+        }
+      ]
+    },
+    {
+      "side": "long",
+      "factorKeys": [
+        "crowded",
+        "funding",
+        "oiDiverg",
+        "taker"
+      ],
+      "losses": 2,
+      "wins": 0,
+      "winRate": 0,
+      "noteTh": "❌ Long crowded+funding+oiDiverg+taker: แพ้ 2/2 (WR 0%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "samples": [
+        {
+          "symbol": "BLURUSDT",
+          "outcome": "loss",
+          "aiAction": null,
+          "horizon": "5m"
+        },
+        {
+          "symbol": "SANDUSDT",
+          "outcome": "loss",
+          "aiAction": "veto",
+          "horizon": "60m"
         }
       ]
     },
@@ -153,37 +153,6 @@
     }
   ],
   "wins": [
-    {
-      "side": "short",
-      "factorKeys": [
-        "fade",
-        "taker"
-      ],
-      "wins": 13,
-      "losses": 8,
-      "winRate": 0.6190476190476191,
-      "noteTh": "✅ Short fade+taker: ชนะ 13/21 (WR 62%) — เก็บแพทเทิร์น",
-      "samples": [
-        {
-          "symbol": "MEGAUSDT",
-          "outcome": "loss",
-          "aiAction": "veto",
-          "horizon": "5m"
-        },
-        {
-          "symbol": "MEGAUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "5m"
-        },
-        {
-          "symbol": "ARXUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "5m"
-        }
-      ]
-    },
     {
       "side": "long",
       "factorKeys": [
@@ -313,6 +282,38 @@
           "horizon": "tp1"
         }
       ]
+    },
+    {
+      "side": "long",
+      "factorKeys": [
+        "crowded",
+        "oiBuild",
+        "oiDiverg"
+      ],
+      "wins": 3,
+      "losses": 1,
+      "winRate": 0.75,
+      "noteTh": "✅ Long crowded+oiBuild+oiDiverg: ชนะ 3/4 (WR 75%) — เก็บแพทเทิร์น",
+      "samples": [
+        {
+          "symbol": "VVVUSDT",
+          "outcome": "win",
+          "aiAction": "veto",
+          "horizon": "60m"
+        },
+        {
+          "symbol": "ALLOUSDT",
+          "outcome": "win",
+          "aiAction": "veto",
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "NMRUSDT",
+          "outcome": "loss",
+          "aiAction": "veto",
+          "horizon": "15m"
+        }
+      ]
     }
   ],
   "aiFewShot": [
@@ -409,12 +410,12 @@
     {
       "key": "vetoBias",
       "value": 0,
-      "noteTh": "คง vetoBias=0 — WR ระยะต้น 64% ยังไม่ต้องเข้มเพิ่ม"
+      "noteTh": "คง vetoBias=0 — WR ระยะต้น 63% ยังไม่ต้องเข้มเพิ่ม"
     },
     {
       "key": "cautionPatterns",
       "value": 5,
-      "noteTh": "จำแพทเทิร์นเสีย 5 แบบ (เช่น crowded+funding+oiDiverg+taker) — ส่งเข้า AI context"
+      "noteTh": "จำแพทเทิร์นเสีย 5 แบบ (เช่น crowded+funding+oiBuild+oiDiverg) — ส่งเข้า AI context"
     },
     {
       "key": "preferBoost",
