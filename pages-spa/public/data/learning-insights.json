@@ -1,80 +1,15 @@
 {
-  "updatedAt": "2026-10-16T16:29:04.746Z",
+  "updatedAt": "2026-10-16T16:44:15.517Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 135,
-    "earlyWins": 82,
-    "earlyLosses": 53,
-    "earlyWinRate": 0.6074074074074074,
+    "earlyGraded": 153,
+    "earlyWins": 94,
+    "earlyLosses": 59,
+    "earlyWinRate": 0.6143790849673203,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
   "mistakes": [
-    {
-      "side": "short",
-      "factorKeys": [
-        "fade",
-        "taker"
-      ],
-      "losses": 8,
-      "wins": 3,
-      "winRate": 0.2727272727272727,
-      "noteTh": "❌ Short fade+taker: แพ้ 8/11 (WR 27%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "samples": [
-        {
-          "symbol": "MARSCOINUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "5m"
-        },
-        {
-          "symbol": "MARSCOINUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "5m"
-        },
-        {
-          "symbol": "MANTAUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "5m"
-        }
-      ]
-    },
-    {
-      "side": "short",
-      "factorKeys": [
-        "fade",
-        "oiDiverg",
-        "taker"
-      ],
-      "losses": 3,
-      "wins": 0,
-      "winRate": 0,
-      "noteTh": "❌ Short fade+oiDiverg+taker: แพ้ 3/3 (WR 0%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "samples": [
-        {
-          "symbol": "WLDUSDT",
-          "outcome": "loss",
-          "aiAction": "veto",
-          "horizon": "sl"
-        },
-        {
-          "symbol": "COMPUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "15m"
-        },
-        {
-          "symbol": "JCTUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "15m"
-        }
-      ]
-    },
     {
       "side": "short",
       "factorKeys": [
@@ -165,29 +100,116 @@
       ]
     },
     {
-      "side": "short",
+      "side": "long",
       "factorKeys": [
         "crowded",
-        "fade",
-        "oiDiverg"
+        "funding",
+        "oiDiverg",
+        "taker"
       ],
       "losses": 2,
       "wins": 0,
       "winRate": 0,
-      "noteTh": "❌ Short crowded+fade+oiDiverg: แพ้ 2/2 (WR 0%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "noteTh": "❌ Long crowded+funding+oiDiverg+taker: แพ้ 2/2 (WR 0%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
       "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
       "samples": [
         {
-          "symbol": "0GUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "sl"
-        },
-        {
-          "symbol": "APRUSDT",
+          "symbol": "BLURUSDT",
           "outcome": "loss",
           "aiAction": null,
           "horizon": "5m"
+        },
+        {
+          "symbol": "SANDUSDT",
+          "outcome": "loss",
+          "aiAction": "veto",
+          "horizon": "60m"
+        }
+      ]
+    },
+    {
+      "side": "short",
+      "factorKeys": [
+        "crowded",
+        "fade",
+        "spot",
+        "taker"
+      ],
+      "losses": 2,
+      "wins": 0,
+      "winRate": 0,
+      "noteTh": "❌ Short crowded+fade+spot+taker: แพ้ 2/2 (WR 0%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "samples": [
+        {
+          "symbol": "ADAUSDT",
+          "outcome": "loss",
+          "aiAction": "veto",
+          "horizon": "5m"
+        },
+        {
+          "symbol": "TIAUSDT",
+          "outcome": "loss",
+          "aiAction": "veto",
+          "horizon": "15m"
+        }
+      ]
+    },
+    {
+      "side": "short",
+      "factorKeys": [
+        "crowded",
+        "fade"
+      ],
+      "losses": 2,
+      "wins": 0,
+      "winRate": 0,
+      "noteTh": "❌ Short crowded+fade: แพ้ 2/2 (WR 0%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "samples": [
+        {
+          "symbol": "VELVETUSDT",
+          "outcome": "loss",
+          "aiAction": null,
+          "horizon": "60m"
+        },
+        {
+          "symbol": "VELVETUSDT",
+          "outcome": "loss",
+          "aiAction": null,
+          "horizon": "60m"
+        }
+      ]
+    },
+    {
+      "side": "long",
+      "factorKeys": [
+        "funding",
+        "oiDiverg"
+      ],
+      "losses": 2,
+      "wins": 1,
+      "winRate": 0.3333333333333333,
+      "noteTh": "❌ Long funding+oiDiverg: แพ้ 2/3 (WR 33%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "samples": [
+        {
+          "symbol": "XRPUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "5m"
+        },
+        {
+          "symbol": "FILUSDT",
+          "outcome": "loss",
+          "aiAction": null,
+          "horizon": "60m"
+        },
+        {
+          "symbol": "RSRUSDT",
+          "outcome": "loss",
+          "aiAction": null,
+          "horizon": "15m"
         }
       ]
     }
@@ -228,38 +250,6 @@
     {
       "side": "long",
       "factorKeys": [
-        "funding",
-        "oiDiverg",
-        "troughStall"
-      ],
-      "wins": 5,
-      "losses": 2,
-      "winRate": 0.7142857142857143,
-      "noteTh": "✅ Long funding+oiDiverg+troughStall: ชนะ 5/7 (WR 71%) — เก็บแพทเทิร์น",
-      "samples": [
-        {
-          "symbol": "KMNOUSDT",
-          "outcome": "loss",
-          "aiAction": "veto",
-          "horizon": "15m"
-        },
-        {
-          "symbol": "LAUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "tp1"
-        },
-        {
-          "symbol": "ATOMUSDT",
-          "outcome": "win",
-          "aiAction": "veto",
-          "horizon": "tp1"
-        }
-      ]
-    },
-    {
-      "side": "long",
-      "factorKeys": [
         "crowded",
         "oiDiverg",
         "troughStall"
@@ -286,37 +276,6 @@
           "outcome": "win",
           "aiAction": "veto",
           "horizon": "tp1"
-        }
-      ]
-    },
-    {
-      "side": "short",
-      "factorKeys": [
-        "fade",
-        "oiDiverg"
-      ],
-      "wins": 4,
-      "losses": 0,
-      "winRate": 1,
-      "noteTh": "✅ Short fade+oiDiverg: ชนะ 4/4 (WR 100%) — เก็บแพทเทิร์น",
-      "samples": [
-        {
-          "symbol": "OPNUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "60m"
-        },
-        {
-          "symbol": "OPNUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "60m"
-        },
-        {
-          "symbol": "PUMPUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "60m"
         }
       ]
     },
@@ -352,96 +311,161 @@
           "horizon": "tp1"
         }
       ]
+    },
+    {
+      "side": "long",
+      "factorKeys": [
+        "crowded",
+        "oiBuild",
+        "oiDiverg",
+        "taker"
+      ],
+      "wins": 3,
+      "losses": 0,
+      "winRate": 1,
+      "noteTh": "✅ Long crowded+oiBuild+oiDiverg+taker: ชนะ 3/3 (WR 100%) — เก็บแพทเทิร์น",
+      "samples": [
+        {
+          "symbol": "FARTCOINUSDT",
+          "outcome": "win",
+          "aiAction": "veto",
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "SPXUSDT",
+          "outcome": "win",
+          "aiAction": "veto",
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "CAKEUSDT",
+          "outcome": "win",
+          "aiAction": "veto",
+          "horizon": "tp1"
+        }
+      ]
+    },
+    {
+      "side": "long",
+      "factorKeys": [
+        "crowded",
+        "oiBuild",
+        "oiDiverg"
+      ],
+      "wins": 3,
+      "losses": 1,
+      "winRate": 0.75,
+      "noteTh": "✅ Long crowded+oiBuild+oiDiverg: ชนะ 3/4 (WR 75%) — เก็บแพทเทิร์น",
+      "samples": [
+        {
+          "symbol": "VVVUSDT",
+          "outcome": "win",
+          "aiAction": "veto",
+          "horizon": "60m"
+        },
+        {
+          "symbol": "ALLOUSDT",
+          "outcome": "win",
+          "aiAction": "veto",
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "NMRUSDT",
+          "outcome": "loss",
+          "aiAction": "veto",
+          "horizon": "15m"
+        }
+      ]
     }
   ],
   "aiFewShot": [
     {
       "outcome": "loss",
-      "side": "short",
-      "symbol": "MARSCOINUSDT",
-      "factors": [
-        "fade",
-        "taker"
-      ],
-      "aiAction": "send",
-      "lessonTh": "เคยพลาด: short [fade+taker] — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
-    },
-    {
-      "outcome": "loss",
-      "side": "short",
-      "symbol": "MARSCOINUSDT",
-      "factors": [
-        "fade",
-        "taker"
-      ],
-      "aiAction": "send",
-      "lessonTh": "เคยพลาด: short [fade+taker] — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
-    },
-    {
-      "outcome": "loss",
       "side": "long",
-      "symbol": "WIFUSDT",
-      "factors": [
-        "funding",
-        "oiDiverg"
-      ],
-      "aiAction": "send",
-      "lessonTh": "เคยพลาด: long [funding+oiDiverg] — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
-    },
-    {
-      "outcome": "loss",
-      "side": "long",
-      "symbol": "WUSDT",
+      "symbol": "ZECUSDT",
       "factors": [
         "crowded",
-        "funding"
+        "troughStall"
       ],
       "aiAction": "send",
-      "lessonTh": "เคยพลาด: long [crowded+funding] — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
+      "lessonTh": "เคยพลาด: long [crowded+troughStall] — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
     },
     {
       "outcome": "loss",
       "side": "short",
-      "symbol": "STRKUSDT",
-      "factors": [
-        "fade",
-        "taker"
-      ],
-      "aiAction": "send",
-      "lessonTh": "เคยพลาด: short [fade+taker] — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
-    },
-    {
-      "outcome": "win",
-      "side": "short",
-      "symbol": "PROMUSDT",
-      "factors": [
-        "crowded",
-        "fade"
-      ],
-      "aiAction": "send",
-      "lessonTh": "เคยถูก: short [crowded+fade] — confluence แบบนี้โอเค"
-    },
-    {
-      "outcome": "win",
-      "side": "short",
-      "symbol": "MANTAUSDT",
-      "factors": [
-        "fade",
-        "taker"
-      ],
-      "aiAction": "send",
-      "lessonTh": "เคยถูก: short [fade+taker] — confluence แบบนี้โอเค"
-    },
-    {
-      "outcome": "win",
-      "side": "short",
-      "symbol": "TAOUSDT",
+      "symbol": "DUSKUSDT",
       "factors": [
         "oiDiverg",
+        "peakStall"
+      ],
+      "aiAction": "send",
+      "lessonTh": "เคยพลาด: short [oiDiverg+peakStall] — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
+    },
+    {
+      "outcome": "loss",
+      "side": "long",
+      "symbol": "CAPUSDT",
+      "factors": [
+        "crowded",
+        "troughStall"
+      ],
+      "aiAction": "send",
+      "lessonTh": "เคยพลาด: long [crowded+troughStall] — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
+    },
+    {
+      "outcome": "loss",
+      "side": "short",
+      "symbol": "MEGAUSDT",
+      "factors": [
+        "fade",
+        "taker"
+      ],
+      "aiAction": "veto",
+      "lessonTh": "เคยพลาด: short [fade+taker] AI=veto — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
+    },
+    {
+      "outcome": "loss",
+      "side": "short",
+      "symbol": "MEGAUSDT",
+      "factors": [
+        "fade",
         "taker"
       ],
       "aiAction": "send",
-      "lessonTh": "เคยถูก: short [oiDiverg+taker] — confluence แบบนี้โอเค"
+      "lessonTh": "เคยพลาด: short [fade+taker] — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
+    },
+    {
+      "outcome": "win",
+      "side": "long",
+      "symbol": "MAGICUSDT",
+      "factors": [
+        "crowded",
+        "troughStall"
+      ],
+      "aiAction": "send",
+      "lessonTh": "เคยถูก: long [crowded+troughStall] — confluence แบบนี้โอเค"
+    },
+    {
+      "outcome": "win",
+      "side": "short",
+      "symbol": "LITUSDT",
+      "factors": [
+        "oiDiverg",
+        "peakStall"
+      ],
+      "aiAction": "send",
+      "lessonTh": "เคยถูก: short [oiDiverg+peakStall] — confluence แบบนี้โอเค"
+    },
+    {
+      "outcome": "win",
+      "side": "long",
+      "symbol": "ZROUSDT",
+      "factors": [
+        "crowded",
+        "troughStall"
+      ],
+      "aiAction": "send",
+      "lessonTh": "เคยถูก: long [crowded+troughStall] — confluence แบบนี้โอเค"
     }
   ],
   "adjustments": [
@@ -453,7 +477,7 @@
     {
       "key": "cautionPatterns",
       "value": 6,
-      "noteTh": "จำแพทเทิร์นเสีย 6 แบบ (เช่น fade+taker) — ส่งเข้า AI context"
+      "noteTh": "จำแพทเทิร์นเสีย 6 แบบ (เช่น crowded+oiDiverg+peakStall+taker) — ส่งเข้า AI context"
     },
     {
       "key": "preferBoost",
