@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-16T17:29:03.742Z",
+  "updatedAt": "2026-10-16T19:19:45.910Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 152,
-    "earlyWins": 92,
-    "earlyLosses": 60,
-    "earlyWinRate": 0.6052631578947368,
+    "earlyGraded": 141,
+    "earlyWins": 84,
+    "earlyLosses": 57,
+    "earlyWinRate": 0.5957446808510638,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -213,38 +213,6 @@
           "horizon": "60m"
         }
       ]
-    },
-    {
-      "side": "long",
-      "factorKeys": [
-        "funding",
-        "oiDiverg"
-      ],
-      "losses": 2,
-      "wins": 1,
-      "winRate": 0.3333333333333333,
-      "noteTh": "❌ Long funding+oiDiverg: แพ้ 2/3 (WR 33%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "samples": [
-        {
-          "symbol": "XRPUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "5m"
-        },
-        {
-          "symbol": "FILUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "60m"
-        },
-        {
-          "symbol": "RSRUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "15m"
-        }
-      ]
     }
   ],
   "wins": [
@@ -255,25 +223,25 @@
         "funding",
         "oiDiverg"
       ],
-      "wins": 10,
+      "wins": 7,
       "losses": 1,
-      "winRate": 0.9090909090909091,
-      "noteTh": "✅ Long crowded+funding+oiDiverg: ชนะ 10/11 (WR 91%) — เก็บแพทเทิร์น",
+      "winRate": 0.875,
+      "noteTh": "✅ Long crowded+funding+oiDiverg: ชนะ 7/8 (WR 88%) — เก็บแพทเทิร์น",
       "samples": [
         {
-          "symbol": "OGNUSDT",
+          "symbol": "WLDUSDT",
           "outcome": "win",
-          "aiAction": "veto",
+          "aiAction": null,
           "horizon": "tp1"
         },
         {
-          "symbol": "XRPUSDT",
+          "symbol": "ALGOUSDT",
           "outcome": "win",
-          "aiAction": "veto",
+          "aiAction": null,
           "horizon": "tp1"
         },
         {
-          "symbol": "XRPUSDT",
+          "symbol": "SANDUSDT",
           "outcome": "win",
           "aiAction": "veto",
           "horizon": "tp1"
@@ -504,8 +472,8 @@
   "adjustments": [
     {
       "key": "vetoBias",
-      "value": 0,
-      "noteTh": "คง vetoBias=0 — WR ระยะต้น 61% ยังไม่ต้องเข้มเพิ่ม"
+      "value": 0.05,
+      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 60% จาก 141 เคส"
     },
     {
       "key": "cautionPatterns",
@@ -524,7 +492,7 @@
     }
   ],
   "biasSummary": {
-    "vetoBias": 0,
+    "vetoBias": 0.05,
     "cautionCount": 6,
     "preferBoostCount": 4,
     "minFactorsFloor": 3,
