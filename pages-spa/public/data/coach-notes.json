@@ -1,20 +1,6 @@
 {
   "notes": [
     {
-      "id": "d299875c-2777-4578-96f5-188debedf1e3",
-      "symbol": "GENIUSUSDT",
-      "side": "long",
-      "outcome": "win",
-      "noteTh": "✅ GENIUSUSDT Long (5m) · ระยะต้น/กำลังสะสม: ทำงานได้ — ราคา +2.77% ตรงทิศ · flags: early:preOrder,crowded,tier:accumulation. เก็บแพทเทิร์นที่คล้ายไว้",
-      "timestamp": "2026-10-16T04:49:09.736Z",
-      "alertId": "c41fb78b-8f1d-4dde-94b6-be21abb2539a",
-      "horizon": "5m",
-      "movePct": 2.77,
-      "source": "early",
-      "tier": "accumulation",
-      "labelTh": "กำลังสะสม"
-    },
-    {
       "id": "d0d724fb-8295-4784-872a-5314f3701b68",
       "symbol": "GENIUSUSDT",
       "side": "long",
@@ -389,6 +375,20 @@
       "source": "learn",
       "tier": "adjust",
       "labelTh": "ปรับโมเดล"
+    },
+    {
+      "id": "bd7f97ea-697b-4f4f-850d-7bc686f38869",
+      "symbol": "ZKUSDT",
+      "side": "short",
+      "outcome": "loss",
+      "noteTh": "❌ ZKUSDT Short (15m) · ระยะต้น/กำลังแจกของ: พลาด — ราคา +1.77% · flags: early:preOrder,peakStall,tier:distribution. ทบทวน confluence / หลักฐานซ่อนก่อนเข้า",
+      "timestamp": "2026-10-16T06:09:11.074Z",
+      "alertId": "4e227176-9660-4ebc-87cd-29d3d8f007fc",
+      "horizon": "15m",
+      "movePct": 1.77,
+      "source": "early",
+      "tier": "distribution",
+      "labelTh": "กำลังแจกของ"
     }
   ],
   "total": 80,

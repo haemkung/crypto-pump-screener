@@ -1,47 +1,15 @@
 {
-  "updatedAt": "2026-10-16T06:04:21.991Z",
+  "updatedAt": "2026-10-16T06:24:06.808Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 145,
+    "earlyGraded": 144,
     "earlyWins": 92,
-    "earlyLosses": 53,
-    "earlyWinRate": 0.6344827586206897,
+    "earlyLosses": 52,
+    "earlyWinRate": 0.6388888888888888,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
   "mistakes": [
-    {
-      "side": "long",
-      "factorKeys": [
-        "crowded",
-        "troughStall"
-      ],
-      "losses": 3,
-      "wins": 2,
-      "winRate": 0.4,
-      "noteTh": "❌ Long crowded+troughStall: แพ้ 3/5 (WR 40%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "samples": [
-        {
-          "symbol": "CAPUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "5m"
-        },
-        {
-          "symbol": "ZROUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "15m"
-        },
-        {
-          "symbol": "FFUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "60m"
-        }
-      ]
-    },
     {
       "side": "long",
       "factorKeys": [
@@ -441,12 +409,12 @@
     {
       "key": "vetoBias",
       "value": 0,
-      "noteTh": "คง vetoBias=0 — WR ระยะต้น 63% ยังไม่ต้องเข้มเพิ่ม"
+      "noteTh": "คง vetoBias=0 — WR ระยะต้น 64% ยังไม่ต้องเข้มเพิ่ม"
     },
     {
       "key": "cautionPatterns",
-      "value": 6,
-      "noteTh": "จำแพทเทิร์นเสีย 6 แบบ (เช่น crowded+troughStall) — ส่งเข้า AI context"
+      "value": 5,
+      "noteTh": "จำแพทเทิร์นเสีย 5 แบบ (เช่น crowded+funding+oiDiverg+taker) — ส่งเข้า AI context"
     },
     {
       "key": "preferBoost",
@@ -461,7 +429,7 @@
   ],
   "biasSummary": {
     "vetoBias": 0,
-    "cautionCount": 6,
+    "cautionCount": 5,
     "preferBoostCount": 4,
     "minFactorsFloor": 3,
     "maxSlPct": 3
