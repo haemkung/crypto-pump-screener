@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-16T04:49:11.578Z",
+  "updatedAt": "2026-10-16T04:59:11.744Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 130,
+    "earlyGraded": 129,
     "earlyWins": 77,
-    "earlyLosses": 53,
-    "earlyWinRate": 0.5923076923076923,
+    "earlyLosses": 52,
+    "earlyWinRate": 0.5968992248062015,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -403,7 +403,7 @@
     {
       "key": "vetoBias",
       "value": 0.05,
-      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 59% จาก 130 เคส"
+      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 60% จาก 129 เคส"
     },
     {
       "key": "cautionPatterns",
