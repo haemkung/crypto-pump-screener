@@ -1,20 +1,6 @@
 {
   "notes": [
     {
-      "id": "82652032-6687-4944-bc7c-f2063ed80334",
-      "symbol": "NEARUSDT",
-      "side": "short",
-      "outcome": "loss",
-      "noteTh": "❌ NEARUSDT Short (15m) · ระยะต้น/กำลังแจกของ: พลาด — ราคา +2.19% · flags: early:preOrder,fade,tier:distribution. ทบทวน confluence / หลักฐานซ่อนก่อนเข้า",
-      "timestamp": "2026-10-16T03:19:09.790Z",
-      "alertId": "1cce440c-f98f-454b-ba19-f59cc2d89a80",
-      "horizon": "15m",
-      "movePct": 2.19,
-      "source": "early",
-      "tier": "distribution",
-      "labelTh": "กำลังแจกของ"
-    },
-    {
       "id": "dbcee607-6d47-431e-b51c-e413cfe631a6",
       "symbol": "MAGICUSDT",
       "side": "short",
@@ -404,6 +390,20 @@
       "source": "early",
       "tier": "ignition_price_only",
       "labelTh": "price-only (Short)"
+    },
+    {
+      "id": "dba67d68-06e9-4a83-978c-cf1216326623",
+      "symbol": "BLURUSDT",
+      "side": "long",
+      "outcome": "loss",
+      "noteTh": "❌ BLURUSDT Long (5m) · ระยะต้น/price-only (Long): พลาด — ราคา -1.20% · flags: early:ignition_price_only,funding,crowded. ทบทวน confluence / หลักฐานซ่อนก่อนเข้า",
+      "timestamp": "2026-10-16T04:24:13.643Z",
+      "alertId": "0dc2648c-04a5-4274-a354-3e602d870042",
+      "horizon": "5m",
+      "movePct": -1.2,
+      "source": "early",
+      "tier": "ignition_price_only",
+      "labelTh": "price-only (Long)"
     }
   ],
   "total": 80,
