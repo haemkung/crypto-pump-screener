@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-17T12:24:16.400Z",
+  "updatedAt": "2026-10-17T13:29:04.695Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 126,
+    "earlyGraded": 127,
     "earlyWins": 75,
-    "earlyLosses": 51,
-    "earlyWinRate": 0.5952380952380952,
+    "earlyLosses": 52,
+    "earlyWinRate": 0.5905511811023622,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -200,9 +200,9 @@
         "troughStall"
       ],
       "wins": 8,
-      "losses": 2,
-      "winRate": 0.8,
-      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 8/10 (WR 80%) — เก็บแพทเทิร์น",
+      "losses": 3,
+      "winRate": 0.7272727272727273,
+      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 8/11 (WR 73%) — เก็บแพทเทิร์น",
       "samples": [
         {
           "symbol": "RLCUSDT",
@@ -231,10 +231,10 @@
         "funding",
         "oiDiverg"
       ],
-      "wins": 6,
+      "wins": 7,
       "losses": 2,
-      "winRate": 0.75,
-      "noteTh": "✅ Long crowded+funding+oiDiverg: ชนะ 6/8 (WR 75%) — เก็บแพทเทิร์น",
+      "winRate": 0.7777777777777778,
+      "noteTh": "✅ Long crowded+funding+oiDiverg: ชนะ 7/9 (WR 78%) — เก็บแพทเทิร์น",
       "samples": [
         {
           "symbol": "OGNUSDT",
@@ -413,7 +413,7 @@
     {
       "key": "vetoBias",
       "value": 0.05,
-      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 60% จาก 126 เคส"
+      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 59% จาก 127 เคส"
     },
     {
       "key": "cautionPatterns",
