@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-17T15:24:09.146Z",
+  "updatedAt": "2026-10-17T16:29:05.863Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 132,
-    "earlyWins": 70,
-    "earlyLosses": 62,
-    "earlyWinRate": 0.5303030303030303,
+    "earlyGraded": 135,
+    "earlyWins": 71,
+    "earlyLosses": 64,
+    "earlyWinRate": 0.5259259259259259,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -43,55 +43,34 @@
       ]
     },
     {
-      "side": "short",
-      "factorKeys": [
-        "crowded",
-        "fade",
-        "oiDiverg"
-      ],
-      "losses": 2,
-      "wins": 0,
-      "winRate": 0,
-      "noteTh": "❌ Short crowded+fade+oiDiverg: แพ้ 2/2 (WR 0%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "samples": [
-        {
-          "symbol": "METISUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "sl"
-        },
-        {
-          "symbol": "APRUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "5m"
-        }
-      ]
-    },
-    {
       "side": "long",
       "factorKeys": [
-        "crowded",
         "funding",
-        "oiBuild"
+        "oiDiverg",
+        "troughStall"
       ],
-      "losses": 2,
-      "wins": 0,
-      "winRate": 0,
-      "noteTh": "❌ Long crowded+funding+oiBuild: แพ้ 2/2 (WR 0%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "losses": 5,
+      "wins": 3,
+      "winRate": 0.375,
+      "noteTh": "❌ Long funding+oiDiverg+troughStall: แพ้ 5/8 (WR 38%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
       "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
       "samples": [
         {
-          "symbol": "BERAUSDT",
+          "symbol": "STXUSDT",
           "outcome": "loss",
           "aiAction": "veto",
           "horizon": "sl"
         },
         {
-          "symbol": "BERAUSDT",
+          "symbol": "PYTHUSDT",
+          "outcome": "win",
+          "aiAction": "veto",
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "STXUSDT",
           "outcome": "loss",
-          "aiAction": null,
+          "aiAction": "veto",
           "horizon": "sl"
         }
       ]
@@ -128,14 +107,47 @@
       "side": "short",
       "factorKeys": [
         "crowded",
-        "taker"
+        "fade",
+        "smart"
       ],
       "losses": 2,
       "wins": 0,
       "winRate": 0,
-      "noteTh": "❌ Short crowded+taker: แพ้ 2/2 (WR 0%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "noteTh": "❌ Short crowded+fade+smart: แพ้ 2/2 (WR 0%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
       "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
       "samples": [
+        {
+          "symbol": "FILUSDT",
+          "outcome": "loss",
+          "aiAction": null,
+          "horizon": "sl"
+        },
+        {
+          "symbol": "KMNOUSDT",
+          "outcome": "loss",
+          "aiAction": null,
+          "horizon": "5m"
+        }
+      ]
+    },
+    {
+      "side": "short",
+      "factorKeys": [
+        "crowded",
+        "taker"
+      ],
+      "losses": 2,
+      "wins": 1,
+      "winRate": 0.3333333333333333,
+      "noteTh": "❌ Short crowded+taker: แพ้ 2/3 (WR 33%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "samples": [
+        {
+          "symbol": "PYTHUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "5m"
+        },
         {
           "symbol": "ARBUSDT",
           "outcome": "loss",
@@ -161,16 +173,10 @@
         "troughStall"
       ],
       "wins": 8,
-      "losses": 4,
-      "winRate": 0.6666666666666666,
-      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 8/12 (WR 67%) — เก็บแพทเทิร์น",
+      "losses": 3,
+      "winRate": 0.7272727272727273,
+      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 8/11 (WR 73%) — เก็บแพทเทิร์น",
       "samples": [
-        {
-          "symbol": "RLCUSDT",
-          "outcome": "loss",
-          "aiAction": "veto",
-          "horizon": "sl"
-        },
         {
           "symbol": "GTCUSDT",
           "outcome": "win",
@@ -182,6 +188,12 @@
           "outcome": "win",
           "aiAction": "veto",
           "horizon": "tp1"
+        },
+        {
+          "symbol": "RLCUSDT",
+          "outcome": "loss",
+          "aiAction": "veto",
+          "horizon": "sl"
         }
       ]
     },
@@ -198,12 +210,6 @@
       "noteTh": "✅ Long crowded+funding+oiDiverg: ชนะ 7/9 (WR 78%) — เก็บแพทเทิร์น",
       "samples": [
         {
-          "symbol": "MUBARAKUSDT",
-          "outcome": "win",
-          "aiAction": "veto",
-          "horizon": "5m"
-        },
-        {
           "symbol": "RLCUSDT",
           "outcome": "loss",
           "aiAction": "veto",
@@ -211,6 +217,12 @@
         },
         {
           "symbol": "WUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "RAYSOLUSDT",
           "outcome": "win",
           "aiAction": null,
           "horizon": "tp1"
@@ -364,6 +376,17 @@
     {
       "outcome": "win",
       "side": "short",
+      "symbol": "PYTHUSDT",
+      "factors": [
+        "crowded",
+        "taker"
+      ],
+      "aiAction": "send",
+      "lessonTh": "เคยถูก: short [crowded+taker] — confluence แบบนี้โอเค"
+    },
+    {
+      "outcome": "win",
+      "side": "short",
       "symbol": "USELESSUSDT",
       "factors": [
         "fade",
@@ -382,24 +405,13 @@
       ],
       "aiAction": "send",
       "lessonTh": "เคยถูก: short [oiDiverg+peakStall] — confluence แบบนี้โอเค"
-    },
-    {
-      "outcome": "win",
-      "side": "short",
-      "symbol": "MOVRUSDT",
-      "factors": [
-        "oiDiverg",
-        "peakStall"
-      ],
-      "aiAction": "send",
-      "lessonTh": "เคยถูก: short [oiDiverg+peakStall] — confluence แบบนี้โอเค"
     }
   ],
   "adjustments": [
     {
       "key": "vetoBias",
       "value": 0.05,
-      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 53% จาก 132 เคส"
+      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 53% จาก 135 เคส"
     },
     {
       "key": "cautionPatterns",
