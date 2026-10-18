@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-10-18T02:27:04.934Z",
-  "daemonAt": "2026-10-18T02:27:04.934Z",
+  "updatedAt": "2026-10-18T02:30:04.313Z",
+  "daemonAt": "2026-10-18T02:30:04.313Z",
   "daemonPid": 4822,
   "rules": {
     "ignitionMinFactors": 3,
@@ -1147,92 +1147,29 @@
       "noteTh": null
     }
   ],
-  "ignition": [
-    {
-      "id": "dd75b0f1-f314-4c9c-9c77-3ff10ed10dbc",
-      "type": "ignition",
-      "symbol": "RAYSOLUSDT",
-      "side": "long",
-      "price": 1.8202,
-      "pct24h": 0.05,
-      "factors": [
-        {
-          "key": "funding",
-          "labelTh": "funding เอียงฝั่งตรงข้าม",
-          "detailTh": "funding -0.0146% (short จ่าย long)"
-        },
-        {
-          "key": "crowded",
-          "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
-          "detailTh": "L/S 0.50 (4 ชม. -2.04%) — short แน่น"
-        },
-        {
-          "key": "oiDiverg",
-          "labelTh": "OI แยกทางที่ปลายราคา",
-          "detailTh": "ใกล้ก้น (ห่าง 1.00%) · OI +0.12% · funding ติดลบ — สะสม/squeeze load"
-        }
-      ],
-      "factorCount": 3,
-      "directional": 3,
-      "flaggedAt": "2026-10-17T20:29:04.327Z",
-      "firstFlaggedAt": "2026-10-17T14:21:04.264Z",
-      "telegram": "ai_veto",
-      "trigger": {
-        "moveWindow": 5,
-        "movePct": 1.39,
-        "volMult": 12.4,
-        "breakoutPct": 1.04
-      },
-      "plan": {
-        "entry": 1.8202,
-        "sl": 1.79220765,
-        "slPct": 1.54,
-        "structPct": 1.54,
-        "tp1": 1.862188525,
-        "tp2": 1.9041770500000001,
-        "slSkip": false,
-        "slNoteTh": "ใต้โลว์ 15 นาทีล่าสุด"
-      },
-      "trade": null,
-      "ai": {
-        "action": "veto",
-        "score": 45,
-        "reasonTh": "เข้าก่อน sweep + SL บาง เสี่ยงโดน hunt",
-        "model": "qwen/qwen3.8-27b",
-        "latencyMs": 224,
-        "ok": true,
-        "skipped": false,
-        "cached": false,
-        "learnedAdjust": null
-      },
-      "status": null,
-      "statusTh": null,
-      "source": null,
-      "noteTh": null
-    }
-  ],
+  "ignition": [],
   "market": {
-    "btc1h": 0.17,
-    "btc4h": 0.61,
-    "med1h": 0.01,
-    "med4h": 0.7,
-    "up1h": 50.65,
-    "up4h": 67.53,
-    "mkt1h": 0.09,
-    "mkt4h": 0.66,
+    "btc1h": 0.19,
+    "btc4h": 0.59,
+    "med1h": -0.08,
+    "med4h": 0.61,
+    "up1h": 48.05,
+    "up4h": 68.83,
+    "mkt1h": 0.06,
+    "mkt4h": 0.6,
     "n1": 77,
     "n4": 77,
     "breadth": "neutral/none",
     "wind": "neutral",
     "strength": "none",
     "agree": null,
-    "noteTh": "ตลาดนิ่ง · BTC 1h +0.17% · alt มัธยฐาน 1h +0.01% (ขึ้น 50.65%) / 4h +0.70% (ขึ้น 67.53%)"
+    "noteTh": "ตลาดนิ่ง · BTC 1h +0.19% · alt มัธยฐาน 1h -0.08% (ขึ้น 48.05%) / 4h +0.61% (ขึ้น 68.83%)"
   },
   "runnerRadar": [],
   "counterTrend": [],
   "meta": {
     "source": "local-box",
-    "publishedAt": "2026-10-18T02:27:32.453Z",
+    "publishedAt": "2026-10-18T02:31:10.834Z",
     "pagesStatic": true
   }
 }
