@@ -1,67 +1,6 @@
 {
   "notes": [
     {
-      "id": "e5ab0b9c-795f-4949-be5f-aef926d61738",
-      "symbol": "AEROUSDT",
-      "side": "short",
-      "outcome": "loss",
-      "noteTh": "❌ AEROUSDT Short (5m) · ระยะต้น/price-only (Short): พลาด — ราคา +0.80% · flags: early:ignition_price_only,taker. ทบทวน confluence / หลักฐานซ่อนก่อนเข้า",
-      "timestamp": "2026-10-17T22:24:15.269Z",
-      "alertId": "93f9ee81-3918-4186-969e-ac0e207ab4e4",
-      "horizon": "5m",
-      "movePct": 0.8,
-      "source": "early",
-      "tier": "ignition_price_only",
-      "labelTh": "price-only (Short)"
-    },
-    {
-      "id": "1b19a3a5-48c4-4797-8f26-00a8fbdbe7d1",
-      "symbol": "USELESSUSDT",
-      "side": "short",
-      "outcome": "win",
-      "noteTh": "✅ USELESSUSDT Short (5m) · ระยะต้น/กำลังแจกของ: ทำงานได้ — ราคา -0.95% ตรงทิศ · flags: early:preOrder,fade,oiDiverg. เก็บแพทเทิร์นที่คล้ายไว้",
-      "timestamp": "2026-10-17T22:24:15.268Z",
-      "alertId": "2f64bdac-7272-4409-a8c5-3dbf39802f05",
-      "horizon": "5m",
-      "movePct": -0.95,
-      "source": "early",
-      "tier": "distribution",
-      "labelTh": "กำลังแจกของ"
-    },
-    {
-      "id": "learn:2026-10-17T22:m:0",
-      "symbol": "LEARN",
-      "side": "short",
-      "outcome": "loss",
-      "noteTh": "❌ Short fade+taker: แพ้ 9/12 (WR 25%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "timestamp": "2026-10-17T22:24:16.159Z",
-      "source": "learn",
-      "tier": "insight",
-      "labelTh": "เรียนรู้ความผิดพลาด"
-    },
-    {
-      "id": "learn:2026-10-17T22:m:1",
-      "symbol": "LEARN",
-      "side": "long",
-      "outcome": "loss",
-      "noteTh": "❌ Long crowded+funding+oiDiverg+troughStall: แพ้ 7/9 (WR 22%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "timestamp": "2026-10-17T22:24:16.159Z",
-      "source": "learn",
-      "tier": "insight",
-      "labelTh": "เรียนรู้ความผิดพลาด"
-    },
-    {
-      "id": "learn:2026-10-17T22:m:2",
-      "symbol": "LEARN",
-      "side": "long",
-      "outcome": "loss",
-      "noteTh": "❌ Long funding+oiDiverg+troughStall: แพ้ 5/6 (WR 17%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "timestamp": "2026-10-17T22:24:16.159Z",
-      "source": "learn",
-      "tier": "insight",
-      "labelTh": "เรียนรู้ความผิดพลาด"
-    },
-    {
       "id": "learn:2026-10-17T22:a:3",
       "symbol": "ADJ",
       "side": "long",
@@ -356,6 +295,61 @@
       "outcome": "neutral",
       "noteTh": "🔧 จำแพทเทิร์นเสีย 5 แบบ (เช่น fade+taker) — ส่งเข้า AI context",
       "timestamp": "2026-10-18T01:19:01.519Z",
+      "source": "learn",
+      "tier": "adjust",
+      "labelTh": "ปรับโมเดล"
+    },
+    {
+      "id": "learn:2026-10-18T02:m:0",
+      "symbol": "LEARN",
+      "side": "long",
+      "outcome": "loss",
+      "noteTh": "❌ Long crowded+funding+oiDiverg+troughStall: แพ้ 8/9 (WR 11%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "timestamp": "2026-10-18T02:24:54.376Z",
+      "source": "learn",
+      "tier": "insight",
+      "labelTh": "เรียนรู้ความผิดพลาด"
+    },
+    {
+      "id": "learn:2026-10-18T02:m:1",
+      "symbol": "LEARN",
+      "side": "long",
+      "outcome": "loss",
+      "noteTh": "❌ Long funding+oiDiverg+troughStall: แพ้ 5/5 (WR 0%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "timestamp": "2026-10-18T02:24:54.376Z",
+      "source": "learn",
+      "tier": "insight",
+      "labelTh": "เรียนรู้ความผิดพลาด"
+    },
+    {
+      "id": "learn:2026-10-18T02:m:2",
+      "symbol": "LEARN",
+      "side": "long",
+      "outcome": "loss",
+      "noteTh": "❌ Long crowded+funding+oiDiverg+taker: แพ้ 3/3 (WR 0%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "timestamp": "2026-10-18T02:24:54.376Z",
+      "source": "learn",
+      "tier": "insight",
+      "labelTh": "เรียนรู้ความผิดพลาด"
+    },
+    {
+      "id": "learn:2026-10-18T02:a:3",
+      "symbol": "ADJ",
+      "side": "long",
+      "outcome": "neutral",
+      "noteTh": "🔧 ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 54% จาก 115 เคส",
+      "timestamp": "2026-10-18T02:24:54.376Z",
+      "source": "learn",
+      "tier": "adjust",
+      "labelTh": "ปรับโมเดล"
+    },
+    {
+      "id": "learn:2026-10-18T02:a:4",
+      "symbol": "ADJ",
+      "side": "long",
+      "outcome": "neutral",
+      "noteTh": "🔧 จำแพทเทิร์นเสีย 4 แบบ (เช่น crowded+funding+oiDiverg+troughStall) — ส่งเข้า AI context",
+      "timestamp": "2026-10-18T02:24:54.376Z",
       "source": "learn",
       "tier": "adjust",
       "labelTh": "ปรับโมเดล"
