@@ -1,28 +1,6 @@
 {
   "notes": [
     {
-      "id": "learn:2026-10-17T22:a:3",
-      "symbol": "ADJ",
-      "side": "long",
-      "outcome": "neutral",
-      "noteTh": "🔧 ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 48% จาก 122 เคส",
-      "timestamp": "2026-10-17T22:24:16.159Z",
-      "source": "learn",
-      "tier": "adjust",
-      "labelTh": "ปรับโมเดล"
-    },
-    {
-      "id": "learn:2026-10-17T22:a:4",
-      "symbol": "ADJ",
-      "side": "long",
-      "outcome": "neutral",
-      "noteTh": "🔧 จำแพทเทิร์นเสีย 5 แบบ (เช่น fade+taker) — ส่งเข้า AI context",
-      "timestamp": "2026-10-17T22:24:16.159Z",
-      "source": "learn",
-      "tier": "adjust",
-      "labelTh": "ปรับโมเดล"
-    },
-    {
       "id": "ef282762-defd-4599-896f-fb2f2b658f3f",
       "symbol": "BRUSDT",
       "side": "short",
@@ -353,6 +331,34 @@
       "source": "learn",
       "tier": "adjust",
       "labelTh": "ปรับโมเดล"
+    },
+    {
+      "id": "63bdb09b-fdd1-40b4-9513-cf6e3d8b4f09",
+      "symbol": "LUMIAUSDT",
+      "side": "long",
+      "outcome": "loss",
+      "noteTh": "❌ LUMIAUSDT Long (5m) · ระยะต้น/กำลังสะสม: พลาด — ราคา -0.84% · flags: early:preOrder,crowded,tier:accumulation. ทบทวน confluence / หลักฐานซ่อนก่อนเข้า",
+      "timestamp": "2026-10-18T02:34:16.435Z",
+      "alertId": "7035057a-b343-4f37-99c2-95093078e3e6",
+      "horizon": "5m",
+      "movePct": -0.84,
+      "source": "early",
+      "tier": "accumulation",
+      "labelTh": "กำลังสะสม"
+    },
+    {
+      "id": "f2b51fd6-e9af-4b65-bc9b-d6f81ead1194",
+      "symbol": "LUMIAUSDT",
+      "side": "long",
+      "outcome": "loss",
+      "noteTh": "❌ LUMIAUSDT Long (5m) · ระยะต้น/price-only (Long): พลาด — ราคา -0.84% · flags: early:ignition_price_only,crowded. ทบทวน confluence / หลักฐานซ่อนก่อนเข้า",
+      "timestamp": "2026-10-18T02:34:16.435Z",
+      "alertId": "640c061f-2732-444a-b143-ffe2b7fe38eb",
+      "horizon": "5m",
+      "movePct": -0.84,
+      "source": "early",
+      "tier": "ignition_price_only",
+      "labelTh": "price-only (Long)"
     }
   ],
   "total": 80,

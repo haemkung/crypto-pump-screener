@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-18T02:29:05.812Z",
+  "updatedAt": "2026-10-18T02:39:11.661Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 128,
-    "earlyWins": 59,
-    "earlyLosses": 69,
-    "earlyWinRate": 0.4609375,
+    "earlyGraded": 130,
+    "earlyWins": 60,
+    "earlyLosses": 70,
+    "earlyWinRate": 0.46153846153846156,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -236,37 +236,6 @@
     {
       "side": "short",
       "factorKeys": [
-        "fade",
-        "oiDiverg"
-      ],
-      "wins": 3,
-      "losses": 0,
-      "winRate": 1,
-      "noteTh": "✅ Short fade+oiDiverg: ชนะ 3/3 (WR 100%) — เก็บแพทเทิร์น",
-      "samples": [
-        {
-          "symbol": "USELESSUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "5m"
-        },
-        {
-          "symbol": "OPNUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "60m"
-        },
-        {
-          "symbol": "PUMPUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "60m"
-        }
-      ]
-    },
-    {
-      "side": "short",
-      "factorKeys": [
         "oiDiverg",
         "taker"
       ],
@@ -318,6 +287,31 @@
           "symbol": "AVAUSDT",
           "outcome": "win",
           "aiAction": "veto",
+          "horizon": "60m"
+        }
+      ]
+    },
+    {
+      "side": "short",
+      "factorKeys": [
+        "fade",
+        "oiDiverg"
+      ],
+      "wins": 2,
+      "losses": 0,
+      "winRate": 1,
+      "noteTh": "✅ Short fade+oiDiverg: ชนะ 2/2 (WR 100%) — เก็บแพทเทิร์น",
+      "samples": [
+        {
+          "symbol": "USELESSUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "5m"
+        },
+        {
+          "symbol": "OPNUSDT",
+          "outcome": "win",
+          "aiAction": null,
           "horizon": "60m"
         }
       ]
@@ -417,7 +411,7 @@
     {
       "key": "vetoBias",
       "value": 0.05,
-      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 46% จาก 128 เคส"
+      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 46% จาก 130 เคส"
     },
     {
       "key": "cautionPatterns",
@@ -426,8 +420,8 @@
     },
     {
       "key": "preferBoost",
-      "value": 4,
-      "noteTh": "แพทเทิร์นชนะชัด 4 แบบ — อนุญาต boost เมื่อตรง"
+      "value": 3,
+      "noteTh": "แพทเทิร์นชนะชัด 3 แบบ — อนุญาต boost เมื่อตรง"
     },
     {
       "key": "guards",
@@ -438,7 +432,7 @@
   "biasSummary": {
     "vetoBias": 0.05,
     "cautionCount": 5,
-    "preferBoostCount": 4,
+    "preferBoostCount": 3,
     "minFactorsFloor": 3,
     "maxSlPct": 3
   },
