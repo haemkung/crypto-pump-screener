@@ -1,73 +1,6 @@
 {
   "notes": [
     {
-      "id": "learn:2026-10-18T06:a:4",
-      "symbol": "ADJ",
-      "side": "long",
-      "outcome": "neutral",
-      "noteTh": "🔧 จำแพทเทิร์นเสีย 6 แบบ (เช่น crowded+funding+oiDiverg+troughStall) — ส่งเข้า AI context",
-      "timestamp": "2026-10-18T06:24:09.324Z",
-      "source": "learn",
-      "tier": "adjust",
-      "labelTh": "ปรับโมเดล"
-    },
-    {
-      "id": "3ae22304-cc92-43f8-bd38-27b78972da95",
-      "symbol": "WLDUSDT",
-      "side": "long",
-      "outcome": "loss",
-      "noteTh": "❌ WLDUSDT Long (15m) · ระยะต้น/กำลังสะสม: พลาด — ราคา -2.02% · flags: early:preOrder,funding,troughStall. ทบทวน confluence / หลักฐานซ่อนก่อนเข้า",
-      "timestamp": "2026-10-18T06:29:06.034Z",
-      "alertId": "6c568cf8-e558-4d90-ad8c-6f534d4b21f7",
-      "horizon": "15m",
-      "movePct": -2.02,
-      "source": "early",
-      "tier": "accumulation",
-      "labelTh": "กำลังสะสม"
-    },
-    {
-      "id": "87cf2629-c369-49a5-8880-b4d673454d61",
-      "symbol": "WLDUSDT",
-      "side": "short",
-      "outcome": "win",
-      "noteTh": "✅ WLDUSDT Short (15m) · ระยะต้น/price-only (Short): ทำงานได้ — ราคา -1.66% ตรงทิศ · flags: early:ignition_price_only,crowded,fade. เก็บแพทเทิร์นที่คล้ายไว้",
-      "timestamp": "2026-10-18T06:29:06.034Z",
-      "alertId": "1d3ce034-9aa4-4594-bea1-12867dd28ae5",
-      "horizon": "15m",
-      "movePct": -1.66,
-      "source": "early",
-      "tier": "ignition_price_only",
-      "labelTh": "price-only (Short)"
-    },
-    {
-      "id": "3705ec3b-6d91-4568-b5c6-8d19f0be3cb7",
-      "symbol": "MINAUSDT",
-      "side": "long",
-      "outcome": "loss",
-      "noteTh": "❌ MINAUSDT Long (15m) · ระยะต้น/กำลังสะสม: พลาด — ราคา -1.71% · flags: early:preOrder,funding,crowded. ทบทวน confluence / หลักฐานซ่อนก่อนเข้า",
-      "timestamp": "2026-10-18T06:29:06.033Z",
-      "alertId": "9c7a39c7-70f3-4d79-89b9-f9f669653e4b",
-      "horizon": "15m",
-      "movePct": -1.71,
-      "source": "early",
-      "tier": "accumulation",
-      "labelTh": "กำลังสะสม"
-    },
-    {
-      "id": "b62d8641-2689-413d-a86e-f644b33bd9d9",
-      "symbol": "METUSDT",
-      "side": "short",
-      "outcome": "win",
-      "noteTh": "✅ METUSDT Short (15m) · ระยะต้น/price-only (Short): ทำงานได้ — ราคา -1.91% ตรงทิศ · flags: early:ignition_price_only,oiDiverg. เก็บแพทเทิร์นที่คล้ายไว้",
-      "timestamp": "2026-10-18T06:29:06.033Z",
-      "alertId": "d4e4d1f3-260a-413c-8b6f-2495f86fcc15",
-      "horizon": "15m",
-      "movePct": -1.91,
-      "source": "early",
-      "tier": "ignition_price_only",
-      "labelTh": "price-only (Short)"
-    },
-    {
       "id": "9fe7fa64-d13d-45f9-bc4a-5ae7892f8159",
       "symbol": "NMRUSDT",
       "side": "short",
@@ -401,6 +334,61 @@
       "source": "early",
       "tier": "ignition_price_only",
       "labelTh": "price-only (Long)"
+    },
+    {
+      "id": "learn:2026-10-18T08:m:0",
+      "symbol": "LEARN",
+      "side": "short",
+      "outcome": "loss",
+      "noteTh": "❌ Short fade+taker: แพ้ 9/11 (WR 18%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "timestamp": "2026-10-18T08:24:16.299Z",
+      "source": "learn",
+      "tier": "insight",
+      "labelTh": "เรียนรู้ความผิดพลาด"
+    },
+    {
+      "id": "learn:2026-10-18T08:m:1",
+      "symbol": "LEARN",
+      "side": "long",
+      "outcome": "loss",
+      "noteTh": "❌ Long crowded+funding+oiDiverg+troughStall: แพ้ 8/10 (WR 20%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "timestamp": "2026-10-18T08:24:16.299Z",
+      "source": "learn",
+      "tier": "insight",
+      "labelTh": "เรียนรู้ความผิดพลาด"
+    },
+    {
+      "id": "learn:2026-10-18T08:m:2",
+      "symbol": "LEARN",
+      "side": "long",
+      "outcome": "loss",
+      "noteTh": "❌ Long crowded+funding+troughStall: แพ้ 2/2 (WR 0%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "timestamp": "2026-10-18T08:24:16.299Z",
+      "source": "learn",
+      "tier": "insight",
+      "labelTh": "เรียนรู้ความผิดพลาด"
+    },
+    {
+      "id": "learn:2026-10-18T08:a:3",
+      "symbol": "ADJ",
+      "side": "long",
+      "outcome": "neutral",
+      "noteTh": "🔧 ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 47% จาก 135 เคส",
+      "timestamp": "2026-10-18T08:24:16.299Z",
+      "source": "learn",
+      "tier": "adjust",
+      "labelTh": "ปรับโมเดล"
+    },
+    {
+      "id": "learn:2026-10-18T08:a:4",
+      "symbol": "ADJ",
+      "side": "long",
+      "outcome": "neutral",
+      "noteTh": "🔧 จำแพทเทิร์นเสีย 5 แบบ (เช่น fade+taker) — ส่งเข้า AI context",
+      "timestamp": "2026-10-18T08:24:16.299Z",
+      "source": "learn",
+      "tier": "adjust",
+      "labelTh": "ปรับโมเดล"
     }
   ],
   "total": 80,
