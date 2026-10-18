@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-18T13:19:02.570Z",
+  "updatedAt": "2026-10-18T14:29:08.467Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 129,
-    "earlyWins": 67,
-    "earlyLosses": 62,
-    "earlyWinRate": 0.5193798449612403,
+    "earlyGraded": 127,
+    "earlyWins": 66,
+    "earlyLosses": 61,
+    "earlyWinRate": 0.5196850393700787,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -16,10 +16,10 @@
         "fade",
         "taker"
       ],
-      "losses": 7,
+      "losses": 6,
       "wins": 2,
-      "winRate": 0.2222222222222222,
-      "noteTh": "❌ Short fade+taker: แพ้ 7/9 (WR 22%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "winRate": 0.25,
+      "noteTh": "❌ Short fade+taker: แพ้ 6/8 (WR 25%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
       "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
       "samples": [
         {
@@ -263,6 +263,18 @@
     {
       "outcome": "loss",
       "side": "short",
+      "symbol": "KMNOUSDT",
+      "factors": [
+        "crowded",
+        "fade",
+        "smart"
+      ],
+      "aiAction": "send",
+      "lessonTh": "เคยพลาด: short [crowded+fade+smart] — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
+    },
+    {
+      "outcome": "loss",
+      "side": "short",
       "symbol": "LABUSDT",
       "factors": [
         "crowded",
@@ -296,17 +308,6 @@
       ],
       "aiAction": "send",
       "lessonTh": "เคยพลาด: short [fade+taker] — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
-    },
-    {
-      "outcome": "loss",
-      "side": "short",
-      "symbol": "ARBUSDT",
-      "factors": [
-        "crowded",
-        "taker"
-      ],
-      "aiAction": "send",
-      "lessonTh": "เคยพลาด: short [crowded+taker] — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
     },
     {
       "outcome": "win",
@@ -346,7 +347,7 @@
     {
       "key": "vetoBias",
       "value": 0.05,
-      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 52% จาก 129 เคส"
+      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 52% จาก 127 เคส"
     },
     {
       "key": "cautionPatterns",
