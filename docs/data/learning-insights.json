@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-19T07:49:09.899Z",
+  "updatedAt": "2026-10-19T08:24:08.509Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 114,
-    "earlyWins": 69,
-    "earlyLosses": 45,
-    "earlyWinRate": 0.6052631578947368,
+    "earlyGraded": 111,
+    "earlyWins": 68,
+    "earlyLosses": 43,
+    "earlyWinRate": 0.6126126126126126,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -100,38 +100,6 @@
           "outcome": "win",
           "aiAction": "veto",
           "horizon": "tp1"
-        }
-      ]
-    },
-    {
-      "side": "short",
-      "factorKeys": [
-        "fade",
-        "taker"
-      ],
-      "losses": 2,
-      "wins": 1,
-      "winRate": 0.3333333333333333,
-      "noteTh": "❌ Short fade+taker: แพ้ 2/3 (WR 33%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "samples": [
-        {
-          "symbol": "NMRUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "15m"
-        },
-        {
-          "symbol": "MEGAUSDT",
-          "outcome": "loss",
-          "aiAction": "veto",
-          "horizon": "5m"
-        },
-        {
-          "symbol": "MEGAUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "5m"
         }
       ]
     }
@@ -384,8 +352,8 @@
     },
     {
       "key": "cautionPatterns",
-      "value": 4,
-      "noteTh": "จำแพทเทิร์นเสีย 4 แบบ (เช่น crowded+funding+oiDiverg+troughStall) — ส่งเข้า AI context"
+      "value": 3,
+      "noteTh": "จำแพทเทิร์นเสีย 3 แบบ (เช่น crowded+funding+oiDiverg+troughStall) — ส่งเข้า AI context"
     },
     {
       "key": "preferBoost",
@@ -400,7 +368,7 @@
   ],
   "biasSummary": {
     "vetoBias": 0,
-    "cautionCount": 4,
+    "cautionCount": 3,
     "preferBoostCount": 1,
     "minFactorsFloor": 3,
     "maxSlPct": 3

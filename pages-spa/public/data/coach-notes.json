@@ -1,86 +1,6 @@
 {
   "notes": [
     {
-      "id": "46645a1d-21a6-4780-8ce6-d639e7f69193",
-      "symbol": "LABUSDT",
-      "side": "short",
-      "outcome": "win",
-      "noteTh": "✅ LABUSDT Short (5m) · ระยะต้น/กำลังแจกของ: ทำงานได้ — ราคา -1.16% ตรงทิศ · flags: early:preOrder,crowded,oiDiverg. เก็บแพทเทิร์นที่คล้ายไว้",
-      "timestamp": "2026-10-19T06:29:12.183Z",
-      "alertId": "5b278b62-e82c-4187-a6f6-fb62fe7dcd70",
-      "horizon": "5m",
-      "movePct": -1.16,
-      "source": "early",
-      "tier": "distribution",
-      "labelTh": "กำลังแจกของ"
-    },
-    {
-      "id": "learn:2026-10-19T06:m:0",
-      "symbol": "LEARN",
-      "side": "long",
-      "outcome": "loss",
-      "noteTh": "❌ Long crowded+funding+oiDiverg+troughStall: แพ้ 9/15 (WR 40%) — AI ส่งแล้วพลาดซ้ำ — พิจารณา veto เมื่อสัญญาณคล้าย",
-      "timestamp": "2026-10-19T06:29:12.539Z",
-      "source": "learn",
-      "tier": "insight",
-      "labelTh": "เรียนรู้ความผิดพลาด"
-    },
-    {
-      "id": "learn:2026-10-19T06:m:1",
-      "symbol": "LEARN",
-      "side": "short",
-      "outcome": "loss",
-      "noteTh": "❌ Short fade+taker: แพ้ 4/6 (WR 33%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "timestamp": "2026-10-19T06:29:12.539Z",
-      "source": "learn",
-      "tier": "insight",
-      "labelTh": "เรียนรู้ความผิดพลาด"
-    },
-    {
-      "id": "learn:2026-10-19T06:m:2",
-      "symbol": "LEARN",
-      "side": "long",
-      "outcome": "loss",
-      "noteTh": "❌ Long crowded+funding+oiDiverg: แพ้ 3/5 (WR 40%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "timestamp": "2026-10-19T06:29:12.539Z",
-      "source": "learn",
-      "tier": "insight",
-      "labelTh": "เรียนรู้ความผิดพลาด"
-    },
-    {
-      "id": "learn:2026-10-19T06:a:3",
-      "symbol": "ADJ",
-      "side": "long",
-      "outcome": "neutral",
-      "noteTh": "🔧 คง vetoBias=0 — WR ระยะต้น 61% ยังไม่ต้องเข้มเพิ่ม",
-      "timestamp": "2026-10-19T06:29:12.539Z",
-      "source": "learn",
-      "tier": "adjust",
-      "labelTh": "ปรับโมเดล"
-    },
-    {
-      "id": "learn:2026-10-19T06:a:4",
-      "symbol": "ADJ",
-      "side": "long",
-      "outcome": "neutral",
-      "noteTh": "🔧 จำแพทเทิร์นเสีย 3 แบบ (เช่น crowded+funding+oiDiverg+troughStall) — ส่งเข้า AI context",
-      "timestamp": "2026-10-19T06:29:12.539Z",
-      "source": "learn",
-      "tier": "adjust",
-      "labelTh": "ปรับโมเดล"
-    },
-    {
-      "id": "learn:2026-10-19T07:m:0",
-      "symbol": "LEARN",
-      "side": "long",
-      "outcome": "loss",
-      "noteTh": "❌ Long crowded+funding+oiDiverg+troughStall: แพ้ 8/13 (WR 38%) — AI ส่งแล้วพลาดซ้ำ — พิจารณา veto เมื่อสัญญาณคล้าย",
-      "timestamp": "2026-10-19T07:19:10.164Z",
-      "source": "learn",
-      "tier": "insight",
-      "labelTh": "เรียนรู้ความผิดพลาด"
-    },
-    {
       "id": "learn:2026-10-19T07:m:1",
       "symbol": "LEARN",
       "side": "short",
@@ -389,6 +309,89 @@
       "source": "early",
       "tier": "accumulation",
       "labelTh": "กำลังสะสม"
+    },
+    {
+      "id": "bfd6282a-452a-4896-b9aa-905867215772",
+      "symbol": "MARSCOINUSDT",
+      "side": "long",
+      "outcome": "win",
+      "noteTh": "✅ MARSCOINUSDT Long (15m) · ระยะต้น/กำลังสะสม: ทำงานได้ — ราคา +3.93% ตรงทิศ · flags: early:preOrder,crowded,taker. เก็บแพทเทิร์นที่คล้ายไว้",
+      "timestamp": "2026-10-19T08:19:05.217Z",
+      "alertId": "1ca54ca0-2cb0-4d3b-bcc7-eba59c876a62",
+      "horizon": "15m",
+      "movePct": 3.93,
+      "source": "early",
+      "tier": "accumulation",
+      "labelTh": "กำลังสะสม"
+    },
+    {
+      "id": "b1cc5456-bc7d-4549-a3f8-9e2a4fe22922",
+      "symbol": "MARSCOINUSDT",
+      "side": "long",
+      "outcome": "win",
+      "noteTh": "✅ MARSCOINUSDT Long (15m) · ระยะต้น/price-only (Long): ทำงานได้ — ราคา +3.93% ตรงทิศ · flags: early:ignition_price_only,crowded,taker. เก็บแพทเทิร์นที่คล้ายไว้",
+      "timestamp": "2026-10-19T08:19:05.217Z",
+      "alertId": "a30d17ab-da23-4315-9752-d743e38b4b98",
+      "horizon": "15m",
+      "movePct": 3.93,
+      "source": "early",
+      "tier": "ignition_price_only",
+      "labelTh": "price-only (Long)"
+    },
+    {
+      "id": "learn:2026-10-19T08:m:0",
+      "symbol": "LEARN",
+      "side": "long",
+      "outcome": "loss",
+      "noteTh": "❌ Long crowded+funding+oiDiverg+troughStall: แพ้ 9/15 (WR 40%) — AI ส่งแล้วพลาดซ้ำ — พิจารณา veto เมื่อสัญญาณคล้าย",
+      "timestamp": "2026-10-19T08:19:05.895Z",
+      "source": "learn",
+      "tier": "insight",
+      "labelTh": "เรียนรู้ความผิดพลาด"
+    },
+    {
+      "id": "learn:2026-10-19T08:m:1",
+      "symbol": "LEARN",
+      "side": "long",
+      "outcome": "loss",
+      "noteTh": "❌ Long crowded+funding+oiDiverg: แพ้ 3/5 (WR 40%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "timestamp": "2026-10-19T08:19:05.895Z",
+      "source": "learn",
+      "tier": "insight",
+      "labelTh": "เรียนรู้ความผิดพลาด"
+    },
+    {
+      "id": "learn:2026-10-19T08:m:2",
+      "symbol": "LEARN",
+      "side": "short",
+      "outcome": "loss",
+      "noteTh": "❌ Short fade+taker: แพ้ 3/5 (WR 40%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "timestamp": "2026-10-19T08:19:05.895Z",
+      "source": "learn",
+      "tier": "insight",
+      "labelTh": "เรียนรู้ความผิดพลาด"
+    },
+    {
+      "id": "learn:2026-10-19T08:a:3",
+      "symbol": "ADJ",
+      "side": "long",
+      "outcome": "neutral",
+      "noteTh": "🔧 คง vetoBias=0 — WR ระยะต้น 65% ยังไม่ต้องเข้มเพิ่ม",
+      "timestamp": "2026-10-19T08:19:05.895Z",
+      "source": "learn",
+      "tier": "adjust",
+      "labelTh": "ปรับโมเดล"
+    },
+    {
+      "id": "learn:2026-10-19T08:a:4",
+      "symbol": "ADJ",
+      "side": "long",
+      "outcome": "neutral",
+      "noteTh": "🔧 จำแพทเทิร์นเสีย 3 แบบ (เช่น crowded+funding+oiDiverg+troughStall) — ส่งเข้า AI context",
+      "timestamp": "2026-10-19T08:19:05.895Z",
+      "source": "learn",
+      "tier": "adjust",
+      "labelTh": "ปรับโมเดล"
     }
   ],
   "total": 80,
