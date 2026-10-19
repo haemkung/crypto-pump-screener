@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-10-18T21:24:14.278Z",
-  "daemonAt": "2026-10-18T21:24:14.278Z",
+  "updatedAt": "2026-10-18T23:27:04.228Z",
+  "daemonAt": "2026-10-18T23:27:04.228Z",
   "daemonPid": 405725,
   "rules": {
     "ignitionMinFactors": 3,
@@ -335,9 +335,9 @@
         "avgR": -1.07
       },
       "all": {
-        "n": 101,
-        "tp1Rate": 54.5,
-        "avgR": 0.61
+        "n": 103,
+        "tp1Rate": 53.4,
+        "avgR": 0.58
       }
     },
     "watch_short": {
@@ -378,6 +378,383 @@
     }
   },
   "preOrder": [
+    {
+      "id": "03fc04c3-2472-4efa-a850-ee989ecf0e35",
+      "type": "preOrder",
+      "tier": "distribution",
+      "symbol": "DOTUSDT",
+      "side": "short",
+      "price": 1.1131,
+      "pct24h": 0.17,
+      "factors": [
+        {
+          "key": "peakStall",
+          "labelTh": "ใกล้ยอด/แจกของก่อนทุบ",
+          "detailTh": "ใกล้ยอด 24h (ห่าง 0.90% · พุ่ง 7%) — แจกของก่อนทุบ"
+        },
+        {
+          "key": "oiDiverg",
+          "labelTh": "OI แยกทางที่ปลายราคา",
+          "detailTh": "ใกล้ยอด (ห่าง 0.20%) แต่ OI -0.51% ใน 2 ชม. — หมดแรง long"
+        }
+      ],
+      "factorCount": 2,
+      "directional": 2,
+      "flaggedAt": "2026-10-18T23:26:04.276Z",
+      "firstFlaggedAt": "2026-10-18T16:28:04.254Z",
+      "telegram": "off",
+      "trigger": null,
+      "plan": {
+        "entry": 1.1131,
+        "sl": 1.1297964999999999,
+        "slPct": 1.5,
+        "structPct": 0.12,
+        "tp1": 1.08805525,
+        "tp2": 1.0630104999999999,
+        "slSkip": false,
+        "slNoteTh": "ขั้นต่ำ 1.5% (โครงสร้าง 0.12%)"
+      },
+      "trade": null,
+      "ai": null,
+      "status": "waiting_ai",
+      "statusTh": "รอ AI",
+      "source": "wait_sweep",
+      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+    },
+    {
+      "id": "a325d0f3-af94-4b5b-9378-ee567437142a",
+      "type": "preOrder",
+      "tier": "distribution",
+      "symbol": "TAOUSDT",
+      "side": "short",
+      "price": 269.81,
+      "pct24h": 0.99,
+      "factors": [
+        {
+          "key": "peakStall",
+          "labelTh": "ใกล้ยอด/แจกของก่อนทุบ",
+          "detailTh": "ใกล้ยอด swing4h (ห่าง 0.04% · พุ่ง 6%) — แจกของก่อนทุบ"
+        },
+        {
+          "key": "oiDiverg",
+          "labelTh": "OI แยกทางที่ปลายราคา",
+          "detailTh": "ใกล้ยอด (ห่าง 0.04%) แต่ OI -0.26% ใน 2 ชม. — หมดแรง long"
+        }
+      ],
+      "factorCount": 2,
+      "directional": 2,
+      "flaggedAt": "2026-10-18T23:26:04.276Z",
+      "firstFlaggedAt": "2026-10-18T14:32:04.260Z",
+      "telegram": "off",
+      "trigger": null,
+      "plan": {
+        "entry": 269.81,
+        "sl": 273.85715,
+        "slPct": 1.5,
+        "structPct": 0.05,
+        "tp1": 263.739275,
+        "tp2": 257.66855,
+        "slSkip": false,
+        "slNoteTh": "ขั้นต่ำ 1.5% (โครงสร้าง 0.05%)"
+      },
+      "trade": null,
+      "ai": null,
+      "status": "waiting_ai",
+      "statusTh": "รอ AI",
+      "source": "wait_sweep",
+      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+    },
+    {
+      "id": "1b690e2b-d2a0-41ed-9886-8179d2bd6167",
+      "type": "preOrder",
+      "tier": "distribution",
+      "symbol": "VVVUSDT",
+      "side": "short",
+      "price": 22.694,
+      "pct24h": 1.93,
+      "factors": [
+        {
+          "key": "peakStall",
+          "labelTh": "ใกล้ยอด/แจกของก่อนทุบ",
+          "detailTh": "ใกล้ยอด 24h (ห่าง 0.87% · พุ่ง 9%) — แจกของก่อนทุบ"
+        },
+        {
+          "key": "oiDiverg",
+          "labelTh": "OI แยกทางที่ปลายราคา",
+          "detailTh": "ใกล้ยอด (ห่าง 0.21%) แต่ OI -0.81% ใน 2 ชม. — หมดแรง long"
+        }
+      ],
+      "factorCount": 2,
+      "directional": 2,
+      "flaggedAt": "2026-10-18T23:26:04.276Z",
+      "firstFlaggedAt": "2026-10-18T23:26:04.276Z",
+      "telegram": "off",
+      "trigger": null,
+      "plan": {
+        "entry": 22.694,
+        "sl": 23.034409999999998,
+        "slPct": 1.5,
+        "structPct": 0.29,
+        "tp1": 22.183385,
+        "tp2": 21.67277,
+        "slSkip": false,
+        "slNoteTh": "ขั้นต่ำ 1.5% (โครงสร้าง 0.29%)"
+      },
+      "trade": null,
+      "ai": null,
+      "status": "waiting_ai",
+      "statusTh": "รอ AI",
+      "source": "wait_sweep",
+      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+    },
+    {
+      "id": "d0360b85-24af-4a6b-a16b-ea4615933ccd",
+      "type": "preOrder",
+      "tier": "distribution",
+      "symbol": "PENGUUSDT",
+      "side": "short",
+      "price": 0.007461,
+      "pct24h": 0.23,
+      "factors": [
+        {
+          "key": "peakStall",
+          "labelTh": "ใกล้ยอด/แจกของก่อนทุบ",
+          "detailTh": "ใกล้ยอด 24h (ห่าง 0.97% · พุ่ง 7%) · OI ยังค้าง +0.05% — แจกของก่อนทุบ"
+        },
+        {
+          "key": "oiDiverg",
+          "labelTh": "OI แยกทางที่ปลายราคา",
+          "detailTh": "ใกล้ยอด (ห่าง 0.04%) แต่ OI +0.39% ใน 2 ชม. — หมดแรง long"
+        }
+      ],
+      "factorCount": 2,
+      "directional": 2,
+      "flaggedAt": "2026-10-18T23:22:45.238Z",
+      "firstFlaggedAt": "2026-10-18T23:22:45.238Z",
+      "telegram": "off",
+      "trigger": null,
+      "plan": {
+        "entry": 0.007461,
+        "sl": 0.007572914999999999,
+        "slPct": 1.5,
+        "structPct": 0.16,
+        "tp1": 0.0072931275,
+        "tp2": 0.007125255,
+        "slSkip": false,
+        "slNoteTh": "ขั้นต่ำ 1.5% (โครงสร้าง 0.16%)"
+      },
+      "trade": null,
+      "ai": null,
+      "status": "waiting_ai",
+      "statusTh": "รอ AI",
+      "source": "wait_sweep",
+      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+    },
+    {
+      "id": "8d8713f8-a37a-4318-94ba-f75dd919a649",
+      "type": "preOrder",
+      "tier": "distribution",
+      "symbol": "MAGICUSDT",
+      "side": "short",
+      "price": 0.09759,
+      "pct24h": -7.57,
+      "factors": [
+        {
+          "key": "taker",
+          "labelTh": "แรง taker เอียง",
+          "detailTh": "taker buy/sell 1h 0.91 · 3h 0.95"
+        },
+        {
+          "key": "fade",
+          "labelTh": "พุ่งแรงแล้วหมดแรง",
+          "detailTh": "24h พุ่ง 11% แล้วย่อจากยอด 8.9%"
+        }
+      ],
+      "factorCount": 2,
+      "directional": 2,
+      "flaggedAt": "2026-10-18T22:36:04.268Z",
+      "firstFlaggedAt": "2026-10-18T08:21:04.246Z",
+      "telegram": "off",
+      "trigger": null,
+      "plan": {
+        "entry": 0.09759,
+        "sl": 0.10002974999999999,
+        "slPct": 2.5,
+        "structPct": 2.74,
+        "tp1": 0.093930375,
+        "tp2": 0.09027075,
+        "slSkip": false,
+        "slNoteTh": "โครงสร้างต้องการ 2.74% → ตัดที่เพดาน 2.5%"
+      },
+      "trade": null,
+      "ai": null,
+      "status": "waiting_ai",
+      "statusTh": "รอ AI",
+      "source": "late_chase",
+      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+    },
+    {
+      "id": "b2ee17c4-1814-44ed-b7e7-58a6cd9c5c43",
+      "type": "preOrder",
+      "tier": "accumulation",
+      "symbol": "SENTUSDT",
+      "side": "long",
+      "price": 0.02228,
+      "pct24h": 5.19,
+      "factors": [
+        {
+          "key": "crowded",
+          "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
+          "detailTh": "L/S 0.66 (4 ชม. +4.79%) — short แน่น"
+        },
+        {
+          "key": "taker",
+          "labelTh": "แรง taker เอียง",
+          "detailTh": "taker buy/sell 1h 1.22 · 3h 1.08"
+        }
+      ],
+      "factorCount": 2,
+      "directional": 2,
+      "flaggedAt": "2026-10-18T22:31:04.447Z",
+      "firstFlaggedAt": "2026-10-18T02:35:04.447Z",
+      "telegram": "off",
+      "trigger": null,
+      "plan": {
+        "entry": 0.02228,
+        "sl": 0.021723,
+        "slPct": 2.5,
+        "structPct": 2.93,
+        "tp1": 0.023115500000000004,
+        "tp2": 0.023951,
+        "slSkip": false,
+        "slNoteTh": "โครงสร้างต้องการ 2.93% → ตัดที่เพดาน 2.5%"
+      },
+      "trade": null,
+      "ai": null,
+      "status": "waiting_ai",
+      "statusTh": "รอ AI",
+      "source": "late_chase",
+      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+    },
+    {
+      "id": "4664f7f1-1999-4cca-a89b-3ceb1e72fca0",
+      "type": "preOrder",
+      "tier": "accumulation",
+      "symbol": "IOTXUSDT",
+      "side": "long",
+      "price": 0.003989,
+      "pct24h": 3.18,
+      "factors": [
+        {
+          "key": "funding",
+          "labelTh": "funding เอียงฝั่งตรงข้าม",
+          "detailTh": "funding -0.3894% (short จ่าย long)"
+        }
+      ],
+      "factorCount": 1,
+      "directional": 1,
+      "flaggedAt": "2026-10-18T22:31:04.447Z",
+      "firstFlaggedAt": "2026-10-18T22:31:04.447Z",
+      "telegram": "off",
+      "trigger": null,
+      "plan": {
+        "entry": 0.003989,
+        "sl": 0.0039151185,
+        "slPct": 1.85,
+        "structPct": 1.85,
+        "tp1": 0.00409982225,
+        "tp2": 0.0042106445,
+        "slSkip": false,
+        "slNoteTh": "ใต้โลว์ 12 นาทีล่าสุด"
+      },
+      "trade": null,
+      "ai": null,
+      "status": "watching",
+      "statusTh": "จ้องอยู่",
+      "source": "late_chase",
+      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+    },
+    {
+      "id": "cd153c58-1d1f-4161-9866-b31a3efea1cb",
+      "type": "preOrder",
+      "tier": "distribution",
+      "symbol": "INITUSDT",
+      "side": "short",
+      "price": 0.12511,
+      "pct24h": 0.68,
+      "factors": [
+        {
+          "key": "peakStall",
+          "labelTh": "ใกล้ยอด/แจกของก่อนทุบ",
+          "detailTh": "ใกล้ยอด swing4h (ห่าง 0.07% · พุ่ง 4%) — แจกของก่อนทุบ"
+        },
+        {
+          "key": "oiDiverg",
+          "labelTh": "OI แยกทางที่ปลายราคา",
+          "detailTh": "ใกล้ยอด (ห่าง 0.07%) แต่ OI +0.13% ใน 2 ชม. — หมดแรง long"
+        }
+      ],
+      "factorCount": 2,
+      "directional": 2,
+      "flaggedAt": "2026-10-18T22:27:04.380Z",
+      "firstFlaggedAt": "2026-10-18T22:27:04.380Z",
+      "telegram": "off",
+      "trigger": null,
+      "plan": {
+        "entry": 0.12511,
+        "sl": 0.12698664999999998,
+        "slPct": 1.5,
+        "structPct": 0.22,
+        "tp1": 0.122295025,
+        "tp2": 0.11948004999999999,
+        "slSkip": false,
+        "slNoteTh": "ขั้นต่ำ 1.5% (โครงสร้าง 0.22%)"
+      },
+      "trade": null,
+      "ai": null,
+      "status": "waiting_ai",
+      "statusTh": "รอ AI",
+      "source": "wait_sweep",
+      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+    },
+    {
+      "id": "447d51df-6121-4071-85f9-daa83ec4215b",
+      "type": "preOrder",
+      "tier": "accumulation",
+      "symbol": "AKTUSDT",
+      "side": "long",
+      "price": 0.6993,
+      "pct24h": 2.22,
+      "factors": [
+        {
+          "key": "smart",
+          "labelTh": "รายใหญ่สวนรายย่อย (top trader)",
+          "detailTh": "top trader L/S +5.92% ใน 4 ชม. ขณะรายย่อย -5.37%"
+        }
+      ],
+      "factorCount": 1,
+      "directional": 1,
+      "flaggedAt": "2026-10-18T22:27:04.380Z",
+      "firstFlaggedAt": "2026-10-18T22:27:04.380Z",
+      "telegram": "off",
+      "trigger": null,
+      "plan": {
+        "entry": 0.6993,
+        "sl": 0.6818175,
+        "slPct": 2.5,
+        "structPct": 3.29,
+        "tp1": 0.7255237500000001,
+        "tp2": 0.7517475,
+        "slSkip": true,
+        "slNoteTh": "โครงสร้างต้องการ 3.29% → ตัดที่เพดาน 2.5%"
+      },
+      "trade": null,
+      "ai": null,
+      "status": "watching",
+      "statusTh": "จ้องอยู่",
+      "source": "late_chase",
+      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
+    },
     {
       "id": "fbb20f81-a8ec-4b8e-97be-c58555a84664",
       "type": "preOrder",
@@ -444,7 +821,7 @@
       "factorCount": 2,
       "directional": 2,
       "flaggedAt": "2026-10-18T21:19:04.327Z",
-      "firstFlaggedAt": "2026-10-17T22:26:04.427Z",
+      "firstFlaggedAt": "2026-10-18T01:26:04.915Z",
       "telegram": "off",
       "trigger": null,
       "plan": {
@@ -487,7 +864,7 @@
       "factorCount": 2,
       "directional": 2,
       "flaggedAt": "2026-10-18T20:31:08.442Z",
-      "firstFlaggedAt": "2026-10-17T21:44:12.882Z",
+      "firstFlaggedAt": "2026-10-18T20:31:08.442Z",
       "telegram": "off",
       "trigger": null,
       "plan": {
@@ -543,264 +920,6 @@
       "status": "watching",
       "statusTh": "จ้องอยู่",
       "source": "late_chase",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
-    },
-    {
-      "id": "021cbea9-7d28-481f-b4f8-d1ef6c0a159c",
-      "type": "preOrder",
-      "tier": "distribution",
-      "symbol": "HBARUSDT",
-      "side": "short",
-      "price": 0.0829,
-      "pct24h": -1.06,
-      "factors": [
-        {
-          "key": "crowded",
-          "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
-          "detailTh": "L/S 1.46 (4 ชม. +8.75%) — long แน่น"
-        },
-        {
-          "key": "taker",
-          "labelTh": "แรง taker เอียง",
-          "detailTh": "taker buy/sell 1h 0.68 · 3h 0.80"
-        }
-      ],
-      "factorCount": 2,
-      "directional": 2,
-      "flaggedAt": "2026-10-18T19:24:04.443Z",
-      "firstFlaggedAt": "2026-10-18T08:36:04.274Z",
-      "telegram": "off",
-      "trigger": null,
-      "plan": {
-        "entry": 0.0829,
-        "sl": 0.0841435,
-        "slPct": 1.5,
-        "structPct": 1.38,
-        "tp1": 0.08103475,
-        "tp2": 0.0791695,
-        "slSkip": false,
-        "slNoteTh": "ขั้นต่ำ 1.5% (โครงสร้าง 1.38%)"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "waiting_ai",
-      "statusTh": "รอ AI",
-      "source": "late_chase",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
-    },
-    {
-      "id": "d6b96d5b-379d-4a23-a840-298124b52c20",
-      "type": "preOrder",
-      "tier": "distribution",
-      "symbol": "ZECUSDT",
-      "side": "short",
-      "price": 1069.98,
-      "pct24h": -7.17,
-      "factors": [
-        {
-          "key": "taker",
-          "labelTh": "แรง taker เอียง",
-          "detailTh": "taker buy/sell 1h 0.82 · 3h 0.98"
-        },
-        {
-          "key": "oiDiverg",
-          "labelTh": "OI แยกทางที่ปลายราคา",
-          "detailTh": "ใกล้ยอด (ห่าง 1.47%) แต่ OI -0.51% ใน 2 ชม. — หมดแรง long"
-        }
-      ],
-      "factorCount": 2,
-      "directional": 2,
-      "flaggedAt": "2026-10-18T19:23:04.224Z",
-      "firstFlaggedAt": "2026-10-18T19:23:04.224Z",
-      "telegram": "off",
-      "trigger": null,
-      "plan": {
-        "entry": 1069.98,
-        "sl": 1086.0296999999998,
-        "slPct": 1.5,
-        "structPct": 1.34,
-        "tp1": 1045.90545,
-        "tp2": 1021.8308999999999,
-        "slSkip": false,
-        "slNoteTh": "ขั้นต่ำ 1.5% (โครงสร้าง 1.34%)"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "waiting_ai",
-      "statusTh": "รอ AI",
-      "source": "ignition_near",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
-    },
-    {
-      "id": "2b913992-3d0d-4e45-a2ca-93602009d4cb",
-      "type": "preOrder",
-      "tier": "distribution",
-      "symbol": "BASEDUSDT",
-      "side": "short",
-      "price": 0.04816,
-      "pct24h": -7.26,
-      "factors": [
-        {
-          "key": "crowded",
-          "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
-          "detailTh": "L/S 2.05 (4 ชม. +3.25%) — long แน่น"
-        },
-        {
-          "key": "fade",
-          "labelTh": "พุ่งแรงแล้วหมดแรง",
-          "detailTh": "24h พุ่ง 14% แล้วย่อจากยอด 9.1%"
-        }
-      ],
-      "factorCount": 2,
-      "directional": 2,
-      "flaggedAt": "2026-10-18T19:22:04.270Z",
-      "firstFlaggedAt": "2026-10-18T19:22:04.270Z",
-      "telegram": "off",
-      "trigger": null,
-      "plan": {
-        "entry": 0.04816,
-        "sl": 0.049364,
-        "slPct": 2.5,
-        "structPct": 2.94,
-        "tp1": 0.046354,
-        "tp2": 0.044548000000000004,
-        "slSkip": false,
-        "slNoteTh": "โครงสร้างต้องการ 2.94% → ตัดที่เพดาน 2.5%"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "waiting_ai",
-      "statusTh": "รอ AI",
-      "source": "late_chase",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
-    },
-    {
-      "id": "55d4eeec-3cc9-423c-b88c-511e92a011a4",
-      "type": "preOrder",
-      "tier": "distribution",
-      "symbol": "ENAUSDT",
-      "side": "short",
-      "price": 0.18046,
-      "pct24h": -5.74,
-      "factors": [
-        {
-          "key": "taker",
-          "labelTh": "แรง taker เอียง",
-          "detailTh": "taker buy/sell 1h 0.67 · 3h 0.91"
-        },
-        {
-          "key": "oiDiverg",
-          "labelTh": "OI แยกทางที่ปลายราคา",
-          "detailTh": "ใกล้ยอด (ห่าง 1.46%) แต่ OI -0.45% ใน 2 ชม. — หมดแรง long"
-        }
-      ],
-      "factorCount": 2,
-      "directional": 2,
-      "flaggedAt": "2026-10-18T19:21:04.699Z",
-      "firstFlaggedAt": "2026-10-17T21:51:04.335Z",
-      "telegram": "off",
-      "trigger": null,
-      "plan": {
-        "entry": 0.18046,
-        "sl": 0.18386538500000002,
-        "slPct": 1.89,
-        "structPct": 1.89,
-        "tp1": 0.1753519225,
-        "tp2": 0.17024384499999998,
-        "slSkip": false,
-        "slNoteTh": "เหนือไฮ 36 นาทีล่าสุด"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "waiting_ai",
-      "statusTh": "รอ AI",
-      "source": "late_chase",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
-    },
-    {
-      "id": "68fc0b5d-76ab-45bd-8be0-2fdc57ab6b6c",
-      "type": "preOrder",
-      "tier": "distribution",
-      "symbol": "MAGMAUSDT",
-      "side": "short",
-      "price": 0.26028,
-      "pct24h": 5.5,
-      "factors": [
-        {
-          "key": "oiBuild",
-          "labelTh": "OI สะสมขณะราคานิ่ง",
-          "detailTh": "OI +5.38% ใน 4 ชม. ขณะราคา +1.21% (กรอบ 4.7%)"
-        },
-        {
-          "key": "crowded",
-          "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
-          "detailTh": "L/S 2.15 (4 ชม. +3.64%) — long แน่น"
-        }
-      ],
-      "factorCount": 2,
-      "directional": 1,
-      "flaggedAt": "2026-10-18T18:31:04.328Z",
-      "firstFlaggedAt": "2026-10-17T21:46:04.254Z",
-      "telegram": "off",
-      "trigger": null,
-      "plan": {
-        "entry": 0.26028,
-        "sl": 0.265347425,
-        "slPct": 1.95,
-        "structPct": 1.95,
-        "tp1": 0.2526788625,
-        "tp2": 0.24507772499999997,
-        "slSkip": false,
-        "slNoteTh": "เหนือไฮ 36 นาทีล่าสุด"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "waiting_ai",
-      "statusTh": "รอ AI",
-      "source": "priority_scout",
-      "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
-    },
-    {
-      "id": "6ae97eef-88c9-442b-a265-d34d6187ef8a",
-      "type": "preOrder",
-      "tier": "accumulation",
-      "symbol": "PUMPUSDT",
-      "side": "long",
-      "price": 0.004123,
-      "pct24h": -7.26,
-      "factors": [
-        {
-          "key": "crowded",
-          "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
-          "detailTh": "L/S 0.78 (4 ชม. -4.25%) — short แน่น"
-        },
-        {
-          "key": "troughStall",
-          "labelTh": "ใกล้ก้น/สะสมก่อนพุ่ง",
-          "detailTh": "ใกล้ก้น 24h (ห่าง 0.46% · ย่อ 9%) — สะสมก่อนพุ่ง"
-        }
-      ],
-      "factorCount": 2,
-      "directional": 2,
-      "flaggedAt": "2026-10-18T18:26:04.252Z",
-      "firstFlaggedAt": "2026-10-17T21:44:12.882Z",
-      "telegram": "off",
-      "trigger": null,
-      "plan": {
-        "entry": 0.004123,
-        "sl": 0.0040611549999999995,
-        "slPct": 1.5,
-        "structPct": 0.51,
-        "tp1": 0.0042157675,
-        "tp2": 0.004308535,
-        "slSkip": false,
-        "slNoteTh": "ขั้นต่ำ 1.5% (โครงสร้าง 0.51%)"
-      },
-      "trade": null,
-      "ai": null,
-      "status": "waiting_ai",
-      "statusTh": "รอ AI",
-      "source": "wait_sweep",
       "noteTh": "pre-order · ยังไม่เข้า · รอ confluence ≥3 + อนุมัติ AI/ระบบ"
     }
   ],
@@ -864,54 +983,6 @@
       "noteTh": null
     },
     {
-      "id": "8be9c866-daa7-4ef5-a9ff-d8942f466bf2",
-      "type": "watch",
-      "tier": "accumulation",
-      "symbol": "WLDUSDT",
-      "side": "long",
-      "price": 0.4617,
-      "pct24h": -8.32,
-      "factors": [
-        {
-          "key": "funding",
-          "labelTh": "funding เอียงฝั่งตรงข้าม",
-          "detailTh": "funding -0.0267% (short จ่าย long)"
-        },
-        {
-          "key": "crowded",
-          "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
-          "detailTh": "L/S 1.50 (4 ชม. -8.57%) — short แน่น"
-        },
-        {
-          "key": "absorb",
-          "labelTh": "ดูดซับ/หมดแรง (vol+taker)",
-          "detailTh": "ใกล้ก้น · วอลุ่ม ×1.8 · taker 1h 1.14 (จาก 3h 0.78) — seller หมดแรง"
-        }
-      ],
-      "factorCount": 3,
-      "directional": 3,
-      "flaggedAt": "2026-10-18T21:19:04.327Z",
-      "firstFlaggedAt": "2026-10-17T21:36:04.332Z",
-      "telegram": "off",
-      "trigger": null,
-      "plan": {
-        "entry": 0.4617,
-        "sl": 0.45477449999999997,
-        "slPct": 1.5,
-        "structPct": 1.32,
-        "tp1": 0.47208825,
-        "tp2": 0.4824765,
-        "slSkip": false,
-        "slNoteTh": "ขั้นต่ำ 1.5% (โครงสร้าง 1.32%)"
-      },
-      "trade": null,
-      "ai": null,
-      "status": null,
-      "statusTh": null,
-      "source": null,
-      "noteTh": "SL 1.50% < 0.75×ATR 1ชม. (2.025%) — SL อยู่ในระยะสะบัดปกติ ไม่เข้า"
-    },
-    {
       "id": "2b938f47-0415-47f2-96c5-aa6a48537445",
       "type": "watch",
       "tier": "accumulation",
@@ -973,6 +1044,54 @@
       "statusTh": null,
       "source": null,
       "noteTh": null
+    },
+    {
+      "id": "8be9c866-daa7-4ef5-a9ff-d8942f466bf2",
+      "type": "watch",
+      "tier": "accumulation",
+      "symbol": "WLDUSDT",
+      "side": "long",
+      "price": 0.4617,
+      "pct24h": -8.32,
+      "factors": [
+        {
+          "key": "funding",
+          "labelTh": "funding เอียงฝั่งตรงข้าม",
+          "detailTh": "funding -0.0267% (short จ่าย long)"
+        },
+        {
+          "key": "crowded",
+          "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
+          "detailTh": "L/S 1.50 (4 ชม. -8.57%) — short แน่น"
+        },
+        {
+          "key": "absorb",
+          "labelTh": "ดูดซับ/หมดแรง (vol+taker)",
+          "detailTh": "ใกล้ก้น · วอลุ่ม ×1.8 · taker 1h 1.14 (จาก 3h 0.78) — seller หมดแรง"
+        }
+      ],
+      "factorCount": 3,
+      "directional": 3,
+      "flaggedAt": "2026-10-18T21:19:04.327Z",
+      "firstFlaggedAt": "2026-10-18T14:52:04.302Z",
+      "telegram": "off",
+      "trigger": null,
+      "plan": {
+        "entry": 0.4617,
+        "sl": 0.45477449999999997,
+        "slPct": 1.5,
+        "structPct": 1.32,
+        "tp1": 0.47208825,
+        "tp2": 0.4824765,
+        "slSkip": false,
+        "slNoteTh": "ขั้นต่ำ 1.5% (โครงสร้าง 1.32%)"
+      },
+      "trade": null,
+      "ai": null,
+      "status": null,
+      "statusTh": null,
+      "source": null,
+      "noteTh": "SL 1.50% < 0.75×ATR 1ชม. (2.025%) — SL อยู่ในระยะสะบัดปกติ ไม่เข้า"
     },
     {
       "id": "90d1312d-561f-4357-b8d4-3bd420149642",
@@ -1224,7 +1343,7 @@
       "factorCount": 3,
       "directional": 2,
       "flaggedAt": "2026-10-18T15:31:04.248Z",
-      "firstFlaggedAt": "2026-10-17T21:44:12.882Z",
+      "firstFlaggedAt": "2026-10-18T14:31:04.430Z",
       "telegram": "ai_veto",
       "trigger": null,
       "plan": {
@@ -1282,7 +1401,7 @@
       "factorCount": 3,
       "directional": 3,
       "flaggedAt": "2026-10-18T15:31:04.248Z",
-      "firstFlaggedAt": "2026-10-17T21:36:04.332Z",
+      "firstFlaggedAt": "2026-10-18T14:26:04.458Z",
       "telegram": "ai_veto",
       "trigger": null,
       "plan": {
@@ -1311,547 +1430,25 @@
       "statusTh": null,
       "source": null,
       "noteTh": null
-    },
-    {
-      "id": "32f5bf93-3226-474d-b2d9-4f5c137c6717",
-      "type": "watch",
-      "tier": "accumulation",
-      "symbol": "EIGENUSDT",
-      "side": "long",
-      "price": 0.2324,
-      "pct24h": -10.44,
-      "factors": [
-        {
-          "key": "funding",
-          "labelTh": "funding เอียงฝั่งตรงข้าม",
-          "detailTh": "funding -0.0049% (short จ่าย long)"
-        },
-        {
-          "key": "crowded",
-          "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
-          "detailTh": "L/S 1.75 (4 ชม. -12.37%) — short แน่น"
-        },
-        {
-          "key": "troughStall",
-          "labelTh": "ใกล้ก้น/สะสมก่อนพุ่ง",
-          "detailTh": "ใกล้ก้น 24h (ห่าง 0.65% · ย่อ 11%) — สะสมก่อนพุ่ง"
-        },
-        {
-          "key": "oiDiverg",
-          "labelTh": "OI แยกทางที่ปลายราคา",
-          "detailTh": "ใกล้ก้น (ห่าง 0.65%) · OI -0.77% · funding ติดลบ — สะสม/squeeze load"
-        }
-      ],
-      "factorCount": 4,
-      "directional": 4,
-      "flaggedAt": "2026-10-18T15:01:04.262Z",
-      "firstFlaggedAt": "2026-10-18T11:21:04.267Z",
-      "telegram": "ai_veto",
-      "trigger": null,
-      "plan": {
-        "entry": 0.2324,
-        "sl": 0.22891399999999998,
-        "slPct": 1.5,
-        "structPct": 1.18,
-        "tp1": 0.23762899999999998,
-        "tp2": 0.242858,
-        "slSkip": false,
-        "slNoteTh": "ใต้จุดกวาดสภาพคล่อง + buffer"
-      },
-      "trade": null,
-      "ai": {
-        "action": "veto",
-        "score": 35,
-        "reasonTh": "เข้าก่อน sweep + ปัจจัยซ้ำกับแพทเทิร์นที่แพ้ (funding+oiDiverg) เสี่ยงโดน hunt",
-        "model": "qwen/qwen3.8-27b",
-        "latencyMs": 218,
-        "ok": true,
-        "skipped": false,
-        "cached": false,
-        "learnedAdjust": null
-      },
-      "status": null,
-      "statusTh": null,
-      "source": null,
-      "noteTh": null
-    },
-    {
-      "id": "92ee21b5-238b-41c0-ac47-2543c4d1be24",
-      "type": "watch",
-      "tier": "accumulation",
-      "symbol": "WUSDT",
-      "side": "long",
-      "price": 0.01301,
-      "pct24h": -8.51,
-      "factors": [
-        {
-          "key": "funding",
-          "labelTh": "funding เอียงฝั่งตรงข้าม",
-          "detailTh": "funding -0.0054% (short จ่าย long)"
-        },
-        {
-          "key": "crowded",
-          "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
-          "detailTh": "L/S 0.81 (4 ชม. -1.56%) — short แน่น"
-        },
-        {
-          "key": "troughStall",
-          "labelTh": "ใกล้ก้น/สะสมก่อนพุ่ง",
-          "detailTh": "ใกล้ก้น 24h (ห่าง 0.96% · ย่อ 10%) — สะสมก่อนพุ่ง"
-        },
-        {
-          "key": "oiDiverg",
-          "labelTh": "OI แยกทางที่ปลายราคา",
-          "detailTh": "ใกล้ก้น (ห่าง 0.96%) · OI -0.86% · funding ติดลบ — สะสม/squeeze load"
-        }
-      ],
-      "factorCount": 4,
-      "directional": 4,
-      "flaggedAt": "2026-10-18T15:01:04.262Z",
-      "firstFlaggedAt": "2026-10-17T21:51:04.335Z",
-      "telegram": "capped",
-      "trigger": null,
-      "plan": {
-        "entry": 0.01301,
-        "sl": 0.012814850000000001,
-        "slPct": 1.5,
-        "structPct": 1.27,
-        "tp1": 0.013302725,
-        "tp2": 0.01359545,
-        "slSkip": false,
-        "slNoteTh": "ใต้จุดกวาดสภาพคล่อง + buffer"
-      },
-      "trade": null,
-      "ai": null,
-      "status": null,
-      "statusTh": null,
-      "source": null,
-      "noteTh": null
-    },
-    {
-      "id": "ab744197-a006-4bc1-a32a-9d2274699a7c",
-      "type": "watch",
-      "tier": "accumulation",
-      "symbol": "RVNUSDT",
-      "side": "long",
-      "price": 0.001403,
-      "pct24h": -5.78,
-      "factors": [
-        {
-          "key": "oiBuild",
-          "labelTh": "OI สะสมขณะราคานิ่ง",
-          "detailTh": "OI +6.28% ใน 4 ชม. ขณะราคา -1.27% (กรอบ 3.8%)"
-        },
-        {
-          "key": "inflow",
-          "labelTh": "วอลุ่มไหลเข้าเงียบ",
-          "detailTh": "วอลุ่ม 2 ชม. ×2.8 ของเฉลี่ย 22 ชม. ขณะกรอบราคา 2.8%"
-        },
-        {
-          "key": "oiDiverg",
-          "labelTh": "OI แยกทางที่ปลายราคา",
-          "detailTh": "ใกล้ก้น (ห่าง 1.16%) · OI +3.93% — สะสม/squeeze load"
-        }
-      ],
-      "factorCount": 3,
-      "directional": 1,
-      "flaggedAt": "2026-10-18T14:52:04.302Z",
-      "firstFlaggedAt": "2026-10-18T14:52:04.302Z",
-      "telegram": "ai_veto",
-      "trigger": null,
-      "plan": {
-        "entry": 0.001403,
-        "sl": 0.001381955,
-        "slPct": 1.5,
-        "structPct": 1.43,
-        "tp1": 0.0014345674999999998,
-        "tp2": 0.001466135,
-        "slSkip": false,
-        "slNoteTh": "ขั้นต่ำ 1.5% (โครงสร้าง 1.43%)"
-      },
-      "trade": null,
-      "ai": {
-        "action": "veto",
-        "score": 35,
-        "reasonTh": "เข้าก่อน sweep + OI diverg เคยพลาด",
-        "model": "qwen/qwen3.8-27b",
-        "latencyMs": 250,
-        "ok": true,
-        "skipped": false,
-        "cached": false,
-        "learnedAdjust": null
-      },
-      "status": null,
-      "statusTh": null,
-      "source": null,
-      "noteTh": null
-    },
-    {
-      "id": "7d34b279-8f06-401d-ac8a-b5f210fcba5c",
-      "type": "watch",
-      "tier": "accumulation",
-      "symbol": "APTUSDT",
-      "side": "long",
-      "price": 0.77,
-      "pct24h": -4.95,
-      "factors": [
-        {
-          "key": "funding",
-          "labelTh": "funding เอียงฝั่งตรงข้าม",
-          "detailTh": "funding -0.0063% (short จ่าย long)"
-        },
-        {
-          "key": "troughStall",
-          "labelTh": "ใกล้ก้น/สะสมก่อนพุ่ง",
-          "detailTh": "ใกล้ก้น swing4h (ห่าง 0.76% · ย่อ 6%) — สะสมก่อนพุ่ง"
-        },
-        {
-          "key": "oiDiverg",
-          "labelTh": "OI แยกทางที่ปลายราคา",
-          "detailTh": "ใกล้ก้น (ห่าง 0.76%) · OI -1.94% · funding ติดลบ — สะสม/squeeze load"
-        }
-      ],
-      "factorCount": 3,
-      "directional": 3,
-      "flaggedAt": "2026-10-18T14:52:04.302Z",
-      "firstFlaggedAt": "2026-10-18T14:26:04.458Z",
-      "telegram": "ai_veto",
-      "trigger": null,
-      "plan": {
-        "entry": 0.77,
-        "sl": 0.75845,
-        "slPct": 1.5,
-        "structPct": 0.86,
-        "tp1": 0.7873249999999999,
-        "tp2": 0.80465,
-        "slSkip": false,
-        "slNoteTh": "ใต้จุดกวาดสภาพคล่อง + buffer"
-      },
-      "trade": null,
-      "ai": {
-        "action": "veto",
-        "score": 35,
-        "reasonTh": "เข้าก่อน sweep + SL บาง 1.5% เสี่ยงโดน hunt",
-        "model": "qwen/qwen3.8-27b",
-        "latencyMs": 228,
-        "ok": true,
-        "skipped": false,
-        "cached": false,
-        "learnedAdjust": null
-      },
-      "status": null,
-      "statusTh": null,
-      "source": null,
-      "noteTh": null
-    },
-    {
-      "id": "ea6e1ee1-bdf5-4fc4-a450-79280abfe23c",
-      "type": "watch",
-      "tier": "accumulation",
-      "symbol": "FILUSDT",
-      "side": "long",
-      "price": 1.0279,
-      "pct24h": -8.27,
-      "factors": [
-        {
-          "key": "troughStall",
-          "labelTh": "ใกล้ก้น/สะสมก่อนพุ่ง",
-          "detailTh": "ใกล้ก้น 24h (ห่าง 0.96% · ย่อ 9%) — สะสมก่อนพุ่ง"
-        },
-        {
-          "key": "smart",
-          "labelTh": "รายใหญ่สวนรายย่อย (top trader)",
-          "detailTh": "top trader L/S +5.67% ใน 4 ชม. ขณะรายย่อย -0.68%"
-        },
-        {
-          "key": "oiDiverg",
-          "labelTh": "OI แยกทางที่ปลายราคา",
-          "detailTh": "ใกล้ก้น (ห่าง 0.96%) · OI -2.12% · funding ติดลบ — สะสม/squeeze load"
-        },
-        {
-          "key": "absorb",
-          "labelTh": "ดูดซับ/หมดแรง (vol+taker)",
-          "detailTh": "ใกล้ก้น · วอลุ่ม ×3.2 · taker 1h 0.92 (จาก 3h 0.81) — seller หมดแรง"
-        }
-      ],
-      "factorCount": 4,
-      "directional": 4,
-      "flaggedAt": "2026-10-18T14:31:04.430Z",
-      "firstFlaggedAt": "2026-10-17T21:36:04.332Z",
-      "telegram": "ai_veto",
-      "trigger": null,
-      "plan": {
-        "entry": 1.0279,
-        "sl": 1.0124815,
-        "slPct": 1.5,
-        "structPct": 0.57,
-        "tp1": 1.05102775,
-        "tp2": 1.0741555,
-        "slSkip": false,
-        "slNoteTh": "ใต้จุดกวาดสภาพคล่อง + buffer"
-      },
-      "trade": null,
-      "ai": {
-        "action": "veto",
-        "score": 45,
-        "reasonTh": "เข้าก่อน sweep+reclaim, SL 1.5% เสี่ยงโดน hunt",
-        "model": "qwen/qwen3.8-27b",
-        "latencyMs": 270,
-        "ok": true,
-        "skipped": false,
-        "cached": false,
-        "learnedAdjust": null
-      },
-      "status": null,
-      "statusTh": null,
-      "source": null,
-      "noteTh": null
-    },
-    {
-      "id": "83e0e2b4-87a8-48ce-9d6c-525ce4c58312",
-      "type": "watch",
-      "tier": "accumulation",
-      "symbol": "ALTUSDT",
-      "side": "long",
-      "price": 0.008408,
-      "pct24h": -3.91,
-      "factors": [
-        {
-          "key": "oiBuild",
-          "labelTh": "OI สะสมขณะราคานิ่ง",
-          "detailTh": "OI +6.88% ใน 4 ชม. ขณะราคา +1.20% (กรอบ 2.9%)"
-        },
-        {
-          "key": "crowded",
-          "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
-          "detailTh": "L/S 1.70 (4 ชม. -13.67%) — short แน่น"
-        },
-        {
-          "key": "smart",
-          "labelTh": "รายใหญ่สวนรายย่อย (top trader)",
-          "detailTh": "top trader L/S +5.43% ใน 4 ชม. ขณะรายย่อย -13.67%"
-        }
-      ],
-      "factorCount": 3,
-      "directional": 2,
-      "flaggedAt": "2026-10-18T14:31:04.430Z",
-      "firstFlaggedAt": "2026-10-18T07:26:04.263Z",
-      "telegram": "ai_veto",
-      "trigger": null,
-      "plan": {
-        "entry": 0.008408,
-        "sl": 0.008241619,
-        "slPct": 1.98,
-        "structPct": 1.98,
-        "tp1": 0.008657571499999999,
-        "tp2": 0.008907143,
-        "slSkip": false,
-        "slNoteTh": "ใต้โลว์ 60 นาทีล่าสุด"
-      },
-      "trade": null,
-      "ai": {
-        "action": "veto",
-        "score": 45,
-        "reasonTh": "เข้าก่อน sweep + ฝั่ง crowded เสี่ยงโดน hunt",
-        "model": "qwen/qwen3.8-27b",
-        "latencyMs": 212,
-        "ok": true,
-        "skipped": false,
-        "cached": false,
-        "learnedAdjust": null
-      },
-      "status": null,
-      "statusTh": null,
-      "source": null,
-      "noteTh": null
-    },
-    {
-      "id": "64a77f1b-1713-4804-bd22-888ef27b848b",
-      "type": "watch",
-      "tier": "accumulation",
-      "symbol": "DOTUSDT",
-      "side": "long",
-      "price": 1.0836,
-      "pct24h": -5.01,
-      "factors": [
-        {
-          "key": "funding",
-          "labelTh": "funding เอียงฝั่งตรงข้าม",
-          "detailTh": "funding -0.0042% (short จ่าย long)"
-        },
-        {
-          "key": "troughStall",
-          "labelTh": "ใกล้ก้น/สะสมก่อนพุ่ง",
-          "detailTh": "ใกล้ก้น swing4h (ห่าง 0.83% · ย่อ 4%) — สะสมก่อนพุ่ง"
-        },
-        {
-          "key": "oiDiverg",
-          "labelTh": "OI แยกทางที่ปลายราคา",
-          "detailTh": "ใกล้ก้น (ห่าง 0.83%) · OI +0.35% · funding ติดลบ — สะสม/squeeze load"
-        }
-      ],
-      "factorCount": 3,
-      "directional": 3,
-      "flaggedAt": "2026-10-18T14:26:04.458Z",
-      "firstFlaggedAt": "2026-10-17T21:31:04.428Z",
-      "telegram": "ai_veto",
-      "trigger": null,
-      "plan": {
-        "entry": 1.0836,
-        "sl": 1.067346,
-        "slPct": 1.5,
-        "structPct": 1.05,
-        "tp1": 1.1079809999999999,
-        "tp2": 1.1323619999999999,
-        "slSkip": false,
-        "slNoteTh": "ใต้จุดกวาดสภาพคล่อง + buffer"
-      },
-      "trade": null,
-      "ai": {
-        "action": "veto",
-        "score": 35,
-        "reasonTh": "เข้าก่อน sweep + SL 1.5% เสี่ยงโดน hunt",
-        "model": "qwen/qwen3.8-27b",
-        "latencyMs": 259,
-        "ok": true,
-        "skipped": false,
-        "cached": false,
-        "learnedAdjust": null
-      },
-      "status": null,
-      "statusTh": null,
-      "source": null,
-      "noteTh": null
-    },
-    {
-      "id": "73e9ba49-865a-42f7-b7c3-5eb05fc16a58",
-      "type": "watch",
-      "tier": "accumulation",
-      "symbol": "LITUSDT",
-      "side": "long",
-      "price": 2.9762,
-      "pct24h": -6.52,
-      "factors": [
-        {
-          "key": "crowded",
-          "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
-          "detailTh": "L/S 0.98 (4 ชม. +2.39%) — short แน่น"
-        },
-        {
-          "key": "spot",
-          "labelTh": "spot นำ",
-          "detailTh": "spot วอลุ่ม 1 ชม. ×2.2 · spot ซื้อ 62%"
-        },
-        {
-          "key": "troughStall",
-          "labelTh": "ใกล้ก้น/สะสมก่อนพุ่ง",
-          "detailTh": "ใกล้ก้น 24h (ห่าง 0.91% · ย่อ 8%) — สะสมก่อนพุ่ง"
-        }
-      ],
-      "factorCount": 3,
-      "directional": 3,
-      "flaggedAt": "2026-10-18T14:26:04.458Z",
-      "firstFlaggedAt": "2026-10-18T07:17:32.291Z",
-      "telegram": "ai_veto",
-      "trigger": null,
-      "plan": {
-        "entry": 2.9762,
-        "sl": 2.9315569999999997,
-        "slPct": 1.5,
-        "structPct": 1.03,
-        "tp1": 3.0431645,
-        "tp2": 3.1101289999999997,
-        "slSkip": false,
-        "slNoteTh": "ใต้จุดกวาดสภาพคล่อง + buffer"
-      },
-      "trade": null,
-      "ai": {
-        "action": "veto",
-        "score": 25,
-        "reasonTh": "เข้าก่อน sweep + SL บาง เสี่ยงโดน hunt",
-        "model": "qwen/qwen3.8-27b",
-        "latencyMs": 185,
-        "ok": true,
-        "skipped": false,
-        "cached": false,
-        "learnedAdjust": null
-      },
-      "status": null,
-      "statusTh": null,
-      "source": null,
-      "noteTh": null
     }
   ],
-  "ignition": [
-    {
-      "id": "9bb8f380-3f7b-44a1-bafc-617b1e3da086",
-      "type": "ignition",
-      "symbol": "AIAUSDT",
-      "side": "short",
-      "price": 0.0711,
-      "pct24h": -4.65,
-      "factors": [
-        {
-          "key": "crowded",
-          "labelTh": "ฝั่งตรงข้ามแน่น (L/S)",
-          "detailTh": "L/S 2.95 (4 ชม. +0.05%) — long แน่น"
-        },
-        {
-          "key": "taker",
-          "labelTh": "แรง taker เอียง",
-          "detailTh": "taker buy/sell 1h 0.85 · 3h 0.85"
-        },
-        {
-          "key": "fade",
-          "labelTh": "พุ่งแรงแล้วหมดแรง",
-          "detailTh": "24h พุ่ง 19% แล้วย่อจากยอด 14.7%"
-        }
-      ],
-      "factorCount": 3,
-      "directional": 3,
-      "flaggedAt": "2026-10-18T15:30:04.298Z",
-      "firstFlaggedAt": "2026-10-18T15:30:04.298Z",
-      "telegram": "off",
-      "trigger": {
-        "moveWindow": 5,
-        "movePct": -1.09,
-        "volMult": 4.7,
-        "breakoutPct": -0.36
-      },
-      "plan": {
-        "entry": 0.0711,
-        "sl": 0.0721665,
-        "slPct": 1.5,
-        "structPct": 1.36,
-        "tp1": 0.06950025,
-        "tp2": 0.06790049999999999,
-        "slSkip": false,
-        "slNoteTh": "ขั้นต่ำ 1.5% (โครงสร้าง 1.36%)"
-      },
-      "trade": null,
-      "ai": null,
-      "status": null,
-      "statusTh": null,
-      "source": null,
-      "noteTh": "SL 1.50% < 0.75×ATR 1ชม. (2.824%) — SL อยู่ในระยะสะบัดปกติ ไม่เข้า"
-    }
-  ],
+  "ignition": [],
   "market": {
-    "btc1h": null,
-    "btc4h": -0.23,
-    "med1h": 0.39,
-    "med4h": -1.7,
-    "up1h": 100,
-    "up4h": 13.75,
-    "mkt1h": 0.39,
-    "mkt4h": -0.96,
-    "n1": 5,
-    "n4": 80,
-    "breadth": "neutral/none",
-    "wind": "neutral",
-    "strength": "none",
+    "btc1h": 0.46,
+    "btc4h": 1.08,
+    "med1h": 1.07,
+    "med4h": 2.09,
+    "up1h": 85.71,
+    "up4h": 80.52,
+    "mkt1h": 0.77,
+    "mkt4h": 1.59,
+    "n1": 77,
+    "n4": 77,
+    "breadth": "pump/soft",
+    "wind": "pump",
+    "strength": "soft",
     "agree": null,
-    "noteTh": "ตลาดนิ่ง · BTC 1h ? · alt มัธยฐาน 1h +0.39% (ขึ้น 100%) / 4h -1.70% (ขึ้น 13.75%)"
+    "noteTh": "ตลาดขึ้นอ่อนๆ · BTC 1h +0.46% · alt มัธยฐาน 1h +1.07% (ขึ้น 85.71%) / 4h +2.09% (ขึ้น 80.52%)"
   },
   "runnerRadar": [
     {
@@ -1883,7 +1480,7 @@
       "info": {
         "p0": 0.07516,
         "hi": 0.07516,
-        "lo": 0.07006,
+        "lo": 0.06951,
         "m1h": -5.23,
         "m4h": -4.22
       },
@@ -1935,7 +1532,7 @@
   "counterTrend": [],
   "meta": {
     "source": "local-box",
-    "publishedAt": "2026-10-18T22:27:18.903Z",
+    "publishedAt": "2026-10-19T00:17:32.308Z",
     "pagesStatic": true
   }
 }
