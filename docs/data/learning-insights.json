@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-19T07:29:08.641Z",
+  "updatedAt": "2026-10-19T07:49:09.899Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 113,
+    "earlyGraded": 114,
     "earlyWins": 69,
-    "earlyLosses": 44,
-    "earlyWinRate": 0.6106194690265486,
+    "earlyLosses": 45,
+    "earlyWinRate": 0.6052631578947368,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -290,6 +290,17 @@
     {
       "outcome": "loss",
       "side": "short",
+      "symbol": "ARBUSDT",
+      "factors": [
+        "inflow",
+        "oiDiverg"
+      ],
+      "aiAction": "send",
+      "lessonTh": "เคยพลาด: short [inflow+oiDiverg] — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
+    },
+    {
+      "outcome": "loss",
+      "side": "short",
       "symbol": "LITUSDT",
       "factors": [
         "oiDiverg",
@@ -330,17 +341,6 @@
       ],
       "aiAction": "send",
       "lessonTh": "เคยพลาด: long [crowded+oiBuild] — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
-    },
-    {
-      "outcome": "loss",
-      "side": "short",
-      "symbol": "HEIUSDT",
-      "factors": [
-        "fade",
-        "oiDiverg"
-      ],
-      "aiAction": "send",
-      "lessonTh": "เคยพลาด: short [fade+oiDiverg] — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
     },
     {
       "outcome": "win",
