@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-19T13:39:07.690Z",
+  "updatedAt": "2026-10-19T14:29:09.558Z",
   "rollingAlerts": 80,
   "stats": {
     "earlyGraded": 101,
-    "earlyWins": 70,
-    "earlyLosses": 31,
-    "earlyWinRate": 0.693069306930693,
+    "earlyWins": 69,
+    "earlyLosses": 32,
+    "earlyWinRate": 0.6831683168316832,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -51,12 +51,6 @@
       "noteTh": "✅ Long funding+oiDiverg+troughStall: ชนะ 13/15 (WR 87%) — เก็บแพทเทิร์น",
       "samples": [
         {
-          "symbol": "DOTUSDT",
-          "outcome": "loss",
-          "aiAction": "veto",
-          "horizon": "5m"
-        },
-        {
           "symbol": "WLDUSDT",
           "outcome": "win",
           "aiAction": null,
@@ -64,6 +58,12 @@
         },
         {
           "symbol": "APTUSDT",
+          "outcome": "win",
+          "aiAction": "veto",
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "FILUSDT",
           "outcome": "win",
           "aiAction": "veto",
           "horizon": "tp1"
@@ -278,7 +278,7 @@
     {
       "key": "vetoBias",
       "value": 0,
-      "noteTh": "คง vetoBias=0 — WR ระยะต้น 69% ยังไม่ต้องเข้มเพิ่ม"
+      "noteTh": "คง vetoBias=0 — WR ระยะต้น 68% ยังไม่ต้องเข้มเพิ่ม"
     },
     {
       "key": "cautionPatterns",
