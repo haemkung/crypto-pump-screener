@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-19T00:54:21.088Z",
+  "updatedAt": "2026-10-19T01:29:04.167Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 116,
-    "earlyWins": 63,
+    "earlyGraded": 118,
+    "earlyWins": 65,
     "earlyLosses": 53,
-    "earlyWinRate": 0.5431034482758621,
+    "earlyWinRate": 0.5508474576271186,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -18,9 +18,9 @@
         "troughStall"
       ],
       "losses": 8,
-      "wins": 3,
-      "winRate": 0.2727272727272727,
-      "noteTh": "❌ Long funding+oiDiverg+troughStall: แพ้ 8/11 (WR 27%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "wins": 4,
+      "winRate": 0.3333333333333333,
+      "noteTh": "❌ Long funding+oiDiverg+troughStall: แพ้ 8/12 (WR 33%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
       "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
       "samples": [
         {
@@ -391,7 +391,7 @@
     {
       "key": "vetoBias",
       "value": 0.05,
-      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 54% จาก 116 เคส"
+      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 55% จาก 118 เคส"
     },
     {
       "key": "cautionPatterns",
