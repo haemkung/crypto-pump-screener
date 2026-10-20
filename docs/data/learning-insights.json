@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-20T12:39:09.912Z",
+  "updatedAt": "2026-10-20T13:29:09.963Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 127,
-    "earlyWins": 78,
-    "earlyLosses": 49,
-    "earlyWinRate": 0.6141732283464567,
+    "earlyGraded": 128,
+    "earlyWins": 80,
+    "earlyLosses": 48,
+    "earlyWinRate": 0.625,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -119,9 +119,9 @@
         "troughStall"
       ],
       "wins": 5,
-      "losses": 2,
-      "winRate": 0.7142857142857143,
-      "noteTh": "✅ Long funding+oiDiverg+troughStall: ชนะ 5/7 (WR 71%) — เก็บแพทเทิร์น",
+      "losses": 3,
+      "winRate": 0.625,
+      "noteTh": "✅ Long funding+oiDiverg+troughStall: ชนะ 5/8 (WR 63%) — เก็บแพทเทิร์น",
       "samples": [
         {
           "symbol": "SIRENUSDT",
@@ -322,6 +322,17 @@
     },
     {
       "outcome": "win",
+      "side": "long",
+      "symbol": "IOSTUSDT",
+      "factors": [
+        "crowded",
+        "spot"
+      ],
+      "aiAction": "send",
+      "lessonTh": "เคยถูก: long [crowded+spot] — confluence แบบนี้โอเค"
+    },
+    {
+      "outcome": "win",
       "side": "short",
       "symbol": "USUSDT",
       "factors": [
@@ -341,24 +352,13 @@
       ],
       "aiAction": "send",
       "lessonTh": "เคยถูก: short [crowded+peakStall] — confluence แบบนี้โอเค"
-    },
-    {
-      "outcome": "win",
-      "side": "long",
-      "symbol": "AUSDT",
-      "factors": [
-        "crowded",
-        "taker"
-      ],
-      "aiAction": "send",
-      "lessonTh": "เคยถูก: long [crowded+taker] — confluence แบบนี้โอเค"
     }
   ],
   "adjustments": [
     {
       "key": "vetoBias",
       "value": 0,
-      "noteTh": "คง vetoBias=0 — WR ระยะต้น 61% ยังไม่ต้องเข้มเพิ่ม"
+      "noteTh": "คง vetoBias=0 — WR ระยะต้น 63% ยังไม่ต้องเข้มเพิ่ม"
     },
     {
       "key": "cautionPatterns",
@@ -367,8 +367,8 @@
     },
     {
       "key": "preferBoost",
-      "value": 4,
-      "noteTh": "แพทเทิร์นชนะชัด 4 แบบ — อนุญาต boost เมื่อตรง"
+      "value": 3,
+      "noteTh": "แพทเทิร์นชนะชัด 3 แบบ — อนุญาต boost เมื่อตรง"
     },
     {
       "key": "guards",
@@ -379,7 +379,7 @@
   "biasSummary": {
     "vetoBias": 0,
     "cautionCount": 3,
-    "preferBoostCount": 4,
+    "preferBoostCount": 3,
     "minFactorsFloor": 3,
     "maxSlPct": 3
   },
