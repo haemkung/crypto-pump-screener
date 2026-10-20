@@ -1,47 +1,15 @@
 {
-  "updatedAt": "2026-10-20T12:29:15.345Z",
+  "updatedAt": "2026-10-20T12:39:09.912Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 132,
+    "earlyGraded": 127,
     "earlyWins": 78,
-    "earlyLosses": 54,
-    "earlyWinRate": 0.5909090909090909,
+    "earlyLosses": 49,
+    "earlyWinRate": 0.6141732283464567,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
   "mistakes": [
-    {
-      "side": "short",
-      "factorKeys": [
-        "fade",
-        "taker"
-      ],
-      "losses": 3,
-      "wins": 2,
-      "winRate": 0.4,
-      "noteTh": "❌ Short fade+taker: แพ้ 3/5 (WR 40%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "samples": [
-        {
-          "symbol": "USUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "5m"
-        },
-        {
-          "symbol": "ZKUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "60m"
-        },
-        {
-          "symbol": "NEARUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "15m"
-        }
-      ]
-    },
     {
       "side": "short",
       "factorKeys": [
@@ -389,13 +357,13 @@
   "adjustments": [
     {
       "key": "vetoBias",
-      "value": 0.05,
-      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 59% จาก 132 เคส"
+      "value": 0,
+      "noteTh": "คง vetoBias=0 — WR ระยะต้น 61% ยังไม่ต้องเข้มเพิ่ม"
     },
     {
       "key": "cautionPatterns",
-      "value": 4,
-      "noteTh": "จำแพทเทิร์นเสีย 4 แบบ (เช่น fade+taker) — ส่งเข้า AI context"
+      "value": 3,
+      "noteTh": "จำแพทเทิร์นเสีย 3 แบบ (เช่น crowded+fade+taker) — ส่งเข้า AI context"
     },
     {
       "key": "preferBoost",
@@ -409,8 +377,8 @@
     }
   ],
   "biasSummary": {
-    "vetoBias": 0.05,
-    "cautionCount": 4,
+    "vetoBias": 0,
+    "cautionCount": 3,
     "preferBoostCount": 4,
     "minFactorsFloor": 3,
     "maxSlPct": 3
