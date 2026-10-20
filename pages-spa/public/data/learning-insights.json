@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-20T08:39:05.687Z",
+  "updatedAt": "2026-10-20T09:34:04.310Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 110,
-    "earlyWins": 69,
+    "earlyGraded": 113,
+    "earlyWins": 72,
     "earlyLosses": 41,
-    "earlyWinRate": 0.6272727272727273,
+    "earlyWinRate": 0.6371681415929203,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -148,9 +148,9 @@
         "troughStall"
       ],
       "wins": 3,
-      "losses": 2,
-      "winRate": 0.6,
-      "noteTh": "✅ Long crowded+troughStall: ชนะ 3/5 (WR 60%) — เก็บแพทเทิร์น",
+      "losses": 1,
+      "winRate": 0.75,
+      "noteTh": "✅ Long crowded+troughStall: ชนะ 3/4 (WR 75%) — เก็บแพทเทิร์น",
       "samples": [
         {
           "symbol": "SOLVUSDT",
@@ -267,12 +267,12 @@
     {
       "key": "vetoBias",
       "value": 0,
-      "noteTh": "คง vetoBias=0 — WR ระยะต้น 63% ยังไม่ต้องเข้มเพิ่ม"
+      "noteTh": "คง vetoBias=0 — WR ระยะต้น 64% ยังไม่ต้องเข้มเพิ่ม"
     },
     {
       "key": "preferBoost",
-      "value": 2,
-      "noteTh": "แพทเทิร์นชนะชัด 2 แบบ — อนุญาต boost เมื่อตรง"
+      "value": 3,
+      "noteTh": "แพทเทิร์นชนะชัด 3 แบบ — อนุญาต boost เมื่อตรง"
     },
     {
       "key": "guards",
@@ -283,7 +283,7 @@
   "biasSummary": {
     "vetoBias": 0,
     "cautionCount": 0,
-    "preferBoostCount": 2,
+    "preferBoostCount": 3,
     "minFactorsFloor": 3,
     "maxSlPct": 3
   },
