@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-20T03:44:09.906Z",
+  "updatedAt": "2026-10-20T04:24:06.992Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 129,
-    "earlyWins": 85,
-    "earlyLosses": 44,
-    "earlyWinRate": 0.6589147286821705,
+    "earlyGraded": 131,
+    "earlyWins": 86,
+    "earlyLosses": 45,
+    "earlyWinRate": 0.6564885496183206,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -83,25 +83,25 @@
         "oiDiverg",
         "troughStall"
       ],
-      "wins": 11,
+      "wins": 9,
       "losses": 0,
       "winRate": 1,
-      "noteTh": "✅ Long funding+oiDiverg+troughStall: ชนะ 11/11 (WR 100%) — เก็บแพทเทิร์น",
+      "noteTh": "✅ Long funding+oiDiverg+troughStall: ชนะ 9/9 (WR 100%) — เก็บแพทเทิร์น",
       "samples": [
         {
-          "symbol": "INJUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "tp1"
-        },
-        {
-          "symbol": "FILUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "tp1"
-        },
-        {
           "symbol": "WLDUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "UNIUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "60m"
+        },
+        {
+          "symbol": "SANDUSDT",
           "outcome": "win",
           "aiAction": null,
           "horizon": "tp1"
@@ -117,9 +117,9 @@
         "troughStall"
       ],
       "wins": 8,
-      "losses": 3,
-      "winRate": 0.7272727272727273,
-      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 8/11 (WR 73%) — เก็บแพทเทิร์น",
+      "losses": 4,
+      "winRate": 0.6666666666666666,
+      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 8/12 (WR 67%) — เก็บแพทเทิร์น",
       "samples": [
         {
           "symbol": "OPUSDT",
@@ -148,10 +148,10 @@
         "funding",
         "oiDiverg"
       ],
-      "wins": 6,
+      "wins": 7,
       "losses": 3,
-      "winRate": 0.6666666666666666,
-      "noteTh": "✅ Long crowded+funding+oiDiverg: ชนะ 6/9 (WR 67%) — เก็บแพทเทิร์น",
+      "winRate": 0.7,
+      "noteTh": "✅ Long crowded+funding+oiDiverg: ชนะ 7/10 (WR 70%) — เก็บแพทเทิร์น",
       "samples": [
         {
           "symbol": "RLCUSDT",
