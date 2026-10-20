@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-20T16:29:07.818Z",
+  "updatedAt": "2026-10-20T17:19:31.940Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 123,
+    "earlyGraded": 125,
     "earlyWins": 72,
-    "earlyLosses": 51,
-    "earlyWinRate": 0.5853658536585366,
+    "earlyLosses": 53,
+    "earlyWinRate": 0.576,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -133,47 +133,15 @@
       ]
     },
     {
-      "side": "long",
-      "factorKeys": [
-        "crowded",
-        "funding",
-        "oiDiverg"
-      ],
-      "wins": 6,
-      "losses": 4,
-      "winRate": 0.6,
-      "noteTh": "✅ Long crowded+funding+oiDiverg: ชนะ 6/10 (WR 60%) — เก็บแพทเทิร์น",
-      "samples": [
-        {
-          "symbol": "MONUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "tp1"
-        },
-        {
-          "symbol": "ATOMUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "tp1"
-        },
-        {
-          "symbol": "JUPUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "sl"
-        }
-      ]
-    },
-    {
       "side": "short",
       "factorKeys": [
         "oiDiverg",
         "peakStall"
       ],
-      "wins": 5,
+      "wins": 4,
       "losses": 2,
-      "winRate": 0.7142857142857143,
-      "noteTh": "✅ Short oiDiverg+peakStall: ชนะ 5/7 (WR 71%) — เก็บแพทเทิร์น",
+      "winRate": 0.6666666666666666,
+      "noteTh": "✅ Short oiDiverg+peakStall: ชนะ 4/6 (WR 67%) — เก็บแพทเทิร์น",
       "samples": [
         {
           "symbol": "ENAUSDT",
@@ -245,6 +213,38 @@
           "horizon": "5m"
         }
       ]
+    },
+    {
+      "side": "long",
+      "factorKeys": [
+        "crowded",
+        "smart",
+        "troughStall"
+      ],
+      "wins": 2,
+      "losses": 1,
+      "winRate": 0.6666666666666666,
+      "noteTh": "✅ Long crowded+smart+troughStall: ชนะ 2/3 (WR 67%) — เก็บแพทเทิร์น",
+      "samples": [
+        {
+          "symbol": "SOLVUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "WLFIUSDT",
+          "outcome": "loss",
+          "aiAction": "veto",
+          "horizon": "sl"
+        },
+        {
+          "symbol": "SOLVUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
+        }
+      ]
     }
   ],
   "aiFewShot": [
@@ -305,30 +305,30 @@
     },
     {
       "outcome": "win",
+      "side": "long",
+      "symbol": "AXSUSDT",
+      "factors": [
+        "crowded",
+        "inflow"
+      ],
+      "aiAction": "send",
+      "lessonTh": "เคยถูก: long [crowded+inflow] — confluence แบบนี้โอเค"
+    },
+    {
+      "outcome": "win",
+      "side": "long",
+      "symbol": "STXUSDT",
+      "factors": [
+        "crowded",
+        "oiDiverg"
+      ],
+      "aiAction": "send",
+      "lessonTh": "เคยถูก: long [crowded+oiDiverg] — confluence แบบนี้โอเค"
+    },
+    {
+      "outcome": "win",
       "side": "short",
       "symbol": "ENAUSDT",
-      "factors": [
-        "oiDiverg",
-        "peakStall"
-      ],
-      "aiAction": "send",
-      "lessonTh": "เคยถูก: short [oiDiverg+peakStall] — confluence แบบนี้โอเค"
-    },
-    {
-      "outcome": "win",
-      "side": "short",
-      "symbol": "UNIUSDT",
-      "factors": [
-        "oiDiverg",
-        "peakStall"
-      ],
-      "aiAction": "send",
-      "lessonTh": "เคยถูก: short [oiDiverg+peakStall] — confluence แบบนี้โอเค"
-    },
-    {
-      "outcome": "win",
-      "side": "short",
-      "symbol": "PUMPUSDT",
       "factors": [
         "oiDiverg",
         "peakStall"
@@ -341,7 +341,7 @@
     {
       "key": "vetoBias",
       "value": 0.05,
-      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 59% จาก 123 เคส"
+      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 58% จาก 125 เคส"
     },
     {
       "key": "cautionPatterns",
