@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-20T02:29:12.643Z",
+  "updatedAt": "2026-10-20T03:44:09.906Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 128,
-    "earlyWins": 86,
-    "earlyLosses": 42,
-    "earlyWinRate": 0.671875,
+    "earlyGraded": 129,
+    "earlyWins": 85,
+    "earlyLosses": 44,
+    "earlyWinRate": 0.6589147286821705,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -180,9 +180,9 @@
         "peakStall"
       ],
       "wins": 5,
-      "losses": 0,
-      "winRate": 1,
-      "noteTh": "✅ Short oiDiverg+peakStall: ชนะ 5/5 (WR 100%) — เก็บแพทเทิร์น",
+      "losses": 1,
+      "winRate": 0.8333333333333334,
+      "noteTh": "✅ Short oiDiverg+peakStall: ชนะ 5/6 (WR 83%) — เก็บแพทเทิร์น",
       "samples": [
         {
           "symbol": "SUSDT",
@@ -332,7 +332,7 @@
     {
       "key": "vetoBias",
       "value": 0,
-      "noteTh": "คง vetoBias=0 — WR ระยะต้น 67% ยังไม่ต้องเข้มเพิ่ม"
+      "noteTh": "คง vetoBias=0 — WR ระยะต้น 66% ยังไม่ต้องเข้มเพิ่ม"
     },
     {
       "key": "cautionPatterns",
