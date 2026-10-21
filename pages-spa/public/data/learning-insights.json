@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-21T00:29:07.989Z",
+  "updatedAt": "2026-10-21T00:44:16.292Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 126,
-    "earlyWins": 79,
-    "earlyLosses": 47,
-    "earlyWinRate": 0.626984126984127,
+    "earlyGraded": 124,
+    "earlyWins": 78,
+    "earlyLosses": 46,
+    "earlyWinRate": 0.6290322580645161,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -167,28 +167,27 @@
       ]
     },
     {
-      "side": "long",
+      "side": "short",
       "factorKeys": [
         "crowded",
-        "funding",
-        "troughStall"
+        "fade"
       ],
       "wins": 2,
       "losses": 0,
       "winRate": 1,
-      "noteTh": "✅ Long crowded+funding+troughStall: ชนะ 2/2 (WR 100%) — เก็บแพทเทิร์น",
+      "noteTh": "✅ Short crowded+fade: ชนะ 2/2 (WR 100%) — เก็บแพทเทิร์น",
       "samples": [
         {
-          "symbol": "RLCUSDT",
+          "symbol": "TIAUSDT",
           "outcome": "win",
           "aiAction": null,
-          "horizon": "tp1"
+          "horizon": "5m"
         },
         {
-          "symbol": "AUSDT",
+          "symbol": "TIAUSDT",
           "outcome": "win",
           "aiAction": null,
-          "horizon": "tp1"
+          "horizon": "5m"
         }
       ]
     }

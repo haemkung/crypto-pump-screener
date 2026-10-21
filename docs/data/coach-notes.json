@@ -1,34 +1,6 @@
 {
   "notes": [
     {
-      "id": "5f75039b-79c9-4e8a-b83a-33a222f98a81",
-      "symbol": "PUMPUSDT",
-      "side": "short",
-      "outcome": "win",
-      "noteTh": "✅ PUMPUSDT Short (60m) · ระยะต้น/กำลังแจกของ: ทำงานได้ — ราคา -3.37% ตรงทิศ · flags: early:preOrder,peakStall,oiDiverg. เก็บแพทเทิร์นที่คล้ายไว้",
-      "timestamp": "2026-10-20T21:34:14.182Z",
-      "alertId": "586fa82a-c0e4-4f40-86f5-67dc8e7eae2d",
-      "horizon": "60m",
-      "movePct": -3.37,
-      "source": "early",
-      "tier": "distribution",
-      "labelTh": "กำลังแจกของ"
-    },
-    {
-      "id": "29bfe201-ab40-47d2-85bd-7134fdfef52c",
-      "symbol": "SOLVUSDT",
-      "side": "long",
-      "outcome": "loss",
-      "noteTh": "❌ SOLVUSDT Long (5m) · ระยะต้น/price-only (Long): พลาด — ราคา -1.05% · flags: early:ignition_price_only,crowded,troughStall. ทบทวน confluence / หลักฐานซ่อนก่อนเข้า",
-      "timestamp": "2026-10-20T21:34:14.182Z",
-      "alertId": "94f7a190-f914-443d-8eee-367d48216319",
-      "horizon": "5m",
-      "movePct": -1.05,
-      "source": "early",
-      "tier": "ignition_price_only",
-      "labelTh": "price-only (Long)"
-    },
-    {
       "id": "387d10d3-85e8-42df-bd4f-de8f5290e0a6",
       "symbol": "ICNTUSDT",
       "side": "long",
@@ -389,6 +361,34 @@
       "source": "learn",
       "tier": "adjust",
       "labelTh": "ปรับโมเดล"
+    },
+    {
+      "id": "e252c928-6e77-4a6c-8729-680d2a6c8b7c",
+      "symbol": "EPICUSDT",
+      "side": "long",
+      "outcome": "loss",
+      "noteTh": "❌ EPICUSDT Long (5m) · ระยะต้น/กำลังสะสม: พลาด — ราคา -1.29% · flags: early:preOrder,troughStall,oiDiverg. ทบทวน confluence / หลักฐานซ่อนก่อนเข้า",
+      "timestamp": "2026-10-21T00:44:15.928Z",
+      "alertId": "5b4fad4c-e182-41b3-9a43-f7f71dbae0b9",
+      "horizon": "5m",
+      "movePct": -1.29,
+      "source": "early",
+      "tier": "accumulation",
+      "labelTh": "กำลังสะสม"
+    },
+    {
+      "id": "9b7fe104-f9d2-46d6-8190-705f46b5461c",
+      "symbol": "MORPHOUSDT",
+      "side": "long",
+      "outcome": "win",
+      "noteTh": "✅ MORPHOUSDT Long (5m) · ระยะต้น/กำลังสะสม: ทำงานได้ — ราคา +1.00% ตรงทิศ · flags: early:preOrder,taker,tier:accumulation. เก็บแพทเทิร์นที่คล้ายไว้",
+      "timestamp": "2026-10-21T00:44:15.926Z",
+      "alertId": "ee0bc6eb-de1f-4dd1-94c2-0c54a86f4abc",
+      "horizon": "5m",
+      "movePct": 1,
+      "source": "early",
+      "tier": "accumulation",
+      "labelTh": "กำลังสะสม"
     }
   ],
   "total": 80,
