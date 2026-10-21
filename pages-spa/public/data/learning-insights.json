@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-21T05:34:18.464Z",
+  "updatedAt": "2026-10-21T06:34:09.664Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 129,
-    "earlyWins": 81,
-    "earlyLosses": 48,
-    "earlyWinRate": 0.627906976744186,
+    "earlyGraded": 123,
+    "earlyWins": 78,
+    "earlyLosses": 45,
+    "earlyWinRate": 0.6341463414634146,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -80,10 +80,10 @@
         "oiDiverg",
         "troughStall"
       ],
-      "wins": 9,
-      "losses": 6,
-      "winRate": 0.6,
-      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 9/15 (WR 60%) — เก็บแพทเทิร์น",
+      "wins": 10,
+      "losses": 5,
+      "winRate": 0.6666666666666666,
+      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 10/15 (WR 67%) — เก็บแพทเทิร์น",
       "samples": [
         {
           "symbol": "WALUSDT",
@@ -201,33 +201,33 @@
       ]
     },
     {
-      "side": "short",
+      "side": "long",
       "factorKeys": [
-        "oiDiverg",
-        "peakStall"
+        "crowded",
+        "taker"
       ],
-      "wins": 4,
-      "losses": 2,
-      "winRate": 0.6666666666666666,
-      "noteTh": "✅ Short oiDiverg+peakStall: ชนะ 4/6 (WR 67%) — เก็บแพทเทิร์น",
+      "wins": 3,
+      "losses": 0,
+      "winRate": 1,
+      "noteTh": "✅ Long crowded+taker: ชนะ 3/3 (WR 100%) — เก็บแพทเทิร์น",
       "samples": [
         {
-          "symbol": "PENGUUSDT",
-          "outcome": "loss",
+          "symbol": "AUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "60m"
+        },
+        {
+          "symbol": "MARSCOINUSDT",
+          "outcome": "win",
           "aiAction": null,
           "horizon": "15m"
         },
         {
-          "symbol": "PUMPUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "5m"
-        },
-        {
-          "symbol": "SUSDT",
+          "symbol": "MARSCOINUSDT",
           "outcome": "win",
           "aiAction": null,
-          "horizon": "5m"
+          "horizon": "15m"
         }
       ]
     }
@@ -335,8 +335,8 @@
     },
     {
       "key": "preferBoost",
-      "value": 2,
-      "noteTh": "แพทเทิร์นชนะชัด 2 แบบ — อนุญาต boost เมื่อตรง"
+      "value": 3,
+      "noteTh": "แพทเทิร์นชนะชัด 3 แบบ — อนุญาต boost เมื่อตรง"
     },
     {
       "key": "guards",
@@ -347,7 +347,7 @@
   "biasSummary": {
     "vetoBias": 0,
     "cautionCount": 2,
-    "preferBoostCount": 2,
+    "preferBoostCount": 3,
     "minFactorsFloor": 3,
     "maxSlPct": 3
   },
