@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-21T19:24:08.861Z",
+  "updatedAt": "2026-10-21T20:24:05.172Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 104,
-    "earlyWins": 62,
+    "earlyGraded": 105,
+    "earlyWins": 63,
     "earlyLosses": 42,
-    "earlyWinRate": 0.5961538461538461,
+    "earlyWinRate": 0.6,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -170,24 +170,25 @@
       "side": "long",
       "factorKeys": [
         "crowded",
+        "funding",
         "taker"
       ],
       "wins": 2,
       "losses": 0,
       "winRate": 1,
-      "noteTh": "✅ Long crowded+taker: ชนะ 2/2 (WR 100%) — เก็บแพทเทิร์น",
+      "noteTh": "✅ Long crowded+funding+taker: ชนะ 2/2 (WR 100%) — เก็บแพทเทิร์น",
       "samples": [
         {
-          "symbol": "NEARUSDT",
+          "symbol": "NILUSDT",
           "outcome": "win",
           "aiAction": null,
-          "horizon": "5m"
+          "horizon": "tp1"
         },
         {
-          "symbol": "ZECUSDT",
+          "symbol": "WUSDT",
           "outcome": "win",
           "aiAction": null,
-          "horizon": "5m"
+          "horizon": "tp1"
         }
       ]
     }
@@ -250,6 +251,17 @@
     },
     {
       "outcome": "win",
+      "side": "short",
+      "symbol": "MONUSDT",
+      "factors": [
+        "oiDiverg",
+        "taker"
+      ],
+      "aiAction": "send",
+      "lessonTh": "เคยถูก: short [oiDiverg+taker] — confluence แบบนี้โอเค"
+    },
+    {
+      "outcome": "win",
       "side": "long",
       "symbol": "EIGENUSDT",
       "factors": [
@@ -269,24 +281,13 @@
       ],
       "aiAction": "send",
       "lessonTh": "เคยถูก: short [fade+smart] — confluence แบบนี้โอเค"
-    },
-    {
-      "outcome": "win",
-      "side": "long",
-      "symbol": "NEARUSDT",
-      "factors": [
-        "crowded",
-        "taker"
-      ],
-      "aiAction": "send",
-      "lessonTh": "เคยถูก: long [crowded+taker] — confluence แบบนี้โอเค"
     }
   ],
   "adjustments": [
     {
       "key": "vetoBias",
       "value": 0.05,
-      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 60% จาก 104 เคส"
+      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 60% จาก 105 เคส"
     },
     {
       "key": "cautionPatterns",
