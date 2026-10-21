@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-21T13:24:21.104Z",
+  "updatedAt": "2026-10-21T14:29:07.111Z",
   "rollingAlerts": 80,
   "stats": {
     "earlyGraded": 110,
@@ -74,19 +74,51 @@
     {
       "side": "long",
       "factorKeys": [
+        "funding",
+        "oiDiverg",
+        "troughStall"
+      ],
+      "wins": 9,
+      "losses": 4,
+      "winRate": 0.6923076923076923,
+      "noteTh": "✅ Long funding+oiDiverg+troughStall: ชนะ 9/13 (WR 69%) — เก็บแพทเทิร์น",
+      "samples": [
+        {
+          "symbol": "SANDUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "SANDUSDT",
+          "outcome": "win",
+          "aiAction": "veto",
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "SANDUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
+        }
+      ]
+    },
+    {
+      "side": "long",
+      "factorKeys": [
         "crowded",
         "funding",
         "oiDiverg"
       ],
-      "wins": 8,
+      "wins": 6,
       "losses": 1,
-      "winRate": 0.8888888888888888,
-      "noteTh": "✅ Long crowded+funding+oiDiverg: ชนะ 8/9 (WR 89%) — เก็บแพทเทิร์น",
+      "winRate": 0.8571428571428571,
+      "noteTh": "✅ Long crowded+funding+oiDiverg: ชนะ 6/7 (WR 86%) — เก็บแพทเทิร์น",
       "samples": [
         {
           "symbol": "LUMIAUSDT",
           "outcome": "win",
-          "aiAction": null,
+          "aiAction": "veto",
           "horizon": "tp1"
         },
         {
@@ -96,39 +128,7 @@
           "horizon": "tp1"
         },
         {
-          "symbol": "LUMIAUSDT",
-          "outcome": "win",
-          "aiAction": "veto",
-          "horizon": "tp1"
-        }
-      ]
-    },
-    {
-      "side": "long",
-      "factorKeys": [
-        "funding",
-        "oiDiverg",
-        "troughStall"
-      ],
-      "wins": 8,
-      "losses": 4,
-      "winRate": 0.6666666666666666,
-      "noteTh": "✅ Long funding+oiDiverg+troughStall: ชนะ 8/12 (WR 67%) — เก็บแพทเทิร์น",
-      "samples": [
-        {
-          "symbol": "SANDUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "tp1"
-        },
-        {
-          "symbol": "SANDUSDT",
-          "outcome": "win",
-          "aiAction": "veto",
-          "horizon": "tp1"
-        },
-        {
-          "symbol": "SANDUSDT",
+          "symbol": "GTCUSDT",
           "outcome": "win",
           "aiAction": null,
           "horizon": "tp1"
@@ -256,6 +256,17 @@
     },
     {
       "outcome": "win",
+      "side": "long",
+      "symbol": "EIGENUSDT",
+      "factors": [
+        "crowded",
+        "inflow"
+      ],
+      "aiAction": "send",
+      "lessonTh": "เคยถูก: long [crowded+inflow] — confluence แบบนี้โอเค"
+    },
+    {
+      "outcome": "win",
       "side": "short",
       "symbol": "AKEUSDT",
       "factors": [
@@ -275,17 +286,6 @@
       ],
       "aiAction": "send",
       "lessonTh": "เคยถูก: long [crowded+taker] — confluence แบบนี้โอเค"
-    },
-    {
-      "outcome": "win",
-      "side": "short",
-      "symbol": "ZROUSDT",
-      "factors": [
-        "fade",
-        "oiDiverg"
-      ],
-      "aiAction": "send",
-      "lessonTh": "เคยถูก: short [fade+oiDiverg] — confluence แบบนี้โอเค"
     }
   ],
   "adjustments": [
