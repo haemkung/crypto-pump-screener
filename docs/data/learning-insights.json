@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-21T17:29:09.184Z",
+  "updatedAt": "2026-10-21T19:24:08.861Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 106,
-    "earlyWins": 64,
+    "earlyGraded": 104,
+    "earlyWins": 62,
     "earlyLosses": 42,
-    "earlyWinRate": 0.6037735849056604,
+    "earlyWinRate": 0.5961538461538461,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -43,39 +43,6 @@
       "factorKeys": [
         "crowded",
         "funding",
-        "oiDiverg",
-        "troughStall"
-      ],
-      "wins": 9,
-      "losses": 3,
-      "winRate": 0.75,
-      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 9/12 (WR 75%) — เก็บแพทเทิร์น",
-      "samples": [
-        {
-          "symbol": "STXUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "tp1"
-        },
-        {
-          "symbol": "LSKUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "tp1"
-        },
-        {
-          "symbol": "MAGICUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "tp1"
-        }
-      ]
-    },
-    {
-      "side": "long",
-      "factorKeys": [
-        "crowded",
-        "funding",
         "oiDiverg"
       ],
       "wins": 8,
@@ -83,12 +50,6 @@
       "winRate": 0.8888888888888888,
       "noteTh": "✅ Long crowded+funding+oiDiverg: ชนะ 8/9 (WR 89%) — เก็บแพทเทิร์น",
       "samples": [
-        {
-          "symbol": "LUMIAUSDT",
-          "outcome": "win",
-          "aiAction": "veto",
-          "horizon": "tp1"
-        },
         {
           "symbol": "MAGICUSDT",
           "outcome": "win",
@@ -100,6 +61,45 @@
           "outcome": "win",
           "aiAction": null,
           "horizon": "tp1"
+        },
+        {
+          "symbol": "WUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
+        }
+      ]
+    },
+    {
+      "side": "long",
+      "factorKeys": [
+        "crowded",
+        "funding",
+        "oiDiverg",
+        "troughStall"
+      ],
+      "wins": 7,
+      "losses": 3,
+      "winRate": 0.7,
+      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 7/10 (WR 70%) — เก็บแพทเทิร์น",
+      "samples": [
+        {
+          "symbol": "MAGICUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "GTCUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "PHAUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
         }
       ]
     },
@@ -110,28 +110,28 @@
         "oiDiverg",
         "troughStall"
       ],
-      "wins": 7,
+      "wins": 6,
       "losses": 4,
-      "winRate": 0.6363636363636364,
-      "noteTh": "✅ Long funding+oiDiverg+troughStall: ชนะ 7/11 (WR 64%) — เก็บแพทเทิร์น",
+      "winRate": 0.6,
+      "noteTh": "✅ Long funding+oiDiverg+troughStall: ชนะ 6/10 (WR 60%) — เก็บแพทเทิร์น",
       "samples": [
         {
-          "symbol": "SANDUSDT",
+          "symbol": "ICNTUSDT",
+          "outcome": "loss",
+          "aiAction": null,
+          "horizon": "60m"
+        },
+        {
+          "symbol": "ARBUSDT",
           "outcome": "win",
           "aiAction": null,
           "horizon": "tp1"
         },
         {
-          "symbol": "ICNTUSDT",
-          "outcome": "loss",
+          "symbol": "ARBUSDT",
+          "outcome": "win",
           "aiAction": null,
-          "horizon": "60m"
-        },
-        {
-          "symbol": "ICNTUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "60m"
+          "horizon": "tp1"
         }
       ]
     },
@@ -285,8 +285,8 @@
   "adjustments": [
     {
       "key": "vetoBias",
-      "value": 0,
-      "noteTh": "คง vetoBias=0 — WR ระยะต้น 60% ยังไม่ต้องเข้มเพิ่ม"
+      "value": 0.05,
+      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 60% จาก 104 เคส"
     },
     {
       "key": "cautionPatterns",
@@ -305,7 +305,7 @@
     }
   ],
   "biasSummary": {
-    "vetoBias": 0,
+    "vetoBias": 0.05,
     "cautionCount": 1,
     "preferBoostCount": 2,
     "minFactorsFloor": 3,
