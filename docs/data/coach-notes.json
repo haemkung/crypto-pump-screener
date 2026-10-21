@@ -1,67 +1,6 @@
 {
   "notes": [
     {
-      "id": "learn:2026-10-21T00:m:0",
-      "symbol": "LEARN",
-      "side": "short",
-      "outcome": "loss",
-      "noteTh": "❌ Short inflow+oiDiverg: แพ้ 2/2 (WR 0%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
-      "timestamp": "2026-10-21T00:29:07.989Z",
-      "source": "learn",
-      "tier": "insight",
-      "labelTh": "เรียนรู้ความผิดพลาด"
-    },
-    {
-      "id": "learn:2026-10-21T00:a:1",
-      "symbol": "ADJ",
-      "side": "long",
-      "outcome": "neutral",
-      "noteTh": "🔧 คง vetoBias=0 — WR ระยะต้น 63% ยังไม่ต้องเข้มเพิ่ม",
-      "timestamp": "2026-10-21T00:29:07.989Z",
-      "source": "learn",
-      "tier": "adjust",
-      "labelTh": "ปรับโมเดล"
-    },
-    {
-      "id": "learn:2026-10-21T00:a:2",
-      "symbol": "ADJ",
-      "side": "long",
-      "outcome": "neutral",
-      "noteTh": "🔧 จำแพทเทิร์นเสีย 1 แบบ (เช่น inflow+oiDiverg) — ส่งเข้า AI context",
-      "timestamp": "2026-10-21T00:29:07.989Z",
-      "source": "learn",
-      "tier": "adjust",
-      "labelTh": "ปรับโมเดล"
-    },
-    {
-      "id": "e252c928-6e77-4a6c-8729-680d2a6c8b7c",
-      "symbol": "EPICUSDT",
-      "side": "long",
-      "outcome": "loss",
-      "noteTh": "❌ EPICUSDT Long (5m) · ระยะต้น/กำลังสะสม: พลาด — ราคา -1.29% · flags: early:preOrder,troughStall,oiDiverg. ทบทวน confluence / หลักฐานซ่อนก่อนเข้า",
-      "timestamp": "2026-10-21T00:44:15.928Z",
-      "alertId": "5b4fad4c-e182-41b3-9a43-f7f71dbae0b9",
-      "horizon": "5m",
-      "movePct": -1.29,
-      "source": "early",
-      "tier": "accumulation",
-      "labelTh": "กำลังสะสม"
-    },
-    {
-      "id": "9b7fe104-f9d2-46d6-8190-705f46b5461c",
-      "symbol": "MORPHOUSDT",
-      "side": "long",
-      "outcome": "win",
-      "noteTh": "✅ MORPHOUSDT Long (5m) · ระยะต้น/กำลังสะสม: ทำงานได้ — ราคา +1.00% ตรงทิศ · flags: early:preOrder,taker,tier:accumulation. เก็บแพทเทิร์นที่คล้ายไว้",
-      "timestamp": "2026-10-21T00:44:15.926Z",
-      "alertId": "ee0bc6eb-de1f-4dd1-94c2-0c54a86f4abc",
-      "horizon": "5m",
-      "movePct": 1,
-      "source": "early",
-      "tier": "accumulation",
-      "labelTh": "กำลังสะสม"
-    },
-    {
       "id": "7d500803-07bd-4de9-8885-1c7d58302316",
       "symbol": "LITUSDT",
       "side": "short",
@@ -389,6 +328,67 @@
       "source": "early",
       "tier": "distribution",
       "labelTh": "กำลังแจกของ"
+    },
+    {
+      "id": "de4fd6dd-127e-4892-9da6-38de179f6af5",
+      "symbol": "龙虾USDT",
+      "side": "short",
+      "outcome": "loss",
+      "noteTh": "❌ 龙虾USDT Short (5m) · ระยะต้น/เริ่มทุบ: พลาด — ราคา +1.12% · flags: early:ignition,crowded,taker. ทบทวน confluence / หลักฐานซ่อนก่อนเข้า",
+      "timestamp": "2026-10-21T03:29:14.657Z",
+      "alertId": "c24dd090-81fa-4dd6-b95f-b415625e0aff",
+      "horizon": "5m",
+      "movePct": 1.12,
+      "source": "early",
+      "tier": "ignition",
+      "labelTh": "เริ่มทุบ"
+    },
+    {
+      "id": "ca176d58-2492-451b-9d4c-5a5e1a9fff9f",
+      "symbol": "QNTUSDT",
+      "side": "short",
+      "outcome": "loss",
+      "noteTh": "❌ QNTUSDT Short (5m) · ระยะต้น/กำลังแจกของ: พลาด — ราคา +1.15% · flags: early:preOrder,peakStall,tier:distribution. ทบทวน confluence / หลักฐานซ่อนก่อนเข้า",
+      "timestamp": "2026-10-21T03:29:14.650Z",
+      "alertId": "51a943c3-e608-4ea1-aa98-337ec36e8164",
+      "horizon": "5m",
+      "movePct": 1.15,
+      "source": "early",
+      "tier": "distribution",
+      "labelTh": "กำลังแจกของ"
+    },
+    {
+      "id": "learn:2026-10-21T03:m:0",
+      "symbol": "LEARN",
+      "side": "short",
+      "outcome": "loss",
+      "noteTh": "❌ Short inflow+oiDiverg: แพ้ 2/2 (WR 0%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "timestamp": "2026-10-21T03:29:15.048Z",
+      "source": "learn",
+      "tier": "insight",
+      "labelTh": "เรียนรู้ความผิดพลาด"
+    },
+    {
+      "id": "learn:2026-10-21T03:a:1",
+      "symbol": "ADJ",
+      "side": "long",
+      "outcome": "neutral",
+      "noteTh": "🔧 คง vetoBias=0 — WR ระยะต้น 64% ยังไม่ต้องเข้มเพิ่ม",
+      "timestamp": "2026-10-21T03:29:15.048Z",
+      "source": "learn",
+      "tier": "adjust",
+      "labelTh": "ปรับโมเดล"
+    },
+    {
+      "id": "learn:2026-10-21T03:a:2",
+      "symbol": "ADJ",
+      "side": "long",
+      "outcome": "neutral",
+      "noteTh": "🔧 จำแพทเทิร์นเสีย 1 แบบ (เช่น inflow+oiDiverg) — ส่งเข้า AI context",
+      "timestamp": "2026-10-21T03:29:15.048Z",
+      "source": "learn",
+      "tier": "adjust",
+      "labelTh": "ปรับโมเดล"
     }
   ],
   "total": 80,
