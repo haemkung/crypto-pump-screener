@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-21T03:29:15.048Z",
+  "updatedAt": "2026-10-21T04:24:19.505Z",
   "rollingAlerts": 80,
   "stats": {
     "earlyGraded": 119,
-    "earlyWins": 76,
-    "earlyLosses": 43,
-    "earlyWinRate": 0.6386554621848739,
+    "earlyWins": 74,
+    "earlyLosses": 45,
+    "earlyWinRate": 0.6218487394957983,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -47,9 +47,9 @@
         "troughStall"
       ],
       "wins": 11,
-      "losses": 5,
-      "winRate": 0.6875,
-      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 11/16 (WR 69%) — เก็บแพทเทิร์น",
+      "losses": 6,
+      "winRate": 0.6470588235294118,
+      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 11/17 (WR 65%) — เก็บแพทเทิร์น",
       "samples": [
         {
           "symbol": "WALUSDT",
@@ -67,38 +67,6 @@
           "symbol": "WALUSDT",
           "outcome": "win",
           "aiAction": null,
-          "horizon": "tp1"
-        }
-      ]
-    },
-    {
-      "side": "long",
-      "factorKeys": [
-        "crowded",
-        "funding",
-        "oiDiverg"
-      ],
-      "wins": 6,
-      "losses": 3,
-      "winRate": 0.6666666666666666,
-      "noteTh": "✅ Long crowded+funding+oiDiverg: ชนะ 6/9 (WR 67%) — เก็บแพทเทิร์น",
-      "samples": [
-        {
-          "symbol": "WUSDT",
-          "outcome": "win",
-          "aiAction": "veto",
-          "horizon": "tp1"
-        },
-        {
-          "symbol": "WUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "tp1"
-        },
-        {
-          "symbol": "RSRUSDT",
-          "outcome": "win",
-          "aiAction": "veto",
           "horizon": "tp1"
         }
       ]
@@ -183,6 +151,38 @@
           "outcome": "win",
           "aiAction": null,
           "horizon": "5m"
+        }
+      ]
+    },
+    {
+      "side": "long",
+      "factorKeys": [
+        "crowded",
+        "smart",
+        "troughStall"
+      ],
+      "wins": 2,
+      "losses": 1,
+      "winRate": 0.6666666666666666,
+      "noteTh": "✅ Long crowded+smart+troughStall: ชนะ 2/3 (WR 67%) — เก็บแพทเทิร์น",
+      "samples": [
+        {
+          "symbol": "SOLVUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "WLFIUSDT",
+          "outcome": "loss",
+          "aiAction": "veto",
+          "horizon": "sl"
+        },
+        {
+          "symbol": "SOLVUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
         }
       ]
     }
@@ -281,7 +281,7 @@
     {
       "key": "vetoBias",
       "value": 0,
-      "noteTh": "คง vetoBias=0 — WR ระยะต้น 64% ยังไม่ต้องเข้มเพิ่ม"
+      "noteTh": "คง vetoBias=0 — WR ระยะต้น 62% ยังไม่ต้องเข้มเพิ่ม"
     },
     {
       "key": "cautionPatterns",
@@ -290,8 +290,8 @@
     },
     {
       "key": "preferBoost",
-      "value": 3,
-      "noteTh": "แพทเทิร์นชนะชัด 3 แบบ — อนุญาต boost เมื่อตรง"
+      "value": 1,
+      "noteTh": "แพทเทิร์นชนะชัด 1 แบบ — อนุญาต boost เมื่อตรง"
     },
     {
       "key": "guards",
@@ -302,7 +302,7 @@
   "biasSummary": {
     "vetoBias": 0,
     "cautionCount": 1,
-    "preferBoostCount": 3,
+    "preferBoostCount": 1,
     "minFactorsFloor": 3,
     "maxSlPct": 3
   },
