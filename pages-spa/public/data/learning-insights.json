@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-20T23:29:01.689Z",
+  "updatedAt": "2026-10-21T00:29:07.989Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 125,
-    "earlyWins": 77,
-    "earlyLosses": 48,
-    "earlyWinRate": 0.616,
+    "earlyGraded": 126,
+    "earlyWins": 79,
+    "earlyLosses": 47,
+    "earlyWinRate": 0.626984126984127,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -110,10 +110,10 @@
         "funding",
         "oiDiverg"
       ],
-      "wins": 6,
+      "wins": 7,
       "losses": 3,
-      "winRate": 0.6666666666666666,
-      "noteTh": "✅ Long crowded+funding+oiDiverg: ชนะ 6/9 (WR 67%) — เก็บแพทเทิร์น",
+      "winRate": 0.7,
+      "noteTh": "✅ Long crowded+funding+oiDiverg: ชนะ 7/10 (WR 70%) — เก็บแพทเทิร์น",
       "samples": [
         {
           "symbol": "JUPUSDT",
@@ -287,7 +287,7 @@
     {
       "key": "vetoBias",
       "value": 0,
-      "noteTh": "คง vetoBias=0 — WR ระยะต้น 62% ยังไม่ต้องเข้มเพิ่ม"
+      "noteTh": "คง vetoBias=0 — WR ระยะต้น 63% ยังไม่ต้องเข้มเพิ่ม"
     },
     {
       "key": "cautionPatterns",
