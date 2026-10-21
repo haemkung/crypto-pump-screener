@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-21T01:34:06.835Z",
+  "updatedAt": "2026-10-21T02:34:04.582Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 128,
-    "earlyWins": 82,
-    "earlyLosses": 46,
-    "earlyWinRate": 0.640625,
+    "earlyGraded": 132,
+    "earlyWins": 87,
+    "earlyLosses": 45,
+    "earlyWinRate": 0.6590909090909091,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -72,6 +72,39 @@
     }
   ],
   "wins": [
+    {
+      "side": "long",
+      "factorKeys": [
+        "crowded",
+        "funding",
+        "oiDiverg",
+        "troughStall"
+      ],
+      "wins": 9,
+      "losses": 5,
+      "winRate": 0.6428571428571429,
+      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 9/14 (WR 64%) — เก็บแพทเทิร์น",
+      "samples": [
+        {
+          "symbol": "RSRUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "WALUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "ACEUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
+        }
+      ]
+    },
     {
       "side": "long",
       "factorKeys": [
@@ -197,37 +230,6 @@
           "horizon": "5m"
         }
       ]
-    },
-    {
-      "side": "long",
-      "factorKeys": [
-        "crowded",
-        "taker"
-      ],
-      "wins": 3,
-      "losses": 0,
-      "winRate": 1,
-      "noteTh": "✅ Long crowded+taker: ชนะ 3/3 (WR 100%) — เก็บแพทเทิร์น",
-      "samples": [
-        {
-          "symbol": "AUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "60m"
-        },
-        {
-          "symbol": "MARSCOINUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "15m"
-        },
-        {
-          "symbol": "MARSCOINUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "15m"
-        }
-      ]
     }
   ],
   "aiFewShot": [
@@ -324,7 +326,7 @@
     {
       "key": "vetoBias",
       "value": 0,
-      "noteTh": "คง vetoBias=0 — WR ระยะต้น 64% ยังไม่ต้องเข้มเพิ่ม"
+      "noteTh": "คง vetoBias=0 — WR ระยะต้น 66% ยังไม่ต้องเข้มเพิ่ม"
     },
     {
       "key": "cautionPatterns",
