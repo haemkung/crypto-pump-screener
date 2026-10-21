@@ -1,48 +1,6 @@
 {
   "notes": [
     {
-      "id": "67127a0e-2ebf-48c0-b60a-1b5da3d3388c",
-      "symbol": "ENAUSDT",
-      "side": "short",
-      "outcome": "win",
-      "noteTh": "✅ ENAUSDT Short (60m) · ระยะต้น/กำลังแจกของ: ทำงานได้ — ราคา -4.45% ตรงทิศ · flags: early:preOrder,peakStall,oiDiverg. เก็บแพทเทิร์นที่คล้ายไว้",
-      "timestamp": "2026-10-21T14:29:06.719Z",
-      "alertId": "8a3b8335-47ac-4fca-9c45-1056c744d8d1",
-      "horizon": "60m",
-      "movePct": -4.45,
-      "source": "early",
-      "tier": "distribution",
-      "labelTh": "กำลังแจกของ"
-    },
-    {
-      "id": "9c969901-b7cb-4ebf-92ea-7ae917fab440",
-      "symbol": "INJUSDT",
-      "side": "long",
-      "outcome": "loss",
-      "noteTh": "❌ INJUSDT Long (60m) · ระยะต้น/กำลังสะสม: พลาด — ราคา -4.94% · flags: early:preOrder,taker,spot. ทบทวน confluence / หลักฐานซ่อนก่อนเข้า",
-      "timestamp": "2026-10-21T14:29:06.719Z",
-      "alertId": "556ae88c-09e9-4af9-ba4e-043641dfaa41",
-      "horizon": "60m",
-      "movePct": -4.94,
-      "source": "early",
-      "tier": "accumulation",
-      "labelTh": "กำลังสะสม"
-    },
-    {
-      "id": "c6988f6a-71a5-4566-a10c-829f0296bf28",
-      "symbol": "UNIUSDT",
-      "side": "short",
-      "outcome": "win",
-      "noteTh": "✅ UNIUSDT Short (60m) · ระยะต้น/กำลังแจกของ: ทำงานได้ — ราคา -3.52% ตรงทิศ · flags: early:preOrder,peakStall,oiDiverg. เก็บแพทเทิร์นที่คล้ายไว้",
-      "timestamp": "2026-10-21T14:29:06.719Z",
-      "alertId": "3d036fe3-3caa-4af2-9d66-83beb346497e",
-      "horizon": "60m",
-      "movePct": -3.52,
-      "source": "early",
-      "tier": "distribution",
-      "labelTh": "กำลังแจกของ"
-    },
-    {
       "id": "82809441-681a-4a4f-abb7-f345e3cddd27",
       "symbol": "STXUSDT",
       "side": "long",
@@ -386,6 +344,48 @@
       "source": "learn",
       "tier": "adjust",
       "labelTh": "ปรับโมเดล"
+    },
+    {
+      "id": "97e23953-3fe7-42d6-9486-03ee0b555879",
+      "symbol": "BTWUSDT",
+      "side": "long",
+      "outcome": "loss",
+      "noteTh": "❌ BTWUSDT Long (15m) · ระยะต้น/กำลังสะสม: พลาด — ราคา -3.75% · flags: early:preOrder,funding,crowded. ทบทวน confluence / หลักฐานซ่อนก่อนเข้า",
+      "timestamp": "2026-10-21T17:29:08.488Z",
+      "alertId": "77459dab-5a61-47ca-8262-6832da36d812",
+      "horizon": "15m",
+      "movePct": -3.75,
+      "source": "early",
+      "tier": "accumulation",
+      "labelTh": "กำลังสะสม"
+    },
+    {
+      "id": "11c2869e-9ebd-4069-87a8-4d19de6443d9",
+      "symbol": "TIAUSDT",
+      "side": "long",
+      "outcome": "loss",
+      "noteTh": "❌ TIAUSDT Long (5m) · ระยะต้น/กำลังสะสม: พลาด — ราคา -0.96% · flags: early:preOrder,taker,tier:accumulation. ทบทวน confluence / หลักฐานซ่อนก่อนเข้า",
+      "timestamp": "2026-10-21T17:29:08.483Z",
+      "alertId": "3e822a9f-f17d-477e-80bc-b5ae2e2f5d1c",
+      "horizon": "5m",
+      "movePct": -0.96,
+      "source": "early",
+      "tier": "accumulation",
+      "labelTh": "กำลังสะสม"
+    },
+    {
+      "id": "c84ba4b4-8485-417f-8b7d-7662cf0dba10",
+      "symbol": "TIAUSDT",
+      "side": "long",
+      "outcome": "loss",
+      "noteTh": "❌ TIAUSDT Long (5m) · ระยะต้น/price-only (Long): พลาด — ราคา -0.96% · flags: early:ignition_price_only,taker. ทบทวน confluence / หลักฐานซ่อนก่อนเข้า",
+      "timestamp": "2026-10-21T17:29:08.483Z",
+      "alertId": "6da31a44-b0ce-4997-b5b3-02d48719f816",
+      "horizon": "5m",
+      "movePct": -0.96,
+      "source": "early",
+      "tier": "ignition_price_only",
+      "labelTh": "price-only (Long)"
     }
   ],
   "total": 80,
