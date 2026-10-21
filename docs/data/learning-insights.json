@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-21T10:49:03.991Z",
+  "updatedAt": "2026-10-21T11:29:06.503Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 115,
-    "earlyWins": 73,
+    "earlyGraded": 112,
+    "earlyWins": 70,
     "earlyLosses": 42,
-    "earlyWinRate": 0.6347826086956522,
+    "earlyWinRate": 0.625,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -46,19 +46,19 @@
         "oiDiverg",
         "troughStall"
       ],
-      "wins": 10,
+      "wins": 9,
       "losses": 5,
-      "winRate": 0.6666666666666666,
-      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 10/15 (WR 67%) — เก็บแพทเทิร์น",
+      "winRate": 0.6428571428571429,
+      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 9/14 (WR 64%) — เก็บแพทเทิร์น",
       "samples": [
         {
-          "symbol": "RLCUSDT",
+          "symbol": "BERAUSDT",
           "outcome": "win",
           "aiAction": null,
           "horizon": "tp1"
         },
         {
-          "symbol": "BERAUSDT",
+          "symbol": "WALUSDT",
           "outcome": "win",
           "aiAction": null,
           "horizon": "tp1"
@@ -106,37 +106,6 @@
     {
       "side": "short",
       "factorKeys": [
-        "oiDiverg",
-        "peakStall"
-      ],
-      "wins": 4,
-      "losses": 2,
-      "winRate": 0.6666666666666666,
-      "noteTh": "✅ Short oiDiverg+peakStall: ชนะ 4/6 (WR 67%) — เก็บแพทเทิร์น",
-      "samples": [
-        {
-          "symbol": "ENAUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "60m"
-        },
-        {
-          "symbol": "UNIUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "60m"
-        },
-        {
-          "symbol": "PUMPUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "60m"
-        }
-      ]
-    },
-    {
-      "side": "short",
-      "factorKeys": [
         "fade",
         "oiDiverg"
       ],
@@ -159,6 +128,37 @@
         },
         {
           "symbol": "CAPUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "60m"
+        }
+      ]
+    },
+    {
+      "side": "short",
+      "factorKeys": [
+        "oiDiverg",
+        "peakStall"
+      ],
+      "wins": 3,
+      "losses": 2,
+      "winRate": 0.6,
+      "noteTh": "✅ Short oiDiverg+peakStall: ชนะ 3/5 (WR 60%) — เก็บแพทเทิร์น",
+      "samples": [
+        {
+          "symbol": "ENAUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "60m"
+        },
+        {
+          "symbol": "UNIUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "60m"
+        },
+        {
+          "symbol": "PUMPUSDT",
           "outcome": "win",
           "aiAction": null,
           "horizon": "60m"
@@ -294,8 +294,8 @@
     },
     {
       "key": "preferBoost",
-      "value": 3,
-      "noteTh": "แพทเทิร์นชนะชัด 3 แบบ — อนุญาต boost เมื่อตรง"
+      "value": 1,
+      "noteTh": "แพทเทิร์นชนะชัด 1 แบบ — อนุญาต boost เมื่อตรง"
     },
     {
       "key": "guards",
@@ -306,7 +306,7 @@
   "biasSummary": {
     "vetoBias": 0,
     "cautionCount": 1,
-    "preferBoostCount": 3,
+    "preferBoostCount": 1,
     "minFactorsFloor": 3,
     "maxSlPct": 3
   },
