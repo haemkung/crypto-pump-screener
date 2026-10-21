@@ -1,15 +1,43 @@
 {
-  "updatedAt": "2026-10-21T20:24:05.172Z",
+  "updatedAt": "2026-10-21T21:19:13.707Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 105,
-    "earlyWins": 63,
-    "earlyLosses": 42,
-    "earlyWinRate": 0.6,
+    "earlyGraded": 101,
+    "earlyWins": 58,
+    "earlyLosses": 43,
+    "earlyWinRate": 0.5742574257425742,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
   "mistakes": [
+    {
+      "side": "short",
+      "factorKeys": [
+        "crowded",
+        "oiDiverg",
+        "peakStall",
+        "taker"
+      ],
+      "losses": 2,
+      "wins": 0,
+      "winRate": 0,
+      "noteTh": "❌ Short crowded+oiDiverg+peakStall+taker: แพ้ 2/2 (WR 0%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "samples": [
+        {
+          "symbol": "AINUSDT",
+          "outcome": "loss",
+          "aiAction": null,
+          "horizon": "5m"
+        },
+        {
+          "symbol": "GRVTUSDT",
+          "outcome": "loss",
+          "aiAction": null,
+          "horizon": "sl"
+        }
+      ]
+    },
     {
       "side": "short",
       "factorKeys": [
@@ -78,17 +106,11 @@
         "oiDiverg",
         "troughStall"
       ],
-      "wins": 7,
+      "wins": 6,
       "losses": 3,
-      "winRate": 0.7,
-      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 7/10 (WR 70%) — เก็บแพทเทิร์น",
+      "winRate": 0.6666666666666666,
+      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 6/9 (WR 67%) — เก็บแพทเทิร์น",
       "samples": [
-        {
-          "symbol": "MAGICUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "tp1"
-        },
         {
           "symbol": "GTCUSDT",
           "outcome": "win",
@@ -100,6 +122,12 @@
           "outcome": "win",
           "aiAction": null,
           "horizon": "tp1"
+        },
+        {
+          "symbol": "GTCUSDT",
+          "outcome": "loss",
+          "aiAction": null,
+          "horizon": "15m"
         }
       ]
     },
@@ -110,17 +138,11 @@
         "oiDiverg",
         "troughStall"
       ],
-      "wins": 6,
-      "losses": 4,
-      "winRate": 0.6,
-      "noteTh": "✅ Long funding+oiDiverg+troughStall: ชนะ 6/10 (WR 60%) — เก็บแพทเทิร์น",
+      "wins": 5,
+      "losses": 3,
+      "winRate": 0.625,
+      "noteTh": "✅ Long funding+oiDiverg+troughStall: ชนะ 5/8 (WR 63%) — เก็บแพทเทิร์น",
       "samples": [
-        {
-          "symbol": "ICNTUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "60m"
-        },
         {
           "symbol": "ARBUSDT",
           "outcome": "win",
@@ -128,7 +150,13 @@
           "horizon": "tp1"
         },
         {
-          "symbol": "ARBUSDT",
+          "symbol": "MORPHOUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "TIAUSDT",
           "outcome": "win",
           "aiAction": null,
           "horizon": "tp1"
@@ -251,17 +279,6 @@
     },
     {
       "outcome": "win",
-      "side": "short",
-      "symbol": "MONUSDT",
-      "factors": [
-        "oiDiverg",
-        "taker"
-      ],
-      "aiAction": "send",
-      "lessonTh": "เคยถูก: short [oiDiverg+taker] — confluence แบบนี้โอเค"
-    },
-    {
-      "outcome": "win",
       "side": "long",
       "symbol": "EIGENUSDT",
       "factors": [
@@ -281,18 +298,29 @@
       ],
       "aiAction": "send",
       "lessonTh": "เคยถูก: short [fade+smart] — confluence แบบนี้โอเค"
+    },
+    {
+      "outcome": "win",
+      "side": "long",
+      "symbol": "NEARUSDT",
+      "factors": [
+        "crowded",
+        "taker"
+      ],
+      "aiAction": "send",
+      "lessonTh": "เคยถูก: long [crowded+taker] — confluence แบบนี้โอเค"
     }
   ],
   "adjustments": [
     {
       "key": "vetoBias",
       "value": 0.05,
-      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 60% จาก 105 เคส"
+      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 57% จาก 101 เคส"
     },
     {
       "key": "cautionPatterns",
-      "value": 1,
-      "noteTh": "จำแพทเทิร์นเสีย 1 แบบ (เช่น inflow+oiDiverg) — ส่งเข้า AI context"
+      "value": 2,
+      "noteTh": "จำแพทเทิร์นเสีย 2 แบบ (เช่น crowded+oiDiverg+peakStall+taker) — ส่งเข้า AI context"
     },
     {
       "key": "preferBoost",
@@ -307,7 +335,7 @@
   ],
   "biasSummary": {
     "vetoBias": 0.05,
-    "cautionCount": 1,
+    "cautionCount": 2,
     "preferBoostCount": 2,
     "minFactorsFloor": 3,
     "maxSlPct": 3
