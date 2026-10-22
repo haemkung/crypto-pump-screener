@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-22T01:14:12.323Z",
+  "updatedAt": "2026-10-22T01:29:16.955Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 88,
-    "earlyWins": 43,
-    "earlyLosses": 45,
-    "earlyWinRate": 0.48863636363636365,
+    "earlyGraded": 90,
+    "earlyWins": 44,
+    "earlyLosses": 46,
+    "earlyWinRate": 0.4888888888888889,
     "confluenceAlerts": 80,
     "casesTotal": 802
   },
@@ -318,6 +318,19 @@
     {
       "outcome": "loss",
       "side": "short",
+      "symbol": "SIRENUSDT",
+      "factors": [
+        "crowded",
+        "funding",
+        "oiDiverg",
+        "peakStall"
+      ],
+      "aiAction": "send",
+      "lessonTh": "เคยพลาด: short [crowded+funding+oiDiverg+peakStall] — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
+    },
+    {
+      "outcome": "loss",
+      "side": "short",
       "symbol": "PENGUUSDT",
       "factors": [
         "oiDiverg",
@@ -325,19 +338,6 @@
       ],
       "aiAction": "send",
       "lessonTh": "เคยพลาด: short [oiDiverg+peakStall] — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
-    },
-    {
-      "outcome": "loss",
-      "side": "short",
-      "symbol": "AINUSDT",
-      "factors": [
-        "crowded",
-        "oiDiverg",
-        "peakStall",
-        "taker"
-      ],
-      "aiAction": "send",
-      "lessonTh": "เคยพลาด: short [crowded+oiDiverg+peakStall+taker] — อย่าส่งซ้ำถ้าสัญญาณคล้าย"
     },
     {
       "outcome": "win",
@@ -377,7 +377,7 @@
     {
       "key": "vetoBias",
       "value": 0.05,
-      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 49% จาก 88 เคส"
+      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 49% จาก 90 เคส"
     },
     {
       "key": "cautionPatterns",
