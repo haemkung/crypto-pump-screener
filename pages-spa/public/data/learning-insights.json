@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-27T15:39:12.389Z",
+  "updatedAt": "2026-10-27T16:24:18.512Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 104,
-    "earlyWins": 57,
+    "earlyGraded": 106,
+    "earlyWins": 59,
     "earlyLosses": 47,
-    "earlyWinRate": 0.5480769230769231,
+    "earlyWinRate": 0.5566037735849056,
     "confluenceAlerts": 80,
     "casesTotal": 800
   },
@@ -171,10 +171,10 @@
         "oiDiverg",
         "troughStall"
       ],
-      "wins": 14,
+      "wins": 15,
       "losses": 3,
-      "winRate": 0.8235294117647058,
-      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 14/17 (WR 82%) — เก็บแพทเทิร์น",
+      "winRate": 0.8333333333333334,
+      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 15/18 (WR 83%) — เก็บแพทเทิร์น",
       "samples": [
         {
           "symbol": "CTUSDT",
@@ -296,30 +296,31 @@
       "side": "long",
       "factorKeys": [
         "crowded",
-        "funding"
+        "funding",
+        "troughStall"
       ],
       "wins": 2,
       "losses": 1,
       "winRate": 0.6666666666666666,
-      "noteTh": "✅ Long crowded+funding: ชนะ 2/3 (WR 67%) — เก็บแพทเทิร์น",
+      "noteTh": "✅ Long crowded+funding+troughStall: ชนะ 2/3 (WR 67%) — เก็บแพทเทิร์น",
       "samples": [
         {
-          "symbol": "BMTUSDT",
+          "symbol": "CTUSDT",
           "outcome": "win",
           "aiAction": null,
-          "horizon": "15m"
+          "horizon": "tp1"
         },
         {
-          "symbol": "REZUSDT",
+          "symbol": "ALTUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "ARKUSDT",
           "outcome": "loss",
           "aiAction": null,
-          "horizon": "5m"
-        },
-        {
-          "symbol": "IOSTUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "60m"
+          "horizon": "15m"
         }
       ]
     }
@@ -418,7 +419,7 @@
     {
       "key": "vetoBias",
       "value": 0.05,
-      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 55% จาก 104 เคส"
+      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 56% จาก 106 เคส"
     },
     {
       "key": "cautionPatterns",
