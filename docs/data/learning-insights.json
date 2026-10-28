@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-28T11:19:10.997Z",
+  "updatedAt": "2026-10-28T12:29:12.731Z",
   "rollingAlerts": 80,
   "stats": {
     "earlyGraded": 96,
@@ -204,28 +204,28 @@
         "oiDiverg",
         "troughStall"
       ],
-      "wins": 6,
+      "wins": 5,
       "losses": 3,
-      "winRate": 0.6666666666666666,
-      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 6/9 (WR 67%) — เก็บแพทเทิร์น",
+      "winRate": 0.625,
+      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 5/8 (WR 63%) — เก็บแพทเทิร์น",
       "samples": [
         {
-          "symbol": "TUSDT",
+          "symbol": "RLCUSDT",
+          "outcome": "loss",
+          "aiAction": null,
+          "horizon": "sl"
+        },
+        {
+          "symbol": "RLCUSDT",
+          "outcome": "loss",
+          "aiAction": null,
+          "horizon": "sl"
+        },
+        {
+          "symbol": "ALTUSDT",
           "outcome": "win",
-          "aiAction": "veto",
+          "aiAction": null,
           "horizon": "tp1"
-        },
-        {
-          "symbol": "RLCUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "sl"
-        },
-        {
-          "symbol": "RLCUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "sl"
         }
       ]
     },
@@ -284,6 +284,39 @@
           "outcome": "loss",
           "aiAction": null,
           "horizon": "15m"
+        }
+      ]
+    },
+    {
+      "side": "long",
+      "factorKeys": [
+        "crowded",
+        "funding",
+        "oiDiverg",
+        "taker"
+      ],
+      "wins": 2,
+      "losses": 1,
+      "winRate": 0.6666666666666666,
+      "noteTh": "✅ Long crowded+funding+oiDiverg+taker: ชนะ 2/3 (WR 67%) — เก็บแพทเทิร์น",
+      "samples": [
+        {
+          "symbol": "POLYXUSDT",
+          "outcome": "loss",
+          "aiAction": "veto",
+          "horizon": "sl"
+        },
+        {
+          "symbol": "BMTUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "BATUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
         }
       ]
     },
@@ -421,11 +454,6 @@
       "noteTh": "จำแพทเทิร์นเสีย 6 แบบ (เช่น oiDiverg+peakStall) — ส่งเข้า AI context"
     },
     {
-      "key": "preferBoost",
-      "value": 1,
-      "noteTh": "แพทเทิร์นชนะชัด 1 แบบ — อนุญาต boost เมื่อตรง"
-    },
-    {
       "key": "guards",
       "value": 3,
       "noteTh": "คงกฎแข็ง: ≥3 ปัจจัยซ่อน · SL ≤3% · ไม่ลด confluence · NOW ปิด"
@@ -434,7 +462,7 @@
   "biasSummary": {
     "vetoBias": 0.05,
     "cautionCount": 6,
-    "preferBoostCount": 1,
+    "preferBoostCount": 0,
     "minFactorsFloor": 3,
     "maxSlPct": 3
   },
