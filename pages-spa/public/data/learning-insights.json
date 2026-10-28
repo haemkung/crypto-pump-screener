@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-28T03:04:18.069Z",
+  "updatedAt": "2026-10-28T03:49:50.275Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 122,
-    "earlyWins": 62,
-    "earlyLosses": 60,
-    "earlyWinRate": 0.5081967213114754,
+    "earlyGraded": 121,
+    "earlyWins": 63,
+    "earlyLosses": 58,
+    "earlyWinRate": 0.5206611570247934,
     "confluenceAlerts": 80,
     "casesTotal": 800
   },
@@ -17,18 +17,12 @@
         "funding",
         "oiDiverg"
       ],
-      "losses": 8,
+      "losses": 7,
       "wins": 2,
-      "winRate": 0.2,
-      "noteTh": "❌ Long crowded+funding+oiDiverg: แพ้ 8/10 (WR 20%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "winRate": 0.2222222222222222,
+      "noteTh": "❌ Long crowded+funding+oiDiverg: แพ้ 7/9 (WR 22%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
       "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
       "samples": [
-        {
-          "symbol": "WUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "sl"
-        },
         {
           "symbol": "ZROUSDT",
           "outcome": "loss",
@@ -40,6 +34,12 @@
           "outcome": "win",
           "aiAction": null,
           "horizon": "tp1"
+        },
+        {
+          "symbol": "GTCUSDT",
+          "outcome": "loss",
+          "aiAction": null,
+          "horizon": "sl"
         }
       ]
     },
@@ -237,16 +237,10 @@
         "troughStall"
       ],
       "wins": 14,
-      "losses": 6,
-      "winRate": 0.7,
-      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 14/20 (WR 70%) — เก็บแพทเทิร์น",
+      "losses": 5,
+      "winRate": 0.7368421052631579,
+      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 14/19 (WR 74%) — เก็บแพทเทิร์น",
       "samples": [
-        {
-          "symbol": "ZROUSDT",
-          "outcome": "loss",
-          "aiAction": null,
-          "horizon": "sl"
-        },
         {
           "symbol": "TUSDT",
           "outcome": "win",
@@ -255,6 +249,12 @@
         },
         {
           "symbol": "CTUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "ANIMEUSDT",
           "outcome": "win",
           "aiAction": null,
           "horizon": "tp1"
@@ -452,7 +452,7 @@
     {
       "key": "vetoBias",
       "value": 0.05,
-      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 51% จาก 122 เคส"
+      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 52% จาก 121 เคส"
     },
     {
       "key": "cautionPatterns",
