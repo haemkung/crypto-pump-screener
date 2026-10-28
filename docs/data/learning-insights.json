@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-27T21:24:05.024Z",
+  "updatedAt": "2026-10-28T00:24:27.785Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 108,
-    "earlyWins": 55,
-    "earlyLosses": 53,
-    "earlyWinRate": 0.5092592592592593,
+    "earlyGraded": 115,
+    "earlyWins": 59,
+    "earlyLosses": 56,
+    "earlyWinRate": 0.5130434782608696,
     "confluenceAlerts": 80,
     "casesTotal": 800
   },
@@ -50,10 +50,10 @@
         "oiDiverg",
         "troughStall"
       ],
-      "losses": 5,
-      "wins": 1,
-      "winRate": 0.16666666666666666,
-      "noteTh": "❌ Long funding+oiDiverg+troughStall: แพ้ 5/6 (WR 17%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "losses": 6,
+      "wins": 2,
+      "winRate": 0.25,
+      "noteTh": "❌ Long funding+oiDiverg+troughStall: แพ้ 6/8 (WR 25%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
       "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
       "samples": [
         {
@@ -204,17 +204,11 @@
         "oiDiverg",
         "troughStall"
       ],
-      "wins": 13,
+      "wins": 14,
       "losses": 5,
-      "winRate": 0.7222222222222222,
-      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 13/18 (WR 72%) — เก็บแพทเทิร์น",
+      "winRate": 0.7368421052631579,
+      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 14/19 (WR 74%) — เก็บแพทเทิร์น",
       "samples": [
-        {
-          "symbol": "BMTUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "tp1"
-        },
         {
           "symbol": "ZROUSDT",
           "outcome": "loss",
@@ -225,6 +219,12 @@
           "symbol": "TUSDT",
           "outcome": "win",
           "aiAction": "veto",
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "CTUSDT",
+          "outcome": "win",
+          "aiAction": null,
           "horizon": "tp1"
         }
       ]
@@ -451,7 +451,7 @@
     {
       "key": "vetoBias",
       "value": 0.05,
-      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 51% จาก 108 เคส"
+      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 51% จาก 115 เคส"
     },
     {
       "key": "cautionPatterns",
