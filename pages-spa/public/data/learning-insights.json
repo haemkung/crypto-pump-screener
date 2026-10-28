@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-10-28T08:39:09.591Z",
+  "updatedAt": "2026-10-28T10:24:58.916Z",
   "rollingAlerts": 80,
   "stats": {
-    "earlyGraded": 97,
-    "earlyWins": 47,
-    "earlyLosses": 50,
-    "earlyWinRate": 0.4845360824742268,
+    "earlyGraded": 99,
+    "earlyWins": 48,
+    "earlyLosses": 51,
+    "earlyWinRate": 0.48484848484848486,
     "confluenceAlerts": 80,
     "casesTotal": 800
   },
@@ -50,9 +50,9 @@
         "troughStall"
       ],
       "losses": 6,
-      "wins": 3,
-      "winRate": 0.3333333333333333,
-      "noteTh": "❌ Long funding+oiDiverg+troughStall: แพ้ 6/9 (WR 33%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
+      "wins": 4,
+      "winRate": 0.4,
+      "noteTh": "❌ Long funding+oiDiverg+troughStall: แพ้ 6/10 (WR 40%) — แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
       "tipTh": "แพทเทิร์นเสียซ้ำ — ตรวจ confluence ให้เข้ม",
       "samples": [
         {
@@ -231,17 +231,11 @@
         "oiDiverg",
         "troughStall"
       ],
-      "wins": 9,
+      "wins": 8,
       "losses": 3,
-      "winRate": 0.75,
-      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 9/12 (WR 75%) — เก็บแพทเทิร์น",
+      "winRate": 0.7272727272727273,
+      "noteTh": "✅ Long crowded+funding+oiDiverg+troughStall: ชนะ 8/11 (WR 73%) — เก็บแพทเทิร์น",
       "samples": [
-        {
-          "symbol": "ARKUSDT",
-          "outcome": "win",
-          "aiAction": null,
-          "horizon": "tp1"
-        },
         {
           "symbol": "TUSDT",
           "outcome": "win",
@@ -252,6 +246,38 @@
           "symbol": "TUSDT",
           "outcome": "win",
           "aiAction": "veto",
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "RLCUSDT",
+          "outcome": "loss",
+          "aiAction": null,
+          "horizon": "sl"
+        }
+      ]
+    },
+    {
+      "side": "long",
+      "factorKeys": [
+        "funding",
+        "oiDiverg",
+        "taker"
+      ],
+      "wins": 2,
+      "losses": 0,
+      "winRate": 1,
+      "noteTh": "✅ Long funding+oiDiverg+taker: ชนะ 2/2 (WR 100%) — เก็บแพทเทิร์น",
+      "samples": [
+        {
+          "symbol": "QNTUSDT",
+          "outcome": "win",
+          "aiAction": null,
+          "horizon": "tp1"
+        },
+        {
+          "symbol": "IRYSUSDT",
+          "outcome": "win",
+          "aiAction": null,
           "horizon": "tp1"
         }
       ]
@@ -414,7 +440,7 @@
     {
       "key": "vetoBias",
       "value": 0.05,
-      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 48% จาก 97 เคส"
+      "noteTh": "ปรับ AI ให้ระวังขึ้น (vetoBias=0.05) เพราะ WR ระยะต้น 48% จาก 99 เคส"
     },
     {
       "key": "cautionPatterns",
